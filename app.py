@@ -1,4 +1,4 @@
-from window_manager import get_focused_window_title, press_f10,pyqt, change_type
+from window_manager import get_focused_window_title, press_f10, change_type, initialize_opacity, open_webview, set_on_top
 from flask import Flask, request, jsonify,send_from_directory
 from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
@@ -64,6 +64,7 @@ default={
 ],
 "settings":{
     "hot_keys":[],
+    "focus_hot_key":"ctrl+9",
     "hot_reload":True,
     "toggle":1,
     "open":0,
@@ -340,6 +341,13 @@ def get_files(subpath):
     return send_from_directory(path,'preview.'+ext)
 
 #---------------------------------------------------------------------------------------- Modifying Content
+@app.route("/checkupdate",methods=["GET"]) # Update the list of mods and their properties
+@cross_origin()
+def check_update():
+    if(update):
+        return jsonify({"status":"ok","list":refresh_dir()})
+    else:
+        return jsonify({"status":"err","message":"No update"})
 
 @app.route("/list",methods=["POST"]) # Get the list of mods and their properties
 @cross_origin()
@@ -370,6 +378,29 @@ def list():
             rsp["list"]=refresh_dir(cwd.replace(data["dir"]+"/",""))
     rsp["status"]="ok"
     return jsonify(rsp)
+
+@app.route("/setpresethotkeys",methods=["POST"]) # Set the hotkeys for the presets
+@cross_origin()
+def set_presethotkeys():
+    data_get=request.get_json(force=True)
+    for i in data_get["presets"]:
+        if i["hotkey"]!="":
+            try:
+                keyboard.remove_hotkey(i["hotkey"])
+            except:
+                pass
+    data["presets"]=data_get["presets"]
+    for i in range(len(data["presets"])):
+        if data["presets"][i]["hotkey"]!="":
+            try:
+                keyboard.add_hotkey(data["presets"][i]["hotkey"], lambda j=deepcopy(i): apply_preset(j))
+            except:
+                pass
+    if save_congif():
+        log("Save preset hotkeys")
+        return jsonify({"status":"ok"})
+    else:
+        return jsonify({"status":"err"})
 
 @app.route("/setpresets", methods=['POST']) # Modify the presets in the configuration
 @cross_origin()
@@ -507,9 +538,7 @@ def dir_content():
         rsp["status"]="err"
     return jsonify(rsp)
 
-@app.route("/applypreset/<i>", methods=['GET']) # Apply a preset to the mod directory
-@cross_origin()
-def apply_content(i):
+def apply_preset(i):
     try:
         log("Apply preset")
         preset=data["presets"][int(i)]["data"]
@@ -526,11 +555,18 @@ def apply_content(i):
                     pass
         global update
         update=True
-        return jsonify({"status":"ok","list":refresh_dir()})
+        return True
     except:
         log("Apply preset err")
         pass
-    return jsonify({"status":"err"})
+    return False
+
+@app.route("/applypreset/<i>", methods=['GET']) # Apply a preset to the mod directory
+@cross_origin()
+def apply_content(i):
+    return jsonify({"status":"ok","list":refresh_dir()}) if apply_preset(i) else jsonify({"status":"err","message":"Not a valid preset"})
+
+    
 
 @app.route('/savepreview', methods=['POST']) # Save the preview image to the specified directory
 @cross_origin()
@@ -566,6 +602,8 @@ def save_settings():
     try:
         if(data_get["settings"]["type"]!=data["settings"]["type"]):
             change_type(data_get["settings"]["type"])
+        if(data_get["settings"]["opacity"]!=data["settings"]["opacity"] or data_get["settings"]["type"]!=data["settings"]["type"]):
+            initialize_opacity(data_get["settings"]["opacity"])
     except:
         pass
     data["settings"]=data_get["settings"]
@@ -587,7 +625,29 @@ def open_link():
         return jsonify({"status":"ok"})
     else:
         return jsonify({"status":"err","message":"No link"})
+
+@app.route('/savetophot', methods=['POST']) # Set the window to be always on top
+@cross_origin()
+def set_on_top2():
+    data_get=request.get_json(force=True)
+    key=data_get["key"]
+    try:
+        keyboard.remove_hotkey(data["settings"]["focus_hot_key"])
+    except:
+        pass
+    if key!="":
+        try:
+            keyboard.add_hotkey(key, set_on_top)
+        except:
+            pass
+    data["settings"]["focus_hot_key"]=key
+    if save_congif():
+        log("Save hotkey")
+        global update
+        update=True
+        return jsonify({"status":"ok"})
     
+
 @app.route('/quit', methods=['GET']) # Used to stop the server after 2 seconds on closing the tab
 @cross_origin()
 def quit_app():
@@ -603,29 +663,35 @@ def run_flask():
     # app.run(host='0.0.0.0', port=2110, threaded=True)
     serve(app, port=2110)
 
-# import keyboard
-# def focus_webview():
-    
-#     activate_window("")
+import keyboard
 
-# keyboard.add_hotkey('ctrl+9', focus_webview)
+
+keyboard.add_hotkey(data["settings"]["focus_hot_key"], set_on_top)
+for i in range(len( data["presets"])):
+    if(data["presets"][i]["hotkey"]!=""):
+        keyboard.add_hotkey(data["presets"][i]["hotkey"], lambda j=deepcopy(i): apply_preset(j))
+    
 
 
 def runner():
     global update
+    first=True
     while running:
         window=get_focused_window_title()
         if(str(window).strip().lower()=="wuthering waves") and update and data["settings"]["hot_reload"]:
             update=False
             press_f10()
         time.sleep(1)
+        if first:
+            first=False
+            initialize_opacity(data["settings"]["opacity"])
+            
 
 if __name__ == '__main__':
     # Start the Flask app in a separate thread
     flask_thread = Thread(target=run_flask,daemon=True)
     flask_thread.start()
     event_thread = Thread(target=runner,daemon=True)
-
     try:
 
         if(data["settings"]["open"]==1):
@@ -633,7 +699,7 @@ if __name__ == '__main__':
             runner()
         else:
             event_thread.start()
-            pyqt(data["settings"]["type"],data["settings"]["opacity"])
+            open_webview(data["settings"]["type"])
 
         # webview.create_window("WWMM Launcher", "http://127.0.1:2110/", width=1200, height=800, resizable=True,on_top=True)
         # webview.start()
