@@ -1,78 +1,86 @@
-
 [![logo](./preview/logo.png)]()  
 
-### WuWa Mod Manager is a desktop application that streamlines mod management for Wuthering Waves. With one-click toggles, customizable presets, and built-in previews, it makes apply, organizing, and managing mods effortless.
+## Overview
+WuWa Mod Manager is a desktop application that streamlines mod management for Wuthering Waves. With one-click toggles, customizable presets, and built-in previews, it makes applying, organizing, and managing mods effortless. It also features an integrated online mod browser, allowing users to discover and install mods directly from Gamebanana without leaving the app.
 
 ## Features
- 
-- View available and installed mods in at a glance.  
-- Toggle mods on or off with a single click.  
-- Create, save, and switch between mod presets.  
-- Assign preview images to individual mod folders.  
-- Open any mod folder in your system’s file explorer or in the manager UI.  
-- Rename mods inline without touching the file system.  
-- Save and display source URLs for each mod.  
-- Filter the mod list by character and by enabled/disabled status.
 
-### Planned Features
+### 1. Mod Management System
+#### Mod Organization
 
-- Launch Wuthering Waves via XXMI with your active mods pre-loaded.
-- Add a built-in mod downloader to fetch mods directly from gamebanana and unzip it to the mod folder.  
-- Detect hotkeys for mods and display them in the UI.
-- Check if mods are up to date and notify the user.
+[![organizing](./preview/org.png)]()  
+- **Directory Scanning**: Automatically detects and lists installed mods from game directory
+- **Mod Organization**: Categorized mod display with folder-based organization
+---
+#### Mod Management
+[![local](./preview/offline.png)]()  
+- **Mod Status Control**: Toggle mods on/off with one click
+- **Batch Operations**: Toggle multiple mods simultaneously using presets
+- **Preview Mod**: Set preview images for mods to easily identify them
+- **Filter Mods**: Filter mods by status (Enabled/Disabled), character, and more
+- **Search Mods**: Search mods by name or categories
+- **Delete Mod**: Remove unwanted mods with a couple of clicks
+---
+#### Restore Points
+[![restore](./preview/restore.png)]()
+- **Backup & Restore**: Create restore points to backup mods
+---
 
+### 2. Online Mode & Installation System
+#### Online Mod Browsing
+[![online_home](./src/demo/03_online_home.png)]()  
+- **Mod Discovery**: Browse Gamebanana's extensive online mod library with search and filtering
+- **Category Filtering**: Filter mods by type (Characters, Skins, UI, etc.)
+- **Mod Details**: Detailed mod information including descriptions & images
+- **Download Integration**: Download mods along with their preview image directly
+- **Update Tracking**: Check if any of your installed mods have a new version available
+---
+#### Download Manager
+[![download](./preview/download.png)]()  
+- **Progress Tracking**: Real-time download progress
+- **Batch Downloads**: Queue multiple mods for sequential downloading
+- **Download History**: Track completed and failed downloads
+- **Auto-Installation**: Automatic mod extraction and installation post-download
+---
+#### File Operations
+[![download](./src/demo/05_zip.png)]() |||  [![extract](./src/demo/06_unzip.png)]()  
+- **Smart Extraction**: Intelligent ZIP/archive extraction with conflict resolution
+- **Path Management**: Automatic directory structure creation and management
+---
 
+### 3. User Interface & Experience
 
-## Installation
+#### Modern UI Design
+- **Responsive Layout**: Adaptive interface that works on different screen sizes
+- **Smooth Animations**: Fluid transitions and micro-interactions
+- **Customizable Layout**: Adjustable sidebar and panel configurations
 
-### Method 1: Using the Executable (Recommended)
+#### Navigation System
+- **Multi-Panel Layout**: Left sidebar (navigation), main content, right sidebar (details)
+- **Quick Actions**: Hotkey support for presets
+- **Search-Driven Interface**: Quick access through global search
+- **Opening External Links**: Paste a mod link ANYWHERE to open it directly in online mode
+---
+### 4. Configuration & Settings
 
-- Download the latest release of WuWa Mod Manager from the GitHub repository.  
+#### Application Settings
+[![settings](./preview/settings.png)]()
 
-### Method 2: Run the Python Script 
+- **Game Path Configuration**: Set game installation directory
+- **Auto Reload XXMI/WWMI**: Automatically reload mod lists when changes are detected
+- **Content Moderation**: Filter out NSFW mods from online browsing
+- **Auto Launch**: Start the game (from XXMI) automatically when opening WWMM
 
-1. Clone the repo:  
-   ```bash
-   git clone https://github.com/jpbhatt21/wuwa-mod-manager.git
-   cd wuwa-mod-manager
-   ```
-2. Install dependencies:  
-   ```bash
-   pip install -r requirements.txt
-   ``` 
-3. Run the script:  
-   ```bash
-    python app.py
-    ```
+#### Hotkey Management
+- **Custom Hotkeys**: Assign keyboard shortcuts to presets to change mods on the fly
 
-### Not making the frontend source code public yet, it is a mess and I am not ready to share it. But I will probably make documentation for the api routes in the future, so you can connect your own frontend.
+#### Import/Export System
+- **Configuration Backup**: Export/Import complete application settings
+---
+#### WWMM Updates
+[![updates](./preview/updater.png)]()
 
-## Usage
-
-- **Run the app**: Run `WuWa-Mod-Manager.exe` or `app.py`.  
-- **Select Mod Folder**: It will try to find the mod folder automatically by looking at `%APPDATA%\\XXMI Launcher\\WWMI\\Mods` , but if it doesn't, you can select it manually.
-- **View Mods**: The app will display all available mods in the selected folder.
-- **Toggle Mods**: `Left-click` to `Select`  |  `Right-click` to `Enable/Disable` a mod.
-- **Edit Info**: `Edit mod info` such as source, name, preview etc in the `Right Panel`.
-- **Create Presets**: Click the `Create Preset button` to `save your current mod configuration`. You can switch between presets easily.
-- **Open Mod Folder**: `Double-click` on a mod to `open its folder` in the app itself, or `click on the folder button` in the info panel on the right to `open it in explorer` .
-
-## Previews
-
-![home](./preview/preview.png)
-
-## Contributing
-
-Bug reports, feature requests, and pull requests are welcome.
-
-## Credits
-
-- [jpbhatt21](https://github.com/jpbhatt21)
-- Inspiration from [XX Mod Manager for ZZZ - XLXZ](https://gamebanana.com/tools/18601)
-
-## License
-
-This project is not affiliated with Wuthering Waves or Kuro Games.  
-MIT License
-
-
+- **Auto-Update Checker**: Notify users of new WWMM versions
+- **Changelog Access**: View the changelog for each new version
+- **Update Directly**: Download and install the latest version from within the app
+---
