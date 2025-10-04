@@ -6,7 +6,7 @@ function Page1({ setPage }: { setPage: (page: number) => void }) {
 			<div
 				className='text-muted-foreground fixed flex flex-col items-center justify-center w-screen h-screen'
 				onClick={() => {
-					console.log("clicked");
+					//console.log("clicked");
 					setPage(1);
 				}}
 				>

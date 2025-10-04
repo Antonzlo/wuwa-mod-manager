@@ -83,7 +83,7 @@ function Main({
 						nextPage(apiRoutes.search({ term, type: onlineType, page: pathPageCount[onlinePath] }), onlinePath);
 					}
 				} catch (e) {
-					console.log(e);
+					//console.log(e);
 					loading = false;
 				}
 			}
@@ -144,7 +144,7 @@ function Main({
 				return;
 			} else if (searchDB) {
 				const results = searchDB.search(debouncedSearchTerm);
-				console.log(results)
+				//console.log(results)
 				setLocalFilteredItems(results as unknown as LocalMod[]);
 			}
 		}, [debouncedSearchTerm, intermediateList]);
@@ -158,7 +158,7 @@ function Main({
 					.then((res) => res.json())
 					.then((data) => {
 						setOnlineData((prev) => {
-							console.log(data);
+							//console.log(data);
 							return {
 								...prev,
 								banner: data,

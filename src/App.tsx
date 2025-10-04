@@ -36,7 +36,7 @@ function App() {
 		}),
 		[rightSidebarOpen]
 	);
-	console.log(introOpen);
+	//console.log(introOpen);
 	return (
 		<div id="background" className="flex flex-row fixed justify-start items-start w-full h-full wuwa-ft">
 			<div

@@ -127,7 +127,7 @@ function Intro() {
 									<Button
 										className={"w-32 mt-2"}
 										onClick={() => {
-											console.log("Getting Dir Restructure Plan");
+											//console.log("Getting Dir Restructure Plan");
 											getDirResructurePlan();
 										}}>
 										Confirm

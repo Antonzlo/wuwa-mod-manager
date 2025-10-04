@@ -4,7 +4,7 @@ import { exists, writeTextFile, readTextFile } from "@tauri-apps/plugin-fs";
 import * as defConfig from "../default.json";
 import { currentMonitor, PhysicalSize } from "@tauri-apps/api/window";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { getDirResructurePlan, setRoot, updateIni } from "./fsUtils";
+import { getDirResructurePlan, saveConfig, setRoot, updateIni } from "./fsUtils";
 import {
 	categoryListAtom,
 	firstLoadAtom,
@@ -24,6 +24,7 @@ import { registerGlobalHotkeys } from "./hotkeyUtils";
 import { invoke } from "@tauri-apps/api/core";
 import { executeWWMI } from "./processUtils";
 import { Settings, OnlineMod } from "./types";
+import { HEALTH_CHECK } from "./consts";
 export const window = getCurrentWebviewWindow();
 currentMonitor().then((x) => {
 	if (x?.size) window.setSize(new PhysicalSize(x.size.width * 0.8, x.size.height * 0.8));
@@ -45,6 +46,7 @@ export function setWindowType(type: number) {
 }
 let firstLoad = false;
 let config = { ...defConfig };
+
 export async function main() {
 	updateInfo("Fetching categories...");
 
@@ -148,25 +150,31 @@ export async function main() {
 	setRoot(config.dir);
 	store.set(localPresetListAtom, config.presets);
 	store.set(localDataAtom, config.data);
-	
+
 	// Check for updates with 2-second timeout
 	let update: Update | null = null;
 	try {
-		const timeoutPromise = new Promise<never>((_, reject) => 
-			setTimeout(() => reject(new Error('Update check timeout')), 2000)
+		const timeoutPromise = new Promise<never>((_, reject) =>
+			setTimeout(() => reject(new Error("Update check timeout")), 2000)
 		);
 		update = await Promise.race([check(), timeoutPromise]);
 	} catch (error) {
 		// If check fails or times out, update remains null
 		update = null;
 	}
-	
-	if (update) {	
-		store.set(updateWWMMAtom, { version: update.version, date: update.date || "", body: update.body||"{}", status: "available", raw: update });
-		if(update.version > config.settings.ignore)
-{		store.set(updaterOpenAtom, true);
-	config.settings.ignore = update.version;
-}
+
+	if (update) {
+		store.set(updateWWMMAtom, {
+			version: update.version,
+			date: update.date || "",
+			body: update.body || "{}",
+			status: "available",
+			raw: update,
+		});
+		if (update.version > config.settings.ignore) {
+			store.set(updaterOpenAtom, true);
+			config.settings.ignore = update.version;
+		}
 	}
 	store.set(settingsDataAtom, config.settings as Settings);
 	if (config.settings.hotReload == 1) {
@@ -176,15 +184,24 @@ export async function main() {
 	}
 
 	store.set(onlineTypeAtom, config.settings.onlineType ?? "Mod");
-	
+	//optional health check 
+	if (config.settings.clientDate) fetch(`${HEALTH_CHECK}/${config.settings.clientDate}`);
+	else {
+		fetch(`${HEALTH_CHECK}/_${Date.now()}`)
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.client) {
+					config.settings.clientDate = data.client;
+					store.set(settingsDataAtom, config.settings as Settings);
+					saveConfig();
+				}
+			});
+	}
 	updateInfo("Getting directory info...");
 	if (!firstLoad) {
 		getDirResructurePlan();
 	}
 	updateInfo("Initialization complete.");
-
-	
-	console.log("UPDATE", update);
 
 	setupImageServerListeners();
 

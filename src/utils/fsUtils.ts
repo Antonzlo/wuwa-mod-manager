@@ -244,11 +244,11 @@ export async function updateIni(num: 0 | 1) {
 			}
 			if (modified) {
 				await writeTextFile(iniPath, lines.join("\n"));
-				console.log(`Updated check_foreground_window to ${num} in d3dx.ini`);
+				//console.log(`Updated check_foreground_window to ${num} in d3dx.ini`);
 			}
 		}
 	} catch (e) {
-		console.log("Error updating d3dx.ini:", e);
+		//console.log("Error updating d3dx.ini:", e);
 	}
 }
 async function restructureDir(entries: LocalMod[]) {
@@ -256,17 +256,17 @@ async function restructureDir(entries: LocalMod[]) {
 	try {
 		await mkdir(joinPath(root, RESTORE));
 	} catch (e) {
-		console.log("Restore Folder already exists");
+		//console.log("Restore Folder already exists");
 	}
 	try {
 		await mkdir(joinPath(root, IGNORE));
 	} catch (e) {
-		console.log("Ignore Folder already exists");
+		//console.log("Ignore Folder already exists");
 	}
 	try {
 		await mkdir(joinPath(root, UNCATEGORIZED));
 	} catch (e) {
-		console.log("Folder Uncat already exists");
+		//console.log("Folder Uncat already exists");
 	}
 	entries = entries.filter((item) => item.name !== UNCATEGORIZED && item.name != IGNORE && item.name != RESTORE && categories.filter((category) => category._sName == item.name).length == 0);
 	for (let entry of entries) {

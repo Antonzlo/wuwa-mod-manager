@@ -25,7 +25,8 @@ interface ModFile {
 
 interface ModUpdateChangeLog {
 	_sTitle: string;
-	_sText: string;
+	text: string;
+	cat: string;
 }
 
 interface ModUpdate {
@@ -130,7 +131,7 @@ function RightOnline() {
 					return { ...prevData };
 				});
 				(async () => {
-					console.log("stage 3");
+					//console.log("stage 3");
 					let items = await refreshRootDir("");
 					setLocalModList(items);
 					saveConfig();
@@ -278,12 +279,12 @@ function RightOnline() {
 								{item._aUpdateChangeLog &&
 									item._aUpdateChangeLog.map((changeItem, index: number) => (
 										<div key={index} className="flex items-center gap-2">
-											<div className="min-w-2 min-h-2 bg-accent rounded-full" />
-											<label className=" text-cyan-100 font-sans">{changeItem._sText}</label>
+											<div className="min-w-2 min-h-2 self-start mt-1.75 bg-accent rounded-full" />
+											<label className=" text-cyan-50 text-sm font-sans">{changeItem.text}- [{changeItem.cat}]</label>
 										</div>
 									))}
 							</div>
-							{item._sUpdateText && <div className="w-full font-sans" dangerouslySetInnerHTML={{ __html: item._sUpdateText }}></div>}
+							{item._sUpdateText && <div className="w-full font-sans" dangerouslySetInnerHTML={{ __html: item._sUpdateText }}>item._sUpdateText</div>}
 						</CollapsibleContent>
 					</Collapsible>
 				)}

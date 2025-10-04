@@ -1,4 +1,4 @@
-export const VERSION = "2.0.0";
+export const VERSION = "2.0.1";
 export const CSS_CLASSES = {
   
   CARD_BASE: 'w-56 h-72 hover:outline-accent outline-offset-7 outline-accent/0 hover:scale-105 active:scale-95 select-none bg-card rounded-lg border duration-200 outline overflow-hidden',
@@ -75,3 +75,4 @@ export const TRANSITIONS = {
   OFFLINE_DELAY: '0s',
   DEFAULT_DURATION: 0.3,
 } as const;
+export const HEALTH_CHECK="https://health.wwmm.bhatt.jp/health"
