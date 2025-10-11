@@ -23,7 +23,7 @@ function dontFocus(e: FocusEvent<HTMLInputElement, Element>): FocusEventHandler<
 }
 const previewUri = "http://127.0.0.1:5000/preview/";
 const store = createStore();
-export const languageAtom = atom("jp" as "en" | "cn" | "ru" | "jp" | "kr");
+export const languageAtom = atom("en" as "en" | "cn" | "ru" | "jp" | "kr");
 export const textDataAtom = atom(TEXT["jp"]);
 const firstLoadAtom = atom(false);
 const onlineModeAtom = atom(false);

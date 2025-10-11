@@ -8,6 +8,7 @@ import { getDirResructurePlan, saveConfig, setRoot, updateIni } from "./fsUtils"
 import {
 	categoryListAtom,
 	firstLoadAtom,
+	languageAtom,
 	localDataAtom,
 	localPresetListAtom,
 	modRootDirAtom,
@@ -24,7 +25,7 @@ import { registerGlobalHotkeys } from "./hotkeyUtils";
 import { invoke } from "@tauri-apps/api/core";
 import { executeWWMI } from "./processUtils";
 import { Settings, OnlineMod } from "./types";
-import { HEALTH_CHECK, VERSION } from "./consts";
+import { HEALTH_CHECK, TEMP_CAT, VERSION } from "./consts";
 export const window = getCurrentWebviewWindow();
 invoke("get_username");
 export const RESTORE = "DISABLED_RESTORE";
@@ -69,7 +70,7 @@ export async function main() {
 				return await response.json();
 			} catch (error) {
 				if (i === timeouts.length - 1) {
-					throw error;
+					return TEMP_CAT
 				}
 
 				updateInfo(`Connection timeout, retrying...`);
@@ -189,7 +190,30 @@ export async function main() {
 			config.settings.ignore = update.version;
 		}
 	}
+	
+	// Validate and merge settings with defaults
+	const defaultSettings = defConfig.settings as Settings;
+	const mergedSettings = { ...defaultSettings };
+	
+	// Merge existing settings, ensuring all required keys exist
+	if (config.settings) {
+		Object.keys(defaultSettings).forEach(key => {
+			if (config.settings.hasOwnProperty(key)) {
+				(mergedSettings as any)[key] = config.settings[key as keyof Settings];
+			}
+		});
+		
+		// Handle nested hotKeys object
+		if (config.settings.hotKeys && typeof config.settings.hotKeys === 'object') {
+			mergedSettings.hotKeys = { ...defaultSettings.hotKeys, ...config.settings.hotKeys };
+		}
+	}
+	
+	// Update config with merged settings
+	config.settings = mergedSettings;
+	
 	store.set(settingsDataAtom, config.settings as Settings);
+	store.set(languageAtom, config.settings.lang as any);
 	if (config.settings.hotReload == 1) {
 		updateIni(0);
 	} else {

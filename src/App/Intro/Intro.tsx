@@ -20,7 +20,7 @@ function Intro() {
 	const [selectedIndex, setSelectedIndex] = useState(-1);
 	const [currentLangIndex, setCurrentLangIndex] = useState(-1);
 	const [settings, setSettings] = useAtom(settingsDataAtom);
-
+	const language = useAtomValue(textDataAtom);
 	// Array of language keys to rotate through
 	const languageKeys = ["en", "cn", "ru", "jp", "kr"] as const;
 
@@ -100,7 +100,7 @@ function Intro() {
 							</span>
 						))}
 					</div>
-					{(firstLoad || !settings.lang) && currentLangIndex > -1 && (
+					{(firstLoad || !language) && currentLangIndex > -1 && (
 						<div className="absolute items-center fade-in bottom-0 h-64 flex flex-col gap-8 justify-evenly">
 							<AnimatePresence mode="wait">
 								<motion.div

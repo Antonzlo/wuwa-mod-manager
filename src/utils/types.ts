@@ -98,6 +98,7 @@ export interface Settings {
 	onlineType: string;
 	nsfw: 0 | 1 | 2;
 	ignore: string;
+	clientDate: string;
 	lang: "en" | "cn" | "ru" | "jp" | "kr";
 }
 export interface DirRestructureItem {
