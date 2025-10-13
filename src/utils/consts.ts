@@ -6,8 +6,8 @@ export const IGNORE = "IGNORE";
 export const UNCATEGORIZED = "Uncategorized";
 export const managedSRC = "DISABLED (Managed by IMM)";
 export const managedTGT = "Mods (Managed by IMM)";
-export const VERSION="2.1.0"
-export const GAMES = ["WW","ZZ"]
+export const VERSION = "2.1.0";
+export const GAMES = ["WW", "ZZ"];
 export const LANG_LIST = [
 	{
 		Name: TEXT.en.generic.Current,
@@ -35,3 +35,9 @@ export const LANG_LIST = [
 		Code: "kr",
 	},
 ];
+export const ONLINE_TRANSITION = (online: boolean,move=false) => ({
+	initial: { opacity: 0, x: move?( online ? "25%" : "-25%"):0 },
+	animate: { opacity: 1, x: 0 },
+	exit: { opacity: 0, x:  move?( online ? "25%" : "-25%"):0 },
+	transition: { duration: 0.2 },
+});

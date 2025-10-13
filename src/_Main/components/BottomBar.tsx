@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { UNCATEGORIZED } from "@/utils/consts";
-import { CATEGORIES, CATEGORY, MOD_LIST, ONLINE, TEXT_DATA } from "@/utils/vars";
+import { CATEGORIES, CATEGORY, MOD_LIST, ONLINE, ONLINE_PATH, ONLINE_SORT, ONLINE_TYPE, TEXT_DATA } from "@/utils/vars";
 import { useAtom, useAtomValue } from "jotai";
 import { FileQuestionIcon, GroupIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -9,6 +9,9 @@ import { useMemo } from "react";
 function BottomBar() {
 	const textData = useAtomValue(TEXT_DATA);
 	const [category, setCategory] = useAtom(CATEGORY);
+	const [onlinePath, setOnlinePath] = useAtom(ONLINE_PATH);
+	const onlineType = useAtomValue(ONLINE_TYPE)
+	const onlineSort = useAtomValue(ONLINE_SORT)
 	const online = useAtomValue(ONLINE);
 	const modList = useAtomValue(MOD_LIST);
 	const categories = useAtomValue(CATEGORIES);
@@ -23,7 +26,6 @@ function BottomBar() {
 					...categories.filter((cat: any) => modList.some((mod: any) => mod.parent == cat._sName)),
 			  ];
 	}, [categories, modList, online]);
-	console.log(localCategories);
 	return (
 		<div className="min-h-20 flex items-center justify-center w-full h-20 p-2">
 			<div className="bg-sidebar text-accent flex items-center justify-center w-full h-full gap-1 p-2 border rounded-lg">
@@ -52,18 +54,19 @@ function BottomBar() {
 									key={cat._sName}
 									onClick={() => {
 										if (online) {
+											if (cat._special) {
+												return;
+											}
+											if (onlinePath.startsWith("Skins/" + cat._sName)) {
+												setOnlinePath("home&type=" + onlineType);
+												return;
+											}
+											setOnlinePath(`Skins/${cat._sName}&_sort=${onlineSort}`);
 										} else {
 											setCategory(cat._sName);
 										}
 										// if (online) {
-										// 	if (category._special) {
-										// 		return;
-										// 	}
-										// 	if (onlinePath.startsWith("Skins/" + category._sName)) {
-										// 		setOnlinePath("home&type=" + onlineType);
-										// 		return;
-										// 	}
-										// 	setOnlinePath(`Skins/${category._sName}&_sort=${onlineSort}`);
+
 										// } else {
 										// 	setSelectedCategory(category._sName);
 										// }
@@ -74,7 +77,7 @@ function BottomBar() {
 										padding: online && cat._special ? "0rem" : "",
 									}}
 									className={
-										(online ? /*onlinePath.startsWith(`Skins/${category._sName}`)*/ false : category == cat._sName)
+										(online ? onlinePath.startsWith(`Skins/${cat._sName}`) : category == cat._sName)
 											? " bg-accent text-background"
 											: ""
 									}

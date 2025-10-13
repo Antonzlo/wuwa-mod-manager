@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { TEXT_DATA } from "@/utils/vars";
 import { useAtomValue } from "jotai";
 import { EyeOff } from "lucide-react";
-function Blur({ blur }: { blur: boolean }) {
+function Blur({  blur }: { blur: boolean }) {
 	const textData = useAtomValue(TEXT_DATA);
 	return (
 		<div

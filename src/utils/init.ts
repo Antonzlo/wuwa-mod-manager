@@ -9,6 +9,7 @@ import { apiClient } from "./api";
 import { CATEGORIES, DATA, GAME, LANG, PRESETS, SETTINGS, SOURCE, store, TARGET } from "./vars";
 import { VERSION } from "./consts";
 import { switchGameTheme } from "./theme";
+import { executeXXMI, isGameProcessRunning } from "./autolaunch";
 // import { v2_0_4_migration } from "./filesys";
 
 let isFirstLoad = false;
@@ -116,7 +117,7 @@ export async function main() {
 			config = JSON.parse(await readTextFile("config.json"));
 			if (config.game) configXX = await initGame(config.game);
 		} finally {
-			categories = configXX.categories || [];
+			categories = configXX.categories || apiClient.categoryList;
 		}
 	} finally {
 		if (!categories || categories.length == 0) return;
@@ -156,6 +157,11 @@ export async function main() {
 
 	if (config.exeXXMI == "" && (await exists(exeXXMI))) {
 		config.exeXXMI = exeXXMI;
+	}
+	if(configXX.settings.launch && await exists(config.exeXXMI)){
+		isGameProcessRunning().then((running)=>{
+			if(!running) executeXXMI(config.exeXXMI);
+		});
 	}
 		// if (config.settings.launch && config.settings.appDir) {
 	// 	(async () => {

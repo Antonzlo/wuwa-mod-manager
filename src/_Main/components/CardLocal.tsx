@@ -4,7 +4,8 @@ import { Label } from "@/components/ui/label";
 // import { setChange } from "@/utils/hotreload";
 // import { previewUri } from "@/utils/vars";
 import { File, Folder, XIcon } from "lucide-react";
-import { getImageUrl, handleImageError} from "@/utils/utils";
+import { getImageUrl, handleImageError } from "@/utils/utils";
+import { Button } from "@/components/ui/button";
 // import { CSS_CLASSES, COMMON_STYLES } from "@/utils/consts";
 // import type { CardLocalProps } from "@/utils/types";
 
@@ -15,35 +16,33 @@ interface CardLocalProps {
 		enabled: boolean;
 		isDir: boolean;
 	};
-    selected: boolean;
-    lastUpdated: number;
+	selected: boolean;
+	lastUpdated: number;
 }
 
 const CardLocal = React.memo(({ item, selected, lastUpdated }: CardLocalProps) => {
 	const previewUrl = `${getImageUrl(item.path)}?${lastUpdated}`;
-	
+
 	return (
 		<div
-			className={`card-local ${selected ? 'selected-card' : ''}`}
+			className={`card-generic ${selected ? "selected-card" : ""}`}
 			style={{
 				borderColor: item.enabled ? "var(--accent)" : "",
 			}}
 		>
 			<img
 				style={{ filter: item.enabled ? "brightness(1) blur(8px) " : " blur(8px) brightness(0.5) saturate(0.5)" }}
-				className="object-cover w-full h-full pointer-events-none"
+				className="object-cover fadein w-full h-full pointer-events-none"
 				src={previewUrl}
 				onError={(e) => handleImageError(e, true)}
 			/>
 			<img
 				style={{ filter: item.enabled ? "brightness(1)" : "brightness(0.5) saturate(0.5)" }}
-				className="w-full h-[calc(100%-3.5rem)] -mt-71.5 duration-200 rounded-t-lg pointer-events-none object-cover"
+				className="w-full fadein h-[calc(100%-3.5rem)] -mt-71.5 duration-200 rounded-t-lg pointer-events-none object-cover"
 				src={previewUrl}
 				onError={(e) => handleImageError(e)}
-
-				
 			/>
-			<div className="bg-background/50 backdrop-blur flex items-center w-full min-h-14 gap-2 px-4 py-1">
+			<div className="bg-background/50 fadein backdrop-blur flex items-center w-full min-h-14 gap-2 px-4 py-1">
 				{item.isDir ? (
 					<Folder style={{ filter: item.enabled ? "brightness(1)" : "brightness(0.5) saturate(0.5)" }} />
 				) : (
@@ -55,19 +54,14 @@ const CardLocal = React.memo(({ item, selected, lastUpdated }: CardLocalProps) =
 				>
 					{item.name}
 				</Label>
-				<div
-					onClick={() => {
-						/*deleteItem(item)*/
-					}}
-					className="-mt-123 cursor-pointer flex text-red-300 items-center justify-center  px-2 w-8 h-6 z-200 -ml-5 -mr-5"
-				>
+				<Button className="-mt-123 bg-button/0 cursor-pointer flex text-red-300 items-center justify-center  px-2 w-8 h-6 z-200 -ml-5 -mr-5">
 					<XIcon className="pointer-events-none" />
-				</div>
+				</Button>
 			</div>
 		</div>
 	);
 });
 
-CardLocal.displayName = 'CardLocal';
+CardLocal.displayName = "CardLocal";
 
 export default CardLocal;

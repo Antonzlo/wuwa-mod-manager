@@ -65,18 +65,24 @@ const TYPES = atom([
 //not-saved
 const LEFT_SIDEBAR_OPEN = atom(true);
 const RIGHT_SIDEBAR_OPEN = atom(true);
+const RIGHT_SLIDEOVER_OPEN = atom(false);
 const ONLINE = atom(false);
+const DOWNLOAD_LIST = atom({
+	queue: [] as any[],
+	downloading:{} as any,
+	completed: [] as any[],
+} as any);
 
 const MOD_LIST = atom([] as any);
 const SELECTED = atom("");
 const FILTER = atom("All");
 const CATEGORY = atom("All");
 const SEARCH = atom("");
-
+const INSTALLED_ITEMS = atom([] as any);
 const ONLINE_DATA = atom<any>({});
 const ONLINE_TYPE = atom("Mod");
-const ONLINE_PATH = atom("home&type=Mod");
 const ONLINE_SORT = atom("");
+const ONLINE_PATH = atom("home&type=Mod");
 const ONLINE_SELECTED = atom("");
 
 const CHANGES = atom({} as any);
@@ -100,6 +106,9 @@ store.sub(SETTINGS, async () => {
 
 export {
 	store,
+	INSTALLED_ITEMS, RIGHT_SLIDEOVER_OPEN ,
+	DOWNLOAD_LIST,
+	TYPES,
 	ONLINE_DATA,
 	ONLINE_TYPE,
 	ONLINE_PATH,

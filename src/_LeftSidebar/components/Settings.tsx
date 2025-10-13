@@ -62,7 +62,7 @@ function Settings({ leftSidebarOpen }: any) {
 						// 		return [...prev];
 						// 	});
 					}}
-					className="w-38 text-ellipsis h-12 overflow-hidden"
+					className="w-38.75 text-ellipsis h-12 overflow-hidden"
 					style={{ width: leftSidebarOpen ? "" : "3rem" }}
 				>
 					<SettingsIcon />
@@ -229,7 +229,7 @@ function Settings({ leftSidebarOpen }: any) {
 											/>
 										</div>
 									</div>
-									<div className="min-w-1/2 justify-evenly flex flex-col min-h-full gap-4 pr-4">
+									<div className="min-w-1/2 justify-evenly flex flex-col min-h-full gap-4 pr-2">
 										<div className="flex flex-col w-full gap-4">
 											<div className="flex items-center gap-1">
 												{textData._LeftSideBar._components._Settings.NSFW}
@@ -344,7 +344,7 @@ function Settings({ leftSidebarOpen }: any) {
 								</>
 							) : (
 								<>
-									<div className="min-w-1/2 justify-between flex flex-col min-h-full gap-4 pr-4">
+									<div className="min-w-1/2 justify-between flex flex-col min-h-full gap-4 pr-2">
 										<div className="flex flex-col w-full gap-4">
 											<div className="flex items-center gap-1">
 												{textData._LeftSideBar._components._Settings.AutoReload}
@@ -491,7 +491,7 @@ function Settings({ leftSidebarOpen }: any) {
 											</div>
 										</div>
 									</div>
-									<div className="min-w-1/2 justify-e venly flex flex-col min-h-full gap-2 pr-4">
+									<div className="min-w-1/2 justify-e venly flex flex-col min-h-full gap-2 pr-2">
 											<div className="flex items-center gap-1">
 												{textData._LeftSideBar._components._Settings.HotKey}
 												<Tooltip>

@@ -390,6 +390,34 @@ export async function refreshModList() {
 	console.log(entries);
 	return entries;
 }
+export async function createModDownloadDir(cat: string, dir: string) {
+	if (!cat || !dir) return;
+	let path = join(src, managedSRC, cat, dir);
+	if (await exists(path)) return path;
+	await mkdir(path, { recursive: true });
+	return path;
+}
+export async function validateModDownload(path: string) {
+	try {
+		const entries = await readDir(path);
+		let diff = entries.filter((entry) => entry.name.startsWith("preview.") && !entry.isDirectory).length;
+		if (entries.length - diff == 0) {
+			let ini = false;
+			let dirs = [];
+			for (let entry of entries) {
+				if (entry.name.endsWith(".ini")) ini = true;
+				if (entry.isDirectory) dirs.push(entry.name);
+			}
+			if (!ini && dirs.length == 1) {
+				let uuid = "WWMM_TEMP_" + Math.random() * 1000000000;
+				await rename(path + "\\" + dirs[0], path + "\\" + uuid);
+				await copyDir(path + "\\" + uuid, path);
+				await remove(path + "\\" + uuid, { recursive: true });
+			}
+		}
+	} catch {}
+	return true;
+}
 export async function changeModName(path: any, newPath: string) {
 	const enabled = await toggleMod(path, false);
 	await mkdir(join(src, managedSRC, ...newPath.split("\\").slice(0, -1)), { recursive: true });
@@ -397,11 +425,22 @@ export async function changeModName(path: any, newPath: string) {
 	if (enabled) await toggleMod(newPath, true);
 	return newPath;
 }
+export async function deleteMod(path: any) {
+	const modSrc = join(src, managedSRC, path);
+	const modTgt = join(tgt, "Mods", managedTGT, path);
+	try {
+		remove(modTgt);
+	} finally {
+		try {
+			remove(modSrc, { recursive: true });
+		} catch {}
+	}
+}
 export async function toggleMod(path: any, enabled: boolean) {
 	const modSrc = join(src, managedSRC, path);
 	const modTgt = join(tgt, "Mods", managedTGT, path);
-	if (enabled) {
-		await mkdir(join(tgt, "Mods", managedTGT, path), { recursive: true });
+	if (enabled && await exists(modSrc) && !(await exists(modTgt))) {
+		await mkdir(join(tgt, "Mods", managedTGT, ...path.split("\\").slice(0, -1)), { recursive: true });
 		try {
 			await invoke("create_symlink", {
 				linkPath: modTgt,

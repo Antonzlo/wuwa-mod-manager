@@ -9,108 +9,7 @@ class ApiClient {
 		categories: "29524",
 		game: "20357",
 	};
-	private categoryList: any[] = [];
-	private generic: Record<string, any[]> = {
-		categories: [
-			{
-				_idRow: 31838,
-				_sName: "NPCs & Entities",
-				_nItemCount: 12,
-				_nCategoryCount: 0,
-				_sUrl: "https://gamebanana.com/mods/cats/31838",
-				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/66e0d90771ac5.png",
-			},
-			{
-				_idRow: 29493,
-				_sName: "Other",
-				_nItemCount: 75,
-				_nCategoryCount: 0,
-				_sUrl: "https://gamebanana.com/mods/cats/29493",
-				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c90cba314.png",
-				_special: true,
-			},
-			{
-				_idRow: 29496,
-				_sName: "UI",
-				_nItemCount: 55,
-				_nCategoryCount: 0,
-				_sUrl: "https://gamebanana.com/mods/cats/29496",
-				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c913ddf00.png",
-				_special: true,
-			},
-		],
-		types: [
-			{
-				_idRow: 29524,
-				_sName: "Skins",
-				_nItemCount: 1483,
-				_nCategoryCount: 34,
-				_sUrl: "https://gamebanana.com/mods/cats/29524",
-				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6654b6596ba11.png",
-			},
-			{
-				_idRow: 29496,
-				_sName: "UI",
-				_nItemCount: 57,
-				_nCategoryCount: 0,
-				_sUrl: "https://gamebanana.com/mods/cats/29496",
-				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c913ddf00.png",
-			},
-			{
-				_idRow: 29493,
-				_sName: "Other",
-				_nItemCount: 75,
-				_nCategoryCount: 0,
-				_sUrl: "https://gamebanana.com/mods/cats/29493",
-				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c90cba314.png",
-			},
-		],
-	};
-	constructor() {
-		return this;
-	}
-
-	async makeRequest(endpoint: string, options: RequestInit = {}) {
-		const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-
-		if (!response.ok) {
-			throw new Error(`API request failed: ${response.statusText}`);
-		}
-
-		return response.json();
-	}
-
-	async categories() {
-		try {
-			const fetchWithRetry = async (timeouts: number[] = [2000, 5000]): Promise<any> => {
-				for (let i = 0; i < timeouts.length; i++) {
-					try {
-						const controller = new AbortController();
-						const timeoutId = setTimeout(() => controller.abort(), timeouts[i]);
-
-						const response = await this.makeRequest(
-							`Mod/Categories?_idCategoryRow=${this.id.categories}&_sSort=a_to_z&_bShowEmpty=true`,
-							{ signal: controller.signal }
-						);
-						clearTimeout(timeoutId);
-
-						if (!response.ok) {
-							throw new Error(`HTTP ${response.status}`);
-						}
-
-						return await response.json();
-					} catch (error) {
-						if (i === timeouts.length - 1) {
-							throw error;
-						}
-					}
-				}
-			};
-			const response = await fetchWithRetry();
-			this.categoryList = [...response.filter((x: any) => x._idRow !== 31838), ...this.generic.categories];
-			return this.categoryList;
-		} catch (error) {
-			return [
+	categoryList: any[] = [
 				{
 					_idRow: 30257,
 					_sName: "Aalto",
@@ -440,6 +339,105 @@ class ApiClient {
 					_special: true,
 				},
 			];
+	private generic: Record<string, any[]> = {
+		categories: [
+			{
+				_idRow: 31838,
+				_sName: "NPCs & Entities",
+				_nItemCount: 12,
+				_nCategoryCount: 0,
+				_sUrl: "https://gamebanana.com/mods/cats/31838",
+				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/66e0d90771ac5.png",
+			},
+			{
+				_idRow: 29493,
+				_sName: "Other",
+				_nItemCount: 75,
+				_nCategoryCount: 0,
+				_sUrl: "https://gamebanana.com/mods/cats/29493",
+				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c90cba314.png",
+				_special: true,
+			},
+			{
+				_idRow: 29496,
+				_sName: "UI",
+				_nItemCount: 55,
+				_nCategoryCount: 0,
+				_sUrl: "https://gamebanana.com/mods/cats/29496",
+				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c913ddf00.png",
+				_special: true,
+			},
+		],
+		types: [
+			{
+				_idRow: 29524,
+				_sName: "Skins",
+				_nItemCount: 1483,
+				_nCategoryCount: 34,
+				_sUrl: "https://gamebanana.com/mods/cats/29524",
+				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6654b6596ba11.png",
+			},
+			{
+				_idRow: 29496,
+				_sName: "UI",
+				_nItemCount: 57,
+				_nCategoryCount: 0,
+				_sUrl: "https://gamebanana.com/mods/cats/29496",
+				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c913ddf00.png",
+			},
+			{
+				_idRow: 29493,
+				_sName: "Other",
+				_nItemCount: 75,
+				_nCategoryCount: 0,
+				_sUrl: "https://gamebanana.com/mods/cats/29493",
+				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c90cba314.png",
+			},
+		],
+	};
+	constructor() {
+		return this;
+	}
+
+	async makeRequest(endpoint: string, options: RequestInit = {}) {
+		const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+
+		if (!response.ok) {
+			throw new Error(`API request failed: ${response.statusText}`);
+		}
+
+		return response.json();
+	}
+
+	async categories() {
+		try {
+			const fetchWithRetry = async (timeouts: number[] = [2000, 5000]): Promise<any> => {
+				for (let i = 0; i < timeouts.length; i++) {
+					try {
+						const controller = new AbortController();
+						const timeoutId = setTimeout(() => controller.abort(), timeouts[i]);
+						console.log(`Fetching categories (attempt ${i + 1})...`, timeouts[i]);
+						const response = await this.makeRequest(
+							`Mod/Categories?_idCategoryRow=${this.id.categories}&_sSort=a_to_z&_bShowEmpty=true`,
+							{ signal: controller.signal }
+						);
+						clearTimeout(timeoutId);
+						if (!response) {
+							throw new Error(`HTTP ${response.status}`);
+						}
+						return await response
+					} catch (error) {
+						if (i === timeouts.length - 1) {
+							throw error;
+						}
+					}
+				}
+			};
+			const response = await fetchWithRetry();
+			this.categoryList = [...response.filter((x: any) => x._idRow !== 31838), ...this.generic.categories];
+			return this.categoryList;
+		} catch (error) {
+			return []
 			console.error("Failed to fetch categories:", error);
 			throw error;
 		}
@@ -464,11 +462,11 @@ class ApiClient {
 	}
 
 	category({ cat = "", sort = "default", page = 1 }) {
-		return `${API_BASE_URL}Mod/Index?_nPerpage=15&_aFilters%5BGeneric_Category%5D=${(
+		return (`${API_BASE_URL}Mod/Index?_nPerpage=15&_aFilters%5BGeneric_Category%5D=${(
 			(cat.split("/").length > 1
 				? this.categoryList.find((x) => x._sName == cat.split("/")[1])?._idRow
 				: this.generic.types.find((x) => x._sName == cat.split("/")[0])?._idRow) || 0
-		).toString()}&_sSort=${sort}&_nPage=${page}`;
+		).toString()}&_sSort=${sort}&_nPage=${page}`);
 	}
 
 	banner() {
@@ -485,9 +483,9 @@ class ApiClient {
 		}
 	}
 
-	async updates(mod = "Mod/0") {
+	async updates(mod = "Mod/0", signal?: AbortSignal) {
 		try {
-			const response = await this.makeRequest(`${mod}/Updates?_nPage=1&_nPerpage=1`);
+			const response = await this.makeRequest(`${mod}/Updates?_nPage=1&_nPerpage=1`, signal && { signal });
 			return response;
 		} catch (error) {
 			console.error("Failed to fetch categories:", error);
