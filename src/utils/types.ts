@@ -1,0 +1,188 @@
+export type Games = "WW" | "ZZ" | ""; //| "GI" | "SR";
+export type Language = "en" | "cn" | "ru" | "jp" | "kr" | "";
+export interface DirEntry {
+	name: string;
+	isDirectory: boolean;
+	icon?: string;
+	children?: DirEntry[];
+}
+export interface GlobalSettings {
+	bgOpacity: number;
+	winOpacity: number;
+	winType: 0 | 1 | 2;
+	bgType: 0 | 1 | 2;
+	listType: 0;
+	nsfw: 0 | 1 | 2;
+	toggleClick: 0 | 2;
+	ignore: string;
+	clientDate: string;
+	exeXXMI: string;
+	lang: Language;
+	game: Games;
+	version?: string;
+	updatedAt?: string;
+}
+export interface GameSettings {
+	launch: 0 | 1;
+	hotReload: 0 | 1 | 2;
+	onlineType: string;
+}
+export interface Settings {
+	global: GlobalSettings;
+	game: GameSettings;
+}
+export interface Category {
+	_idRow: number;
+	_sName: string;
+	_nItemCount: number;
+	_nCategoryCount: number;
+	_sUrl: string;
+	_sIconUrl: string;
+	_special?: boolean;
+}
+export interface ModData {
+	source?: string;
+	updatedAt?: number;
+	viewedAt?: number;
+	note?: string;
+}
+export interface ModDataObj {
+	[key: string]: ModData;
+}
+export interface Preset {
+	name: string;
+	data: string[];
+	hotkey?: string;
+}
+export interface GameConfig {
+	version: string;
+	game: Games;
+	sourceDir: string;
+	targetDir: string;
+	settings: GameSettings;
+	data: ModDataObj;
+	presets: Preset[];
+	categories: Category[];
+	updatedAt: string;
+}
+export interface DownloadItem {
+	status: "pending" | "downloading" | "completed" | "failed";
+	addon: boolean;
+	preview: string;
+	category: string;
+	source: string;
+	file: string;
+	updated:  number;
+	name: string;
+	fname: string;
+}
+export interface DownloadList {
+	queue: DownloadItem[];
+	downloading: DownloadItem | null ;
+	completed: DownloadItem[];
+}
+export interface ModHotKeys {
+	key: string;
+	type: string;
+	target: string;
+	name: string;
+}
+export interface Mod {
+	isDir: boolean;
+	name: string;
+	parent: string;
+	path: string;
+	keys: ModHotKeys[];
+	enabled: boolean;
+	children: Mod[];
+	depth: number;
+	icon?: string;
+	source?: string;
+	updatedAt?: number;
+	viewedAt?: number;
+	note?: string;
+}
+export interface ProgressData {
+	title: string;
+	finished: boolean;
+	button: string;
+	open: boolean;
+}
+export interface InstalledItem {
+	name: string;
+	source: string;
+	updated: number;
+	viewed: number;
+	modStatus: number;
+}
+export interface OnlineModImage {
+	_sType: string;
+	_sBaseUrl: string;
+	_sFile: string;
+	_sFile220?: string;
+	_hFile220?: number;
+	_wFile220?: number;
+	_sFile530?: string;
+	_hFile530?: number;
+	_wFile530?: number;
+	_sFile100: string;
+	_hFile100: number;
+	_wFile100: number;
+}
+export interface OnlineModPreviewMedia {
+	_aImages: OnlineModImage[];
+}
+export interface OnlineModSubmitter {
+	_idRow: number;
+	_sName: string;
+	_bIsOnline: boolean;
+	_bHasRipe?: boolean;
+	_sProfileUrl: string;
+	_sAvatarUrl: string;
+	_sHdAvatarUrl: string;
+	_sUpicUrl?: string;
+	_sMoreByUrl?: string;
+}
+export interface OnlineModCategory {
+	_sName: string;
+	_sProfileUrl: string;
+	_sIconUrl: string;
+}
+export interface OnlineMod {
+	_idRow: number;
+	_sModelName: string;
+	_sSingularTitle?: string;
+	_sIconClasses?: string;
+	_sName: string;
+	_sProfileUrl: string;
+	_tsDateAdded?: number;
+	_tsDateModified?: number;
+	_tsDateUpdated?: number;
+	_bHasFiles?: boolean;
+	_aTags?: any[];
+	_aFiles?: any[];
+	_aPreviewMedia?: OnlineModPreviewMedia;
+	_aSubmitter: OnlineModSubmitter;
+	_aRootCategory: OnlineModCategory;
+	_sVersion?: string;
+	_bIsObsolete?: boolean;
+	_sInitialVisibility: string;
+	_bHasContentRatings?: boolean;
+	_nLikeCount: number;
+	_nPostCount: number;
+	_bWasFeatured?: boolean;
+	_nViewCount?: number;
+	_bIsOwnedByAccessor?: boolean;
+	_sImageUrl?: string;
+	_sPeriod?: "today" | "yesterday" | "week" | "month" | "3month" | "6month" | "year" | "alltime";
+}
+export interface OnlineData {
+	[key: string]: OnlineMod[] | OnlineMod;
+}
+export interface ChangeInfo {
+	before: DirEntry[];
+	after: DirEntry[];
+	map: Record<string, DirEntry>;
+	title: string;
+	skip: boolean;
+}

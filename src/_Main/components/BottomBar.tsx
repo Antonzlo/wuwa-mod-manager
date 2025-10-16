@@ -20,16 +20,16 @@ function BottomBar() {
 			? categories
 			: [
 					{ _sName: "All", _sIconUrl: "/icons/all.png", _special: true },
-					...(modList.some((mod: any) => mod.parent == UNCATEGORIZED)
+					...(modList.some((mod) => mod.parent == UNCATEGORIZED)
 						? [{ _sName: UNCATEGORIZED, _sIconUrl: "/icons/uncategorized.png", _special: true }]
 						: []),
-					...categories.filter((cat: any) => modList.some((mod: any) => mod.parent == cat._sName)),
+					...categories.filter((cat) => modList.some((mod) => mod.parent == cat._sName)),
 			  ];
 	}, [categories, modList, online]);
 	return (
 		<div className="min-h-20 flex items-center justify-center w-full h-20 p-2">
-			<div className="bg-sidebar z-100 text-accent flex items-center justify-center w-full h-full gap-1 p-2 border rounded-lg">
-				<label className="min-w-fit gap-1">{textData.generic.Category} :</label>
+			<div className="bg-sidebar trs z-100 text-accent flex items-center justify-center w-full h-full gap-1 p-2 border rounded-lg">
+				<label className="min-w-fit data-zzz:text-foreground gap-1">{textData.Category} :</label>
 				<div
 					onWheel={(e) => {
 						if (e.deltaX != 0) return;
@@ -42,7 +42,7 @@ function BottomBar() {
 					className=" h-15 items-top thin flex items-center justify-start w-full gap-2 p-2 my-1 mr-1 overflow-x-auto overflow-y-hidden text-white"
 				>
 					<AnimatePresence mode="popLayout">
-						{localCategories.map((cat: any) => (
+						{localCategories.map((cat) => (
 							<motion.div
 								initial={{ opacity: 0, y: "100%" }}
 								animate={{ opacity: 1, y: "0%" }}
@@ -77,7 +77,7 @@ function BottomBar() {
 										padding: online && cat._special ? "0rem" : "",
 									}}
 									className={
-										"trs data-zzz:rounded-lg "+((online ? onlinePath.startsWith(`Skins/${cat._sName}`) : category == cat._sName)
+										" data-zzz:rounded-lg "+((online ? onlinePath.startsWith(`Skins/${cat._sName}`) : category == cat._sName)
 											? " bg-accent bgaccent    data-zzz:text-background text-background"
 											: "")
 									}

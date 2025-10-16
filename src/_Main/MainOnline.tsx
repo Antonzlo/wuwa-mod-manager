@@ -19,6 +19,7 @@ import CardOnline from "./components/CardOnline";
 import Carousel from "./components/Carousel";
 import { preventContextMenu } from "@/utils/utils";
 import { LoaderIcon } from "lucide-react";
+import { OnlineMod } from "@/utils/types";
 const pageCount = {} as any;
 function resetPageCounts() {
 	Object.keys(pageCount).forEach((key) => {
@@ -42,7 +43,7 @@ function MainOnline() {
 	const [visibleRange, setVisibleRange] = useState({ start: -1, end: -1 });
 	const game = useAtomValue(GAME);
 	const onModClick = useCallback(
-		(e: MouseEvent, mod: any) => {
+		(e: MouseEvent, mod: OnlineMod) => {
 			let targetTag = (e.target as HTMLElement).tagName.toLowerCase();
 			if (targetTag !== "button") {
 				setSelected(mod ? `${mod._sModelName}/${mod._idRow}` : "");
@@ -54,7 +55,7 @@ function MainOnline() {
 	const nextPage = useCallback(async (url: string, onlinePath: string) => {
 		const res = await fetch(url);
 		const data = await res.json();
-		setOnlineData((prev: any) => {
+		setOnlineData((prev) => {
 			prev[onlinePath] = [...prev[onlinePath], ...data._aRecords];
 			return {
 				...prev,
@@ -153,7 +154,7 @@ function MainOnline() {
 			.then((res) => res.json())
 			.then((data) => {
 				max = data._aMetadata._nRecordCount / (data?._aMetadata?._nPerPage || 15);
-				setOnlineData((prev: any) => {
+				setOnlineData((prev) => {
 					prev[onlinePath] = data._aRecords;
 					return {
 						...prev,
@@ -182,7 +183,7 @@ function MainOnline() {
 			if (onlinePath.startsWith("home")) {
 				fetch(apiClient.banner(), { signal: controller.signal }).then((res) =>
 					res.json().then((data) => {
-						setOnlineData((prev: any) => {
+						setOnlineData((prev) => {
 							return {
 								...prev,
 								banner: data || [],
@@ -216,14 +217,14 @@ function MainOnline() {
 	const filteredBannerData = useMemo(() => {
 		if (!onlineData?.banner) return [];
 		return onlineData.banner.filter(
-			(item: any) => (item._sModelName == "Mod" || onlineType == "") && (nsfw || item._sInitialVisibility != "hide")
+			(item) => (item._sModelName == "Mod" || onlineType == "") && (nsfw || item._sInitialVisibility != "hide")
 		);
 	}, [onlineData?.banner, onlineType, nsfw]);
 
 	// Memoize filtered online data
 	const filteredOnlineData = useMemo(() => {
 		if (!onlineData[onlinePath]) return [];
-		return onlineData[onlinePath].filter((item: any) => nsfw || item._sInitialVisibility != "hide");
+		return onlineData[onlinePath].filter((item) => nsfw || item._sInitialVisibility != "hide");
 	}, [onlineData, onlinePath, nsfw]);
 	// Memoize animation variants to prevent recreation on every render
 	const animationVariants = useMemo(
@@ -275,7 +276,7 @@ function MainOnline() {
 							<Carousel
 								data={filteredBannerData || []}
 								blur={nsfw == 1}
-								// onModClick={onModClick}
+								onModClick={onModClick}
 							/>
 						</motion.div>
 					)}
@@ -292,7 +293,7 @@ function MainOnline() {
 					exit={{ opacity: 0 }}
 					transition={transitionConfig(0)}
 				>
-					{filteredOnlineData.map((item: any, index: any) => {
+					{filteredOnlineData.map((item, index) => {
 						const isVisible = isItemVisible(index);
 						return (
 							<motion.div
@@ -311,7 +312,6 @@ function MainOnline() {
 								) : (
 									<CardOnline
 										{...item}
-										index={index}
 										now={now}
 										blur={nsfw == 1}
 										show={textData._Main._components._Filter.Show}

@@ -1,6 +1,7 @@
 // API client for communicating with Flask backend
 
 import { VERSION } from "./consts";
+import { Category } from "./types";
 
 const API_BASE_URL = "https://gamebanana.com/apiv11/";
 const HEALTH_CHECK = "https://health.wwmm.bhatt.jp/health";
@@ -813,7 +814,7 @@ class ApiClient {
 		if (this.GAME_DATA[game]) {
 			this.GAME = game;
 			this.id = this.GAME_DATA[game].id;
-			this.categoryList = this.GAME_DATA[game].categoryList;
+			this.categoryList = this.GAME_DATA[game].categoryList as Category[];
 			this.generic = this.GAME_DATA[game].generic;
 			return;
 		}
@@ -823,7 +824,7 @@ class ApiClient {
 		categories: "29524",
 		game: "20357",
 	};
-	categoryList: any[] = [
+	categoryList: Category[] = [
 		{
 			_idRow: 30257,
 			_sName: "Aalto",
@@ -838,6 +839,7 @@ class ApiClient {
 			_nItemCount: 44,
 			_nCategoryCount: 0,
 			_sUrl: "https://gamebanana.com/mods/cats/39143",
+			_sIconUrl: "",
 		},
 		{
 			_idRow: 30251,
@@ -941,6 +943,7 @@ class ApiClient {
 			_nItemCount: 35,
 			_nCategoryCount: 0,
 			_sUrl: "https://gamebanana.com/mods/cats/39624",
+			_sIconUrl: "",
 		},
 		{
 			_idRow: 30263,
@@ -1153,7 +1156,7 @@ class ApiClient {
 			_special: true,
 		},
 	];
-	generic: Record<string, any[]> = {
+	generic: Record<string, Category[]> = {
 		categories: [
 			{
 				_idRow: 31838,

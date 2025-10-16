@@ -7,7 +7,17 @@ import { join } from "./hotreload";
 export { join };
 const reservedWindowsNames = /^(con|prn|aux|nul|com\d|lpt\d)$/i;
 const illegalCharacters = /[<>:"/\\|?*\x00-\x1F]/g;
-
+export function safeLoadJson(cur: any, neww: any) {
+	if (!cur || !neww) return;
+	Object.keys(neww).forEach((key) => {
+		if (typeof neww[key] === "object" && !Array.isArray(neww[key])) {
+			cur[key] = safeLoadJson(cur[key], neww[key]) || cur[key] || {};
+		} else {
+			cur[key] = neww[key];
+		}
+	});
+	return cur;
+}
 export function sanitizeFileName(input: string, options: any = {}): string {
 	
 	const { replacement = "_", defaultName = "untitled", maxLength = 255 } = options;
@@ -56,6 +66,7 @@ export function handleImageError(event: React.SyntheticEvent<HTMLImageElement, E
 }
 export function preventContextMenu(event: React.MouseEvent): void {
 	event.preventDefault();
+	// event.currentTarget.dispatchEvent(new MouseEvent("mouseup", { button: 2, bubbles: true }));
 }
 let src = "";
 let lastUpdated = 0;
@@ -123,7 +134,7 @@ export async function fetchMod(selected: string, controller?: AbortController) {
 			}
 			if (data2._idRow != selected.split("/").slice(-1)[0]) return;
 			allData = data2;
-			store.set(ONLINE_DATA, (prev: any) => {
+			store.set(ONLINE_DATA, (prev) => {
 				return {
 					...prev,
 					[selected]: data2,

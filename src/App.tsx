@@ -9,6 +9,7 @@ import {
 	MOD_LIST,
 	ONLINE,
 	ONLINE_SELECTED,
+	PROGRESS_OVERLAY,
 	RIGHT_SIDEBAR_OPEN,
 	RIGHT_SLIDEOVER_OPEN,
 	SETTINGS,
@@ -27,6 +28,8 @@ import RightOnline from "./_RightSidebar/RightOnline";
 import { modRouteFromURL } from "./utils/utils";
 import { main } from "./utils/init";
 import { Button } from "./components/ui/button";
+import ToastProvider from "./_Toaster/ToastProvider";
+import Progress from "./_Progress/Progress";
 
 initializeThemes();
 main();
@@ -42,6 +45,7 @@ function App() {
 	const [rightSidebarOpen, setRightSidebarOpen] = useAtom(RIGHT_SIDEBAR_OPEN);
 	const [rightSlideOverOpen, setRightSlideOverOpen] = useAtom(RIGHT_SLIDEOVER_OPEN);
 	const setModList = useSetAtom(MOD_LIST);
+	const progressOverlay = useAtomValue(PROGRESS_OVERLAY);
 	const [showModeSwitch, setShowModeSwitch] = useState(false);
 	const [previousOnline, setPreviousOnline] = useState(online);
 	const afterInit = useCallback(async () => {
@@ -74,6 +78,8 @@ function App() {
 		return () => document.removeEventListener("paste", handlePaste);
 	}, []);
 
+	
+
 	// Handle mode switch animation
 	useEffect(() => {
 		if (previousOnline !== online) {
@@ -83,7 +89,7 @@ function App() {
 				() => {
 					setRightSidebarOpen(!online);
 				},
-				online ? 300 : 0
+				300
 			);
 
 			const timer = setTimeout(() => {
@@ -125,7 +131,7 @@ function App() {
 				<LeftSidebar />
 			</SidebarProvider>
 			<SidebarProvider open={rightSidebarOpen}>
-				<RightLocal />
+				<RightLocal  />
 			</SidebarProvider>
 
 			<RightOnline open={online && rightSlideOverOpen} />
@@ -133,7 +139,7 @@ function App() {
 			<div className="w-full h-full fixed flex flex-row">
 				<div className="h-full duration-200 ease-linear" style={leftSidebarStyle} />
 				<Main />
-				<div className="h-full duration-200 ease-linear" style={rightSidebarStyle} />
+				<div className="h-full duration-300 ease-linear" style={rightSidebarStyle} />
 			</div>
 			<div className="w-full pointer-events-none h-full fixed flex flex-row">
 				<div className="h-full duration-200 ease-linear" style={leftSidebarStyle} />
@@ -155,14 +161,14 @@ function App() {
 
 			<AnimatePresence>{(!initDone || !lang || !game) && <Checklist />}</AnimatePresence>
 			<AnimatePresence>{changes.title && <Changes afterInit={afterInit} />}</AnimatePresence>
+			<AnimatePresence>{progressOverlay.open && <Progress />}</AnimatePresence>
+
 			{/* <div className="pointer-events-none fixed h-screen w-screen opacity-0 z-20 backdrop-blur-md bg-background/50 duration-300">
 
 			</div> */}
-			<Button onClick={()=>{
-				// toast.success("This is a success message",{className:" bg-white"});
-			}} className="fixed w-20 h-10 z-1000" >
-				Sonner</Button>
-			 
+			<ToastProvider />
+			
+			
 		</div>
 	);
 }

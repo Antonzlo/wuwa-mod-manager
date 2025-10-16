@@ -8,6 +8,7 @@ import {
 	SEARCH,
 	SELECTED,
 	SETTINGS,
+	SOURCE,
 	TEXT_DATA,
 } from "@/utils/vars";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -18,7 +19,10 @@ import { preventContextMenu } from "@/utils/utils";
 import { deleteMod, saveConfigs, toggleMod } from "@/utils/filesys";
 import MiniSearch from "minisearch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent } from "@/components/ui/alert-dialog";
-import { setChange } from "@/utils/hotreload";
+import { join, setChange } from "@/utils/hotreload";
+import { managedSRC } from "@/utils/consts";
+import { openPath } from "@tauri-apps/plugin-opener";
+import { Mod } from "@/utils/types";
 
 let searchDB: any = null;
 let prev = "prev";
@@ -26,7 +30,7 @@ let prevEnabled = "noData";
 function MainLocal() {
 	const initDone = useAtomValue(INIT_DONE);
 	const [alertOpen, setAlertOpen] = useState(false);
-	const [deleteItemData, setDeleteItemData] = useState<any>(null);
+	const [deleteItemData, setDeleteItemData] = useState<Mod | null>(null);
 	const textData = useAtomValue(TEXT_DATA);
 	const [initial, setInitial] = useState(true);
 	const lastUpdated = useAtomValue(LAST_UPDATED);
@@ -34,15 +38,16 @@ function MainLocal() {
 	const category = useAtomValue(CATEGORY);
 	const filter = useAtomValue(FILTER);
 	const search = useAtomValue(SEARCH);
+	const source = useAtomValue(SOURCE);
 	const setData = useSetAtom(DATA);
-	const [filteredList, setFilteredList] = useState([] as any[]);
+	const [filteredList, setFilteredList] = useState([] as Mod[]);
 	const [visibleRange, setVisibleRange] = useState({ start: -1, end: -1 });
 	const [selected, setSelected] = useAtom(SELECTED);
-	const containerRef = useRef<any>(null);
+	const containerRef = useRef<HTMLDivElement | null>(null);
 	const toggleOn = useAtomValue(SETTINGS).global.toggleClick;
 	const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
-	const keyRef = useRef<any>(null);
+	const keyRef = useRef<string | null>(null);
 	useEffect(() => {
 		if (!searchDB && modList.length > 0) {
 			searchDB = new MiniSearch({
@@ -61,10 +66,10 @@ function MainLocal() {
 			prevEnabled = "noData";
 		} else {
 			const enabled = modList
-				.filter((m: any) => m.enabled)
-				.map((m: any) => m.path)
+				.filter((m) => m.enabled)
+				.map((m) => m.path)
 				.join(",");
-			if (prevEnabled !== "noData" && prevEnabled !== enabled) {
+			if (prevEnabled !== enabled) {
 				setChange();
 			}
 
@@ -81,23 +86,23 @@ function MainLocal() {
 			setInitial(true);
 		}
 		prev = keyRef.current;
-		let newList: any = searchDB && search ? searchDB.search(search) : [...modList];
+		let newList: Mod[] = searchDB && search ? searchDB.search(search) : [...modList];
 		if (filter != "All") {
-			newList = newList.filter((mod: any) => mod.enabled == (filter == "Enabled"));
+			newList = newList.filter((mod) => mod.enabled == (filter == "Enabled"));
 		}
 		if (category != "All") {
-			newList = newList.filter((mod: any) => mod.parent == category);
+			newList = newList.filter((mod) => mod.parent == category);
 		}
 		setFilteredList(newList);
 	}, [modList, filter, category, search]);
 
 	const handleClick = useCallback(
-		(e: MouseEvent, mod: any) => {
+		(e: MouseEvent, mod: Mod) => {
 			const click = e.button;
 			let tag = (e.target as HTMLElement).tagName.toLowerCase();
 			if (tag == "button") {
 				if (!mod) return;
-				setDeleteItemData((prev: any) => {
+				setDeleteItemData((prev) => {
 					if (prev) return prev;
 					setAlertOpen(true);
 					return mod;
@@ -106,8 +111,8 @@ function MainLocal() {
 			}
 			if (click == toggleOn) {
 				toggleMod(mod.path, !mod.enabled);
-				setModList((prev: any) => {
-					return prev.map((m: any) => {
+				setModList((prev) => {
+					return prev.map((m) => {
 						if (m.path == mod.path) {
 							return { ...m, enabled: !m.enabled };
 						}
@@ -116,7 +121,7 @@ function MainLocal() {
 				});
 			} else setSelected(mod.path == selected ? "" : mod.path);
 		},
-		[selected, setSelected, toggleOn, setModList]
+		[selected, setSelected, toggleOn, setModList, containerRef]
 	);
 	const handleScroll = useCallback(() => {
 		if (initial) {
@@ -171,89 +176,116 @@ function MainLocal() {
 		},
 		[visibleRange]
 	);
-	return (
-		<div
-			ref={containerRef}
-			onScroll={handleScroll}
-			className="flex flex-col  overflow-x-hidden items-center h-screen w-full  overflow-y-auto duration-300"
-		>
-			{" "}
-			<AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
-				<AlertDialogContent className="min-w-120">
-					<div className="max-w-96 flex flex-col items-center gap-6 mt-6 text-center">
-						<div className="text-xl text-gray-200">
-							{textData._Main._MainLocal.Delete} <span className="text-accent ">{deleteItemData?.name}</span>?
-						</div>
-						<div className="text-red-300	">{textData._Main._MainLocal.Irrev}</div>
-					</div>
-					<div className="flex justify-between w-full gap-4 mt-4">
-						<AlertDialogCancel className="w-24 duration-300">{textData.generic.Cancel}</AlertDialogCancel>
-						<AlertDialogAction
-							className="w-24 text-red-300 hover:bg-red-300 data-zzz:hover:text-background hover:text-background"
-							onClick={async () => {
-								if (!deleteItemData) return;
-								setData((prev: any) => {
-									const newData = { ...prev };
-									if (deleteItemData.path) {
-										delete newData[deleteItemData.path];
-									}
-									return newData;
-								});
-								deleteMod(deleteItemData.path);
-								saveConfigs();
-								setModList((prev: any) => {
-									const newData = prev.filter((m: any) => m.path != deleteItemData.path);
-									return newData;
-								});
-								setAlertOpen(false);
-								setSelected("");
-								// let items = await refreshRootDir("");
-								// setRightSidebarOpen(false);
-								// setLocalModList(items);
-								// saveConfig();
-							}}
-						>
-							{textData._Main._MainLocal.Delete}
-						</AlertDialogAction>
-					</div>
-				</AlertDialogContent>
-			</AlertDialog>
-			<AnimatePresence mode="popLayout">
-				<motion.div
-					layout
-					className="min-h-fit grid justify-center w-full py-4 card-grid"
-					key={keyRef.current}
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					exit={{ opacity: 0 }}
-					transition={transitionConfig(0)}
+	const noItems = useMemo(() => {
+		return (
+			<div
+				className="w-full h-0 text-muted items-center flex-col flex duration-200 justify-center"
+				style={{
+					height: modList.length == 0 ? "100%" : "0px",
+					opacity: modList.length == 0 ? 1 : 0,
+				}}
+			>
+				<label>{textData._Main._MainLocal.NoMods}</label>
+				<label
+					className="text-center hover:text-accent cursor-pointerx duration-200"
+					onClick={() => {
+						openPath(join(source, managedSRC));
+					}}
 				>
-					{filteredList.map((mod: any, index: number) => {
-						const isVisible = isItemVisible(index);
+					{" "}
+					{source}\{managedSRC}
+				</label>
+			</div>
+		);
+	}, [modList, source]);
 
-						return (
-							<motion.div
-								key={mod.path + keyRef.current}
-								layout
-								variants={animationVariants()}
-								initial="hidden"
-								animate="visible"
-								exit="exit"
-								transition={transitionConfig(index)}
-								onMouseUp={(e: any) => handleClick(e, mod)}
-								onContextMenu={preventContextMenu}
+	return (
+		<>
+			<div
+				ref={containerRef}
+				onScroll={handleScroll}
+				className="flex flex-col  overflow-x-hidden items-center h-screen w-full  overflow-y-auto duration-300"
+			>
+				{" "}
+				<label className="text-muted -mb-2">{filteredList.length} {textData.Items} </label>
+				{noItems}
+				<AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+					<AlertDialogContent className="min-w-120">
+						<div className="max-w-96 flex flex-col items-center gap-6 mt-6 text-center">
+							<div className="text-xl text-gray-200">
+								{textData._Main._MainLocal.Delete} <span className="text-accent ">{deleteItemData?.name}</span>?
+							</div>
+							<div className="text-red-300	">{textData._Main._MainLocal.Irrev}</div>
+						</div>
+						<div className="flex justify-between w-full gap-4 mt-4">
+							<AlertDialogCancel className="w-24 duration-300">{textData.Cancel}</AlertDialogCancel>
+							<AlertDialogAction
+								className="w-24 text-red-300 hover:bg-red-300 data-zzz:hover:text-background hover:text-background"
+								onClick={async () => {
+									if (!deleteItemData) return;
+									setData((prev) => {
+										const newData = { ...prev };
+										if (deleteItemData.path) {
+											delete newData[deleteItemData.path];
+										}
+										return newData;
+									});
+									deleteMod(deleteItemData.path);
+									saveConfigs();
+									setModList((prev) => {
+										const newData = prev.filter((m) => m.path != deleteItemData.path);
+										return newData;
+									});
+									setAlertOpen(false);
+									setSelected("");
+									// let items = await refreshRootDir("");
+									// setRightSidebarOpen(false);
+									// setLocalModList(items);
+									// saveConfig();
+								}}
 							>
-								{isVisible ? (
-									<div className="card-generic"></div>
-								) : (
-									<CardLocal item={mod} selected={selected === mod.path} lastUpdated={lastUpdated} />
-								)}
-							</motion.div>
-						);
-					})}
-				</motion.div>
-			</AnimatePresence>
-		</div>
+								{textData._Main._MainLocal.Delete}
+							</AlertDialogAction>
+						</div>
+					</AlertDialogContent>
+				</AlertDialog>
+				<AnimatePresence mode="popLayout">
+					<motion.div
+						layout
+						className="min-h-fit grid justify-center w-full py-4 card-grid"
+						key={keyRef.current}
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ ...transitionConfig(0) }}
+					>
+						{filteredList.map((mod, index) => {
+							const isVisible = isItemVisible(index);
+
+							return (
+								<motion.div
+									key={mod.path + keyRef.current}
+									layout
+									variants={animationVariants()}
+									initial="hidden"
+									animate="visible"
+									exit="exit"
+									transition={transitionConfig(index)}
+									onMouseUp={(e: any) => handleClick(e, mod)}
+									onContextMenu={preventContextMenu}
+								>
+									{isVisible ? (
+										<div className="card-generic"></div>
+									) : (
+										<CardLocal item={mod} selected={selected === mod.path} lastUpdated={lastUpdated} />
+									)}
+								</motion.div>
+							);
+						})}
+					</motion.div>
+				</AnimatePresence>
+			</div>
+		</>
 	);
 }
 

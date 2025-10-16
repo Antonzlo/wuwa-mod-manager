@@ -23,6 +23,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { cn } from "@/lib/utils";
 import { changeModName, saveConfigs, savePreviewImage } from "@/utils/filesys";
 import { Label } from "@/components/ui/label";
+import { Mod } from "@/utils/types";
 
 function RightLocal() {
 	const categories = useAtomValue(CATEGORIES);
@@ -31,14 +32,14 @@ function RightLocal() {
 	const [selected, setSelected] = useAtom(SELECTED);
 	const textData = useAtomValue(TEXT_DATA);
 	const setData = useSetAtom(DATA);
-	const [item, setItem] = useState<any>(null);
+	const [item, setItem] = useState<Mod | undefined>();
 	const [popoverOpen, setPopoverOpen] = useState(false);
 	const [category, setCategory] = useState({ name: "-1", icon: "" });
 	const lastUpdated = useAtomValue(LAST_UPDATED);
 	function renameMod(path: string, newPath: string) {
 		changeModName(path, newPath).then((newPath) => {
 			if (newPath) {
-				setData((prev: any) => {
+				setData((prev) => {
 					if (prev[path]) {
 						prev[newPath] = { ...prev[path] };
 						delete prev[path];
@@ -47,8 +48,8 @@ function RightLocal() {
 				});
 				saveConfigs();
 				const name = newPath.split("\\").pop();
-				setModList((prev: any[]) => {
-					return prev.map((m: any) => {
+				name && newPath && setModList((prev) => {
+					return prev.map((m) => {
 						if (m.path == path) {
 							return { ...m, path: newPath, name, parent: newPath.split("\\")[0] };
 						}
@@ -61,13 +62,13 @@ function RightLocal() {
 	}
 	useEffect(() => {
 		if (selected) {
-			const mod = modList.find((m: any) => m.path == selected);
+			const mod = modList.find((m) => m.path == selected);
 			setItem(mod);
-		} else setItem(null);
+		} else setItem(undefined);
 	}, [selected]);
 	useEffect(() => {
 		if (item) {
-			const cat = categories.find((c: any) => c._sName == item.parent) || { _sName: "-1", _sIconUrl: "" };
+			const cat = categories.find((c) => c._sName == item.parent) || { _sName: "-1", _sIconUrl: "" };
 			setCategory({ name: cat._sName, icon: cat._sIconUrl });
 		} else {
 			setCategory({ name: "-1", icon: "" });
@@ -75,10 +76,8 @@ function RightLocal() {
 	}, [item, modList]);
 	return (
 		<Sidebar side="right" className="bg-sidebar duration-300">
-			<SidebarContent className="flex duration-300 flex-row w-full h-full gap-0 p-0 overflow-hidden border border-l-0">
-				<div className="flex flex-col items-center h-full min-w-full overflow-y-hidden "
-				key={item?.path||"no-item"}
-				>
+			<SidebarContent className="flex polka duration-300 flex-row w-full h-full gap-0 p-0 overflow-hidden border border-l-0">
+				<div className="flex flex-col items-center h-full min-w-full overflow-y-hidden " key={item?.path || "no-item"}>
 					<div className="min-w-full text-accent flex items-center justify-center h-16 gap-3 px-3 border-b">
 						{item ? (
 							<>
@@ -89,7 +88,7 @@ function RightLocal() {
 									}}
 									onBlur={(e) => {
 										if (e.currentTarget.value != item.name) {
-											renameMod(item.path, join(item.path.split("\\").slice(0, -1), e.currentTarget.value));
+											renameMod(item.path, join(...item.path.split("\\").slice(0, -1), e.currentTarget.value));
 										}
 									}}
 									type="text"
@@ -113,7 +112,7 @@ function RightLocal() {
 					<SidebarGroup className="min-h-82  px-1 mt-1 select-none">
 						<EditIcon
 							onClick={() => {
-								savePreviewImage(item.path);
+								item && savePreviewImage(item.path);
 							}}
 							className="min-h-12 min-w-12 bg-background/50 z-25 text-accent data-zzz:rounded-tr-2xl data-zzz:rounded-bl-2xl rounded-tr-md rounded-bl-md self-end w-12 p-3 -mb-12 border"
 						/>
@@ -128,7 +127,7 @@ function RightLocal() {
 						<div className="flex flex-col w-full border  rounded-lg">
 							<div className="bg-pat2 flex items-center justify-between w-full p-1 rounded-lg">
 								<Label className=" h-12  flex items-center justify-center  min-w-28.5 w-28.5 text-accent ">
-									{textData.generic.Category}
+									{textData.Category}
 								</Label>
 								{item?.depth == 1 ? (
 									<Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
@@ -154,19 +153,19 @@ function RightLocal() {
 														</div>
 													</>
 												) : (
-													textData.generic.Select
+													textData.Select
 												)}
 												<ChevronDownIcon />
 											</div>
 										</PopoverTrigger>
 										<PopoverContent className="w-80 p-0 my-2 mr-2 border rounded-lg">
 											<Command>
-												<CommandInput placeholder="Search category..." className="h-12" />
+												<CommandInput placeholder={textData.Search} className="h-12" />
 
 												<CommandList>
 													<CommandEmpty>{textData._RightSideBar._RightLocal.NoCat}</CommandEmpty>
 													<CommandGroup>
-														{categories.map((cat: any) => (
+														{categories.map((cat) => (
 															<CommandItem
 																key={cat._sName}
 																value={cat._sName}
@@ -210,8 +209,8 @@ function RightLocal() {
 								<div className="w-48.5 flex items-center px-1">
 									<Input
 										onBlur={(e) => {
-											if (e.currentTarget.value !== item?.source) {
-												setData((prev: any) => {
+											if (item && e.currentTarget.value !== item?.source) {
+												setData((prev) => {
 													prev[item.path] = {
 														...prev[item.path],
 														source: e.currentTarget.value,
@@ -220,8 +219,8 @@ function RightLocal() {
 													};
 													return { ...prev };
 												});
-												setModList((prev: any[]) => {
-													return prev.map((m: any) => {
+												setModList((prev) => {
+													return prev.map((m) => {
 														if (m.path == item.path) {
 															return { ...m, source: e.currentTarget.value };
 														}
@@ -232,7 +231,7 @@ function RightLocal() {
 											}
 										}}
 										type="text"
-										placeholder="No source"
+										placeholder={textData._RightSideBar._RightLocal.NoSource}
 										className="w-full select-none focus-within:select-auto overflow-hidden h-12 focus-visible:ring-[0px] border-0  text-ellipsis"
 										style={{ backgroundColor: "#fff0" }}
 										key={item?.source}
@@ -258,16 +257,16 @@ function RightLocal() {
 								<div className="w-48.5 flex items-center px-1">
 									<Input
 										onBlur={(e) => {
-											if (e.currentTarget.value !== item?.note) {
-												setData((prev: any) => {
+											if (item && e.currentTarget.value !== item?.note) {
+												setData((prev) => {
 													prev[item.path] = {
 														...prev[item.path],
 														note: e.currentTarget.value,
 													};
 													return { ...prev };
 												});
-												setModList((prev: any[]) => {
-													return prev.map((m: any) => {
+												setModList((prev) => {
+													return prev.map((m) => {
 														if (m.path == item.path) {
 															return { ...m, note: e.currentTarget.value };
 														}
@@ -281,7 +280,7 @@ function RightLocal() {
 										className="w-full select-none focus-within:select-auto overflow-hidden h-12 focus-visible:ring-[0px] border-0  text-ellipsis"
 										style={{ backgroundColor: "#fff0" }}
 										key={item?.note}
-										placeholder="No notes"
+										placeholder={textData._RightSideBar._RightLocal.NoNotes}
 										defaultValue={item?.note}
 									/>
 								</div>
@@ -291,7 +290,7 @@ function RightLocal() {
 					<SidebarGroup
 						className="px-1 my-1 duration-200 opacity-0"
 						style={{
-							opacity: item?.keys?.length > 0 ? 1 : 0,
+							opacity: item && item?.keys?.length > 0 ? 1 : 0,
 						}}
 					>
 						<div className="flex flex-col w-full h-full overflow-hidden border rounded-lg">
@@ -304,7 +303,7 @@ function RightLocal() {
 										<label className="text-c w-1/2 px-4">{textData._RightSideBar._RightLocal.Key}</label>
 										<label className="text-c w-1/2 px-4">{textData._RightSideBar._RightLocal.Action}</label>
 									</div>
-									{item?.keys?.map((hotkey: any, index: number) => (
+									{item?.keys?.map((hotkey, index) => (
 										<div
 											key={index + item.path}
 											className={"flex w-full items-center justify-center h-8 bg-pat" + (1 + (index % 2))}

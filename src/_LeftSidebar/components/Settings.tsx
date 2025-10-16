@@ -1,3 +1,4 @@
+import { addToast } from "@/_Toaster/ToastProvider";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -45,11 +46,11 @@ import { useCallback, useState } from "react";
 let bg: HTMLBodyElement | null = null;
 let keys = [] as any[];
 let keysdown = [] as any[];
-function Settings({ leftSidebarOpen }: any) {
+function Settings({ leftSidebarOpen }: { leftSidebarOpen: boolean }) {
 	const textData = useAtomValue(TEXT_DATA);
 	const [presets, setPresets] = useAtom(PRESETS);
 	const [settingsOpen, setSettingsOpen] = useState(false);
-	const [source, setSource] = useAtom(SOURCE);
+	const [_, setSource] = useAtom(SOURCE);
 	const [target, setTarget] = useAtom(TARGET);
 	const [settings, setSettings] = useAtom(SETTINGS);
 	const [alertOpen, setAlertOpen] = useState(false);
@@ -60,32 +61,28 @@ function Settings({ leftSidebarOpen }: any) {
 	});
 	const importConfig = async () => {
 		try {
-			const filePath = await open({
-				title: textData._LeftSideBar._components._Settings._ImportExport.ImportPop,
-				filters: [
-					{
-						name: "JSON files",
-						extensions: ["json"],
-					},
-				],
-			});
-			if (filePath) {
-				const fileContent = await readTextFile(filePath);
-				setSettingsOpen(false);
-				setConfig(JSON.parse(fileContent));
-				// const config = await checkConfigValidity(JSON.parse(fileContent));
-				// if (config) {
-				// 	setRoot(config.dir, true);
-				// 	setSettings({ ...config.settings });
-				// 	setPresets([...config.presets]);
-				// 	setLocalData({ ...config.data });
-				// 	saveConfig();
-				// 	window.location.reload();
-				// }
-			}
-		} catch (error) {
-			// logger.error("Import config error:", error);
-		}
+			var input = document.createElement("input");
+			input.type = "file";
+			input.accept = ".json";
+
+			input.onchange = (e: any) => {
+				if (!e.target) return;
+				var file = e.target.files[0];
+				var reader = new FileReader();
+				reader.readAsText(file, "UTF-8");
+				reader.onload = (readerEvent: any) => {
+					try {
+						setConfig(JSON.parse(readerEvent.target.result));
+						setSettingsOpen(false);
+					} catch {
+						addToast({ type: "error", message: textData._Toasts.InvalidConfig });
+					}
+				};
+			};
+
+			input.click();
+			return;
+		} catch (error) {}
 	};
 	const exportConfig = useCallback(async () => {
 		try {
@@ -102,9 +99,10 @@ function Settings({ leftSidebarOpen }: any) {
 			});
 			if (filePath) {
 				await writeTextFile(filePath, JSON.stringify(gameConfig, null, 2));
+				addToast({ type: "success", message: textData._Toasts.ConfigExported });
 			}
 		} catch (error) {
-			// logger.error("Export error:", error);
+			addToast({ type: "error", message: textData._Toasts.ErrorExporting });
 		}
 	}, [settings]);
 	return (
@@ -122,7 +120,7 @@ function Settings({ leftSidebarOpen }: any) {
 					style={{ width: leftSidebarOpen ? "" : "3rem" }}
 				>
 					<SettingsIcon />
-					{leftSidebarOpen && textData.generic.Settings}
+					{leftSidebarOpen && textData.Settings}
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="min-h-fit">
@@ -130,29 +128,28 @@ function Settings({ leftSidebarOpen }: any) {
 					<AlertDialogContent className="  game-font bg-background/50 backdrop-blur-xs border-border flex flex-col items-center gap-4 p-4 overflow-hidden border-2 rounded-lg">
 						<div className=" flex flex-col items-center gap-6 mt-6 text-center">
 							<div className="text-xl flex gap-2 flex-col items-center justify-center text-gray-200">
-								{TEXT[langAlertData.prev].generic.Change +
-									TEXT[langAlertData.prev].generic.Languages[langAlertData.new]}
+								{TEXT[langAlertData.prev].Change + TEXT[langAlertData.prev].Languages[langAlertData.new]}
 								?
 								<Separator />
-								{TEXT[langAlertData.new].generic.Change + TEXT[langAlertData.new].generic.Languages[langAlertData.new]}?
+								{TEXT[langAlertData.new].Change + TEXT[langAlertData.new].Languages[langAlertData.new]}?
 							</div>
 
 							{langAlertData.new !== "en" && (
 								<div className="max-w-96 text-accent gap-4 text-sm flex flex-col	">
 									<span>
-										{TEXT[langAlertData.prev].generic.Warning1 + " "}
-										{TEXT[langAlertData.prev].generic.Warning2}
+										{TEXT[langAlertData.prev].Warning1 + " "}
+										{TEXT[langAlertData.prev].Warning2}
 									</span>
 									<span>
-										{TEXT[langAlertData.new].generic.Warning1 + " "}
-										{TEXT[langAlertData.new].generic.Warning2}
+										{TEXT[langAlertData.new].Warning1 + " "}
+										{TEXT[langAlertData.new].Warning2}
 									</span>
 								</div>
 							)}
 						</div>
 						<div className="flex justify-between w-full gap-4 mt-4">
 							<AlertDialogCancel className="min-w-24 duration-300">
-								{TEXT[langAlertData.prev].generic.Cancel} | {TEXT[langAlertData.new].generic.Cancel}
+								{TEXT[langAlertData.prev].Cancel} | {TEXT[langAlertData.new].Cancel}
 							</AlertDialogCancel>
 							<AlertDialogAction
 								className="min-w-24 text-accent "
@@ -165,13 +162,13 @@ function Settings({ leftSidebarOpen }: any) {
 									setAlertOpen(false);
 								}}
 							>
-								{TEXT[langAlertData.prev].generic.Confirm} | {TEXT[langAlertData.new].generic.Confirm}
+								{TEXT[langAlertData.prev].Confirm} | {TEXT[langAlertData.new].Confirm}
 							</AlertDialogAction>
 						</div>
 					</AlertDialogContent>
 				</AlertDialog>
 				<div className="min-h-fit text-accent my-6 text-3xl">
-					{textData.generic.Settings}
+					{textData.Settings}
 					<Tooltip>
 						<TooltipTrigger></TooltipTrigger>
 						<TooltipContent className="opacity-0"></TooltipContent>
@@ -185,7 +182,7 @@ function Settings({ leftSidebarOpen }: any) {
 					<TabsList className="bg-background/50 w-full gap-2">
 						<TabsTrigger value="global" className="w-1/2 h-10">
 							<Globe2 />
-							Global
+							{textData._LeftSideBar._components._Settings.Global}
 						</TabsTrigger>
 						<TabsTrigger value="game" className="w-1/2 h-10">
 							<div
@@ -194,7 +191,7 @@ function Settings({ leftSidebarOpen }: any) {
 									filter: !globalPage ? "invert(1) hue-rotate(180deg)" : "",
 								}}
 							></div>
-							{{ WW: "WuWa", ZZ: "ZZZ" }[settings.global.game]}
+							{{ WW: "WuWa", ZZ: "ZZZ","":"" }[settings.global.game]}
 						</TabsTrigger>
 					</TabsList>
 					<AnimatePresence mode="wait" initial={false}>
@@ -373,12 +370,12 @@ function Settings({ leftSidebarOpen }: any) {
 											</Tabs>
 										</div>
 										<div className="flex flex-col w-full gap-4">
-											<label>{textData.generic.Language}</label>
+											<label>{textData.Language}</label>
 											<div className="flex justify-evenly ">
 												{LANG_LIST.map((lang) => (
 													<div
 														key={lang.Code}
-														className={`hover:brightness-150 -mt-2 flex-col flex items-center justify-center gap-1 text-sm duration-300 cursor-pointer select-none`}
+														className={`hover:brightness-150 -mt-2 flex-col flex items-center justify-center gap-1 text-sm duration-300 cursor-pointerx select-none`}
 														onClick={() => {
 															if (settings.global.lang == lang.Code) return;
 															setLangAlertData({
@@ -420,7 +417,7 @@ function Settings({ leftSidebarOpen }: any) {
 																{textData._LeftSideBar._components._Settings._AutoReload.DisableMsg}
 															</div>
 															<div>
-																<b>WWMM -</b> {textData._LeftSideBar._components._Settings._AutoReload.WWMMMsg}
+																<b>IMM -</b> {textData._LeftSideBar._components._Settings._AutoReload.WWMMMsg}
 															</div>
 															<div>
 																<b>{textData._LeftSideBar._components._Settings._AutoReload.OnFocus} -</b>{" "}
@@ -452,7 +449,7 @@ function Settings({ leftSidebarOpen }: any) {
 													</TabsTrigger>
 													<TabsTrigger value="1" className="w-1/3 h-10">
 														<AppWindowIcon />
-														WWMM
+														IMM
 													</TabsTrigger>
 													<TabsTrigger value="2" className="w-1/3 h-10">
 														<FocusIcon />
@@ -503,13 +500,13 @@ function Settings({ leftSidebarOpen }: any) {
 													disabled={settings.game.launch == 0}
 													className="aspect-square flex items-center justify-center w-8 h-8"
 													onClick={async () => {
-														const path = await selectPath();
+														const path = await selectPath({multiple:false,directory:false,defaultPath:settings.global.exeXXMI,title:"Select XXMI Executable",filters:[{name:"Application",extensions:["exe"]}]});
 														if (path) {
-															// setSettings((prev) => {
-															// 	prev.appDir = path;
-															// 	return { ...prev };
-															// });
-															// saveConfig();
+															setSettings((prev) => {
+																prev.global.exeXXMI = path;
+																return { ...prev };
+															});
+															saveConfigs();
 														}
 													}}
 													style={{
@@ -534,18 +531,18 @@ function Settings({ leftSidebarOpen }: any) {
 										<div className="flex flex-col w-full gap-4">
 											<div className="flex items-center gap-1">
 												{settings.global.game + "MI and Mods Folder"}
-												<Tooltip>
+												{/* <Tooltip>
 													<TooltipTrigger>
 														<InfoIcon className="text-muted-foreground hover:text-gray-300 w-4 h-4" />
 													</TooltipTrigger>
 													<TooltipContent>
 														<div className="flex flex-col gap-1">
 															<div>
-																<b>{textData._LeftSideBar._components._Settings._AutoReload.Disable} -</b>{" "}
-																{textData._LeftSideBar._components._Settings._AutoReload.DisableMsg}
+																Select location of <b>{textData._LeftSideBar._components._Settings._AutoReload.Disable} -</b>{" "}
+																
 															</div>
 															<div>
-																<b>WWMM -</b> {textData._LeftSideBar._components._Settings._AutoReload.WWMMMsg}
+																<b>IMM -</b> {textData._LeftSideBar._components._Settings._AutoReload.WWMMMsg}
 															</div>
 															<div>
 																<b>{textData._LeftSideBar._components._Settings._AutoReload.OnFocus} -</b>{" "}
@@ -555,7 +552,7 @@ function Settings({ leftSidebarOpen }: any) {
 															<div>{textData._LeftSideBar._components._Settings._AutoReload.ReloadMsg}</div>
 														</div>
 													</TooltipContent>
-												</Tooltip>
+												</Tooltip> */}
 											</div>
 											<div className="flex flex-row items-center w-full gap-2">
 												<Button
@@ -567,7 +564,7 @@ function Settings({ leftSidebarOpen }: any) {
 														store.set(INIT_DONE, false);
 													}}
 												>
-													Change
+													{textData._LeftSideBar._components._Settings.Change}
 												</Button>
 												<Button className="w-1/2" disabled></Button>
 											</div>
@@ -600,7 +597,7 @@ function Settings({ leftSidebarOpen }: any) {
 																				}
 																			}}
 																		>
-																			{textData.generic.Browse}
+																			{textData.Browse}
 																		</Button> */}
 										</div>
 										<div className="flex items-center gap-1">
@@ -613,7 +610,7 @@ function Settings({ leftSidebarOpen }: any) {
 													<div className="flex flex-col gap-1">
 														<div>{textData._LeftSideBar._components._Settings._HotKey.HKMsg1}</div>
 														<div>
-															{textData._LeftSideBar._components._Settings._HotKey.HKMsg2} <b>'WWMM'</b>{" "}
+															{textData._LeftSideBar._components._Settings._HotKey.HKMsg2} <b>'IMM'</b>{" "}
 															{textData._LeftSideBar._components._Settings._HotKey.HKMsg3}{" "}
 															<b>'{textData._LeftSideBar._components._Settings._AutoReload.OnFocus}'</b>
 														</div>
@@ -633,7 +630,7 @@ function Settings({ leftSidebarOpen }: any) {
 										</div>
 										<div className="max-h-51 flex flex-col w-full h-full gap-1 p-2 ml-2 overflow-x-hidden overflow-y-auto ">
 											{presets.length > 0 ? (
-												[...presets, ...presets, ...presets, ...presets].map((preset, index) => (
+												presets.map((preset, index) => (
 													<div className="flex items-center justify-between w-full h-10 gap-2">
 														<Input
 															className="w-25 text-ellipsis h-10 p-0 overflow-hidden break-words border-0"
@@ -641,10 +638,10 @@ function Settings({ leftSidebarOpen }: any) {
 															onFocus={(e) => {
 																e.currentTarget.blur();
 															}}
-															value={preset.name}
+															value={preset?.name}
 														></Input>
 														<Input
-															defaultValue={formatHotkeyDisplay(preset.hotkey)}
+															defaultValue={formatHotkeyDisplay(preset?.hotkey || "")}
 															autoFocus={false}
 															contentEditable={false}
 															onKeyDownCapture={(e) => {
@@ -653,7 +650,7 @@ function Settings({ leftSidebarOpen }: any) {
 																	e.currentTarget.value = "";
 																	saveConfigs();
 																} else if (e.code == "Escape") {
-																	e.currentTarget.value = formatHotkeyDisplay(preset.hotkey);
+																	e.currentTarget.value = formatHotkeyDisplay(preset?.hotkey || "");
 																	keysdown = [];
 																	keys = [];
 																} else {

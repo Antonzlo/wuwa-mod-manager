@@ -23,15 +23,16 @@ function LeftSidebar() {
 	useInstalledItemsManager();
 	return (
 		<Sidebar collapsible="icon" className="pointer-events-auto">
-			<SidebarContent className="bg-sidebar h-full gap-0 overflow-hidden border border-r-0">
+			<SidebarContent className="bg-sidebar polka h-full gap-0 overflow-hidden border border-r-0">
 				<div className="flex flex-col min-h-full max-h-full w-full">
 					<div className="min-h-16 min-w-16 flex items-center justify-center h-16 gap-5 p-0 border-b">
 						<div
-							// id="WWM MLogo"
+							id="IMMLogo"
 							className="aspect-square logo h-10"
-							onClick={() => {
+							onClick={(e) => {
 								// setTutorialMode(true);
 								// setSettings((prev) => ({ ...prev, glo/bal: { ...prev.global, game: "" } }));
+							if(e.isTrusted)
 								setGame("");
 							}}
 						></div>
@@ -71,7 +72,7 @@ function LeftSidebar() {
 								}
 							>
 								<HardDriveDownload className="w-6 h-6" />
-								{leftSidebarOpen && textData.generic.Installed}
+								{leftSidebarOpen && textData.Installed}
 							</Button>
 							<Button
 								onClick={() => {

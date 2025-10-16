@@ -10,26 +10,33 @@ import { Input } from "@/components/ui/input";
 // import { CSS_CLASSES, COMMON_STYLES } from "@/utils/consts";
 // import type { CardLocalProps } from "@/utils/types";
 
-interface CardLocalProps {
-	item: {
-		path: string;
-		name: string;
-		enabled: boolean;
-		isDir: boolean;
+interface CardOnlineProps {
+	
+	_sName: string;
+	_sModelName: string;
+	_sInitialVisibility: string;
+	_nLikeCount: number;
+	_nPostCount?: number;
+	_tsDateAdded?: number;
+	_tsDateModified?: number;
+	_aPreviewMedia?: {
+		_aImages?: {
+			_sBaseUrl: string;
+			_sFile: string;
+		}[];
 	};
-	selected: boolean;
-	lastUpdated: number;
+	blur?: boolean;
+	now: number;
+	show: string;
 }
 
-const Online = React.memo((data: any) => {
+const Online = React.memo((data: CardOnlineProps) => {
 	const backgroundImage = data._aPreviewMedia?._aImages?.[0]
 		? `${data._aPreviewMedia._aImages[0]._sBaseUrl}/${data._aPreviewMedia._aImages[0]._sFile}`
 		: "/err";
 
 	return (
-		<div
-			className="card-generic card-online "
-		>
+		<div className="card-generic card-online ">
 			<img
 				className="flex fadein flex-col bg-no-repeat items-center justify-center w-full h-full duration-200 bg-center object-cover rounded-t-lg pointer-events-none"
 				src={backgroundImage}
@@ -66,7 +73,7 @@ const Online = React.memo((data: any) => {
 				<Input
 					readOnly
 					type="text"
-					className="bg-semi w-56 cursor-pointer select-none focus-within:select-auto overflow-hidden h-8 focus-visible:ring-[0px] border-0 text-ellipsis"
+					className="bg-semi w-56 cursor-pointerx select-none focus-within:select-auto overflow-hidden h-8 focus-visible:ring-[0px] border-0 text-ellipsis"
 					// style={COMMON_STYLES.TRANSPARENT_BG}
 					defaultValue={data._sName}
 				/>

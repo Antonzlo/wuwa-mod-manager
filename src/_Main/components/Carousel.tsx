@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 // import { OnlineMod } from "@/utils/types";
 import type { EmblaCarouselType } from "embla-carousel";
 import Blur from "./Filter";
+import { OnlineMod } from "@/utils/types";
 
 let dict = {
 	today: "the Day",
@@ -22,8 +23,8 @@ function Carousel({
 	onModClick,
 	blur = true,
 }: {
-	data?: any[];//OnlineMod[];
-	onModClick?: (data:any) => void;
+	data?: OnlineMod[];
+	onModClick?: (e:any,data: OnlineMod) => void;
 	blur?: boolean;
 }) {
 	const [api, setApi] = useState<EmblaCarouselType | undefined>();
@@ -48,13 +49,13 @@ function Carousel({
 				className="aspect-video max-w-3xl overflow-hidden rounded-lg"
 			>
 				<CarouselContent>
-					{data?.map((item:any, index) => (
+					{data?.map((item, index) => (
 						<CarouselItem key={index}>
 							<div
 								onClick={(e) => {
 									if (e.target != e.currentTarget) return;
 									if (onModClick) {
-										onModClick(item);
+										onModClick(e,item);
 									} else {
 									}
 								}}

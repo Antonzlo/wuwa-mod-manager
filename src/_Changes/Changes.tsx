@@ -1,10 +1,14 @@
+import { addToast } from "@/_Toaster/ToastProvider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { UNCATEGORIZED } from "@/utils/consts";
-import { applyChanges } from "@/utils/filesys";
-import { CHANGES, INIT_DONE, TEXT_DATA } from "@/utils/vars";
+import { managedSRC, UNCATEGORIZED } from "@/utils/consts";
+import { applyChanges, createManagedDir, createRestorePoint, folderSelector, verifyDirStruct } from "@/utils/filesys";
+import { ChangeInfo } from "@/utils/types";
+import { join } from "@/utils/utils";
+import { CHANGES, INIT_DONE, SOURCE, TEXT_DATA } from "@/utils/vars";
 import { invoke } from "@tauri-apps/api/core";
+import { mkdir } from "@tauri-apps/plugin-fs";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ChevronRightIcon, FileIcon, Folder, FolderCogIcon } from "lucide-react";
 import { motion } from "motion/react";
@@ -12,6 +16,7 @@ import { useEffect } from "react";
 function Changes({ afterInit }: { afterInit: () => Promise<void> }) {
 	const textData = useAtomValue(TEXT_DATA);
 	const [changes, setChanges] = useAtom(CHANGES);
+	const [source, setSource] = useAtom(SOURCE);
 	const setInitDone = useSetAtom(INIT_DONE);
 	useEffect(() => {
 		if (!changes.skip) return;
@@ -25,7 +30,8 @@ function Changes({ afterInit }: { afterInit: () => Promise<void> }) {
 					after: [],
 					map: {},
 					title: "",
-				} as any);
+				} as ChangeInfo);
+				addToast({ type: "info", message: textData._Toasts.ModsLoaded });
 			}, 1000);
 		});
 	}, [changes.skip]);
@@ -42,23 +48,25 @@ function Changes({ afterInit }: { afterInit: () => Promise<void> }) {
 			}}
 		>
 			<div className="w-180 h-164 bg-background/50 border-border flex flex-col items-center gap-4 p-4 overflow-hidden border-2 rounded-lg">
-				<div className="min-h-fit text-accent my-6 text-3xl">{textData._Consent._Consent.Confirm}</div>
+				<div className="min-h-fit text-accent my-6 text-3xl">{textData._Changes.ConfirmChanges}</div>
 				<div className="flex flex-row items-center w-full gap-2 px-2">
 					<Button
 						className="aspect-square flex items-center justify-center w-10 h-10"
 						onClick={async () => {
-							// await selectRootDir();
+							let path = ((await folderSelector(source)) as string) || source || "";
+							setSource(path.endsWith(managedSRC) ? path.split(managedSRC)[0] : path);
+							setChanges(await verifyDirStruct());
 						}}
 					>
 						<Folder className="aspect-square w-5" />
 					</Button>
 					<div className=" w-157 max-w-157 bg-input/50 min-h-10 flex items-center px-2 text-gray-200 rounded-md">
-						<Label className=" max-w-full duration-200">{"rootDir" + "-"}</Label>
+						<Label className=" max-w-full duration-200">{source}</Label>
 					</div>
 				</div>
 				<div className="h-100 flex items-center w-full p-0">
 					<div className="flex flex-col w-1/2 h-full overflow-x-hidden overflow-y-auto text-gray-300 border rounded-sm">
-						{changes.before.map((item: any, index: any) => (
+						{changes.before.map((item, index) => (
 							<div
 								key={index + item.name}
 								className={"w-full min-h-10 border-b flex gap-2 items-center px-2"}
@@ -71,7 +79,7 @@ function Changes({ afterInit }: { afterInit: () => Promise<void> }) {
 					</div>
 					<ChevronRightIcon className="text-accent w-8 h-8" />
 					<div className="flex flex-col w-1/2 h-full overflow-x-hidden overflow-y-auto text-gray-300 border rounded-sm">
-						{changes.after.map((item: any, index: any) => (
+						{changes.after.map((item, index) => (
 							<div
 								key={index + item.name}
 								className={"w-full flex  flex-col"}
@@ -85,14 +93,14 @@ function Changes({ afterInit }: { afterInit: () => Promise<void> }) {
 									<Label className={"w-full pointer-events-none " + ((index % 2) + 1)}>{item.name}</Label>
 								</div>
 								<div className="flex border-l flex-col items-center w-full ml-4">
-									{item.children?.map((child: any, index: any) => (
+									{item.children?.map((child, index) => (
 										<>
 											<div
 												key={index + child.name}
 												className={"w-full min-h-10 bor der-y flex gap-2 items-center px-2 "}
 												style={{
 													backgroundColor: index % 2 == 0 ? "#1b1b1b50" : "#31313150",
-													borderBottom: child.children.length == 0 ? "" : "1px solid var(--border)",
+													borderBottom: child.children?.length == 0 ? "" : "1px solid var(--border)",
 													borderTop: index == 0 ? "" : "1px solid var(--border)",
 												}}
 											>
@@ -112,7 +120,7 @@ function Changes({ afterInit }: { afterInit: () => Promise<void> }) {
 												<Label className={"w-full pointer-events-none " + ((index % 2) + 1)}>{child.name}</Label>
 											</div>
 											<div className="flex flex-col items-center w-full pl-4">
-												{child.children?.map((grandchild: any, index: any) => (
+												{child.children?.map((grandchild, index) => (
 													<div
 														key={index + grandchild.name}
 														className={"w-full min-h-10 border-l flex gap-2 items-center px-2 "}
@@ -151,33 +159,36 @@ function Changes({ afterInit }: { afterInit: () => Promise<void> }) {
 				<div className="flex justify-between w-full h-10 mt-2">
 					<Button
 						className="w-28 text-red-300 hover:bg-red-300 data-zzz:hover:text-background hover:text-background"
-						onClick={() => {
-							invoke("exit_app");
+						onClick={async() => {
+							// invoke("exit_app");
+							await createManagedDir();
+							setChanges((prev) => ({ ...prev, skip: true }));
 						}}
 					>
-						{textData.generic.Quit}
+						{textData.Skip}
 					</Button>
 					<div className="flex flex-col items-center justify-center w-full">
 						<div className=" flex items-center gap-2">
 							<Checkbox id="checkbox" className=" checked:bg-accent bgaccent" />
-							<label className="text-accent opacity-75 text-sm">{textData._Consent._Consent.RestorePoint}</label>
+							<label className="text-accent opacity-75 text-sm">{textData._Changes.CreateRestore}</label>
 						</div>
 					</div>
 					<Button
 						className="w-28 "
 						onClick={async () => {
-							// let checked = document.getElementById("checkbox")?.getAttribute("aria-checked") == "true";
+							let checked = document.getElementById("checkbox")?.getAttribute("aria-checked") == "true";
 							// if (firstLoad) setTutorialMode(true);
-							// if (checked) await createRestorePoint("ORG-");
-							// else {
-							// 	updateInfo("Optimizing dir structure...");
-							// 	setConsentOverlayData((prev) => ({ ...prev, next: true }));
-							await applyChanges();
-							setChanges((prev: any) => ({ ...prev, skip: true }));
-							// }
+							if (checked) await createRestorePoint("ORG-");
+							else {
+								// updateInfo("Optimizing dir structure...");
+								// setConsentOverlayData((prev) => ({ ...prev, next: true }));
+							addToast({ type: "info", message: textData._Toasts.ApplyingChanges });
+							await applyChanges(true);
+							setChanges((prev) => ({ ...prev, skip: true }));
+							}
 						}}
 					>
-						{textData.generic.Confirm}
+						{textData.Confirm}
 					</Button>
 				</div>
 			</div>

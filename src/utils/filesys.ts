@@ -1,50 +1,96 @@
 import { copyFile, exists, mkdir, readDir, readTextFile, remove, rename, writeTextFile } from "@tauri-apps/plugin-fs";
 import { IGNORE, managedSRC, managedTGT, OLD_RESTORE, RESTORE, UNCATEGORIZED, VERSION } from "./consts";
-import { CATEGORIES, DATA, INIT_DONE, LAST_UPDATED, PRESETS, SETTINGS, SOURCE, store, TARGET } from "./vars";
+import {
+	CATEGORIES,
+	DATA,
+	DOWNLOAD_LIST,
+	LAST_UPDATED,
+	PRESETS,
+	PROGRESS_OVERLAY,
+	SETTINGS,
+	SOURCE,
+	store,
+	TARGET,
+	TEXT_DATA,
+} from "./vars";
 import { open } from "@tauri-apps/plugin-dialog";
 import { invoke } from "@tauri-apps/api/core";
-import { join } from "./utils";
-import { main } from "./init";
-
+import { join, safeLoadJson } from "./utils";
+import { main, updateConfig } from "./init";
+import { addToast } from "@/_Toaster/ToastProvider";
+import {
+	GameConfig,
+	GlobalSettings,
+	Mod,
+	ModHotKeys,
+	Settings,
+	DirEntry,
+	Category,
+	ModDataObj,
+	ChangeInfo,
+} from "./types";
+const textMSG = {
+	rem: "Removing current files",
+	disc: "Discovering files",
+	file: "File",
+};
+let completedFiles = 0;
+let totalFiles = 0;
+let canceled = false;
+let result = "Ok";
+let progressBar: HTMLElement | null = null;
+let progressMessage: HTMLElement | null = null;
+let progressPerct: HTMLElement | null = null;
 // Initialize Intl.Collator for faster string comparison
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
 const sp = [UNCATEGORIZED, IGNORE, OLD_RESTORE];
+let recentlyDownloaded: string[] = [];
+store.sub(DOWNLOAD_LIST, () => {
+	recentlyDownloaded = store.get(DOWNLOAD_LIST).completed.map((item:any) => item.path);
+});
 let src = "";
+let rootReplace = "";
+let modRoot = "";
 let tgt = "";
+let textData = store.get(TEXT_DATA);
+store.sub(TEXT_DATA, () => {
+	textData = store.get(TEXT_DATA);
+});
 store.sub(SOURCE, () => {
 	src = store.get(SOURCE);
+	modRoot = join(src, managedSRC);
+	rootReplace = modRoot;
 });
 store.sub(TARGET, () => {
 	tgt = store.get(TARGET);
 });
-export function safeLoadJson(cur: any, neww: any) {
-	if (!cur || !neww) return;
-	Object.keys(neww).forEach((key) => {
-		if (typeof neww[key] === "object" && !Array.isArray(neww[key])) {
-			cur[key] = safeLoadJson(cur[key], neww[key]) || cur[key] || {};
-		} else {
-			cur[key] = neww[key];
-		}
-	});
-	return cur;
-}
+
 export async function setConfig(config: any) {
 	if (!config) return;
+	if (config.version && config.version < "2.1.0") {
+		await updateConfig(config);
+		addToast({ type: "success", message: textData._Toasts.SuccessPort });
+		main();
+		return;
+	}
 	let { gameConfig: curConfig } = getConfig(store.get(SETTINGS));
-	if (!curConfig.game || !config.game || curConfig.game !== config.game) return;
+	if (!curConfig.game || !config.game || curConfig.game !== config.game) {
+		addToast({ type: "error", message: textData._Toasts.GameConfigMismatch });
+		return;
+	}
 	curConfig = safeLoadJson(curConfig, config) || curConfig;
 	curConfig.version = VERSION;
 	await writeTextFile(`config${curConfig.game}.json`, JSON.stringify(curConfig, null, 2));
 	// store.set(INIT_DONE,false)
+	addToast({ type: "success", message: textData._Toasts.ConfigLoaded });
 	main();
-
 }
-export function getConfig(settings: any) {
-	const config: any = settings.global;
+export function getConfig(settings: Settings) {
+	const config: GlobalSettings = settings.global;
 	config["updatedAt"] = new Date().toISOString();
 	config["version"] = VERSION;
-	const gameConfig: any = {
+	const gameConfig: GameConfig = {
 		version: VERSION,
 		game: settings.global.game,
 		sourceDir: store.get(SOURCE),
@@ -72,7 +118,13 @@ export async function saveConfigs(skip = false, settings = store.get(SETTINGS)) 
 	}
 }
 export async function selectPath(
-	options = { multiple: false, directory: false } as { multiple?: boolean; directory?: boolean; defaultPath?: string }
+	options = { multiple: false, directory: false } as {
+		multiple?: boolean;
+		directory?: boolean;
+		defaultPath?: string;
+		title?: string;
+		filters?: { name: string; extensions: string[] }[];
+	}
 ) {
 	return await open(options);
 }
@@ -82,12 +134,20 @@ export function folderSelector(path = "") {
 function replaceDisabled(name: string) {
 	return name.replace("DISABLED_", "").replace("DISABLED", "").trim();
 }
-
+function formatDateTime() {
+	const now = new Date();
+	return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(
+		2,
+		"0"
+	)}-${String(now.getHours()).padStart(2, "0")}-${String(now.getMinutes()).padStart(2, "0")}-${String(
+		now.getSeconds()
+	).padStart(2, "0")}`;
+}
 /**
  * Optimized sorting function using Intl.Collator for better performance
  * Handles case-insensitive sorting with uppercase precedence for same letters
  */
-function sortMods(a: any, b: any) {
+function sortMods(a: Mod | DirEntry, b: Mod | DirEntry) {
 	const x = replaceDisabled(a.name);
 	const y = replaceDisabled(b.name);
 
@@ -112,41 +172,185 @@ function sortMods(a: any, b: any) {
 
 	return 0;
 }
-async function copyDir(src: string, dest: string) {
+async function copyDir(src: string, dest: string, withProgress = false) {
 	try {
 		await mkdir(dest, { recursive: true });
-		const entries = await readDir(src);
+		const entries = (await readDir(src)).filter(
+			(item) =>
+				!withProgress ||
+				(item.name !== RESTORE && item.name !== IGNORE && item.name !== managedSRC && item.name !== managedTGT)
+		);
 		for (const entry of entries) {
+			if (withProgress && canceled) {
+				if (result == "Ok") result = "Operation Cancelled";
+				return;
+			}
 			const srcPath = `${src}/${entry.name}`;
 			const destPath = `${dest}/${entry.name}`;
 			if (!entry.isDirectory) {
 				await copyFile(srcPath, destPath);
+				if (withProgress) {
+					completedFiles++;
+					if (progressBar && progressPerct && progressMessage) {
+						const percentage = ((completedFiles / totalFiles) * 100).toFixed(2);
+						progressBar.style.width = percentage + "%";
+						progressPerct.innerText = percentage + "%";
+						progressMessage.innerText = `${textMSG.file} ${completedFiles}/${totalFiles}: ${src.replace(
+							rootReplace,
+							""
+						)}/${entry.name}`;
+					}
+				}
 			} else {
-				await copyDir(srcPath, destPath);
+				await copyDir(srcPath, destPath, withProgress);
 			}
 		}
 	} catch (error) {
+		canceled = true;
+		result = "An Error Occurred";
 		console.error("Error copying directory:", error);
 		throw error;
 	}
 }
-async function removeDir(path: string) {
-	try {
-		const entries = await readDir(path);
-		for (const entry of entries) {
-			if (entry.name == RESTORE) continue;
-			const fullPath = join(path, entry.name);
-			if (entry.isDirectory) {
-				await removeDir(fullPath);
-			} else {
-				await remove(fullPath);
+
+async function countFilesInDir(path: string) {
+	let entries = (await readDir(join(path, ""))).filter((item) => item.name != RESTORE && item.name != IGNORE);
+	for (let entry of entries) {
+		if (entry.isDirectory) {
+			await countFilesInDir(join(path, entry.name));
+		} else {
+			totalFiles++;
+			if (progressMessage) {
+				progressMessage.innerText = textMSG.disc + " ( " + totalFiles + " / ? )";
 			}
 		}
-		await remove(path);
-	} catch (error) {
-		console.error("Error removing directory:", error);
-		throw error;
 	}
+}
+export function cancelRestore() {
+	canceled = true;
+}
+export async function getRestorePoints(): Promise<string[]> {
+	try {
+		const restoreDir = join(modRoot, RESTORE);
+		if (!(await exists(restoreDir))) return [];
+		const entries = await readDir(restoreDir);
+		return entries
+			.filter((item) => item.isDirectory)
+			.map((item) => item.name)
+			.sort()
+			.reverse();
+	} catch (error) {
+		console.error("Error getting restore points:", error);
+		return [];
+	}
+}
+export async function previewRestorePoint(point: string) {
+	let path = join(modRoot, RESTORE, point);
+	if (!(await exists(path))) return [];
+	let entries = await readDirRecr(path, "", 2);
+	let categories = store.get(CATEGORIES) || [];
+	console.log(entries);
+	return entries.map((entry: Mod) => {
+		let category = categories.find((cat) => cat._sName == entry.name);
+		if (category && entry.isDir) entry.icon = category._sIconUrl;
+		return entry;
+	});
+}
+export async function restoreFromPoint(point: string) {
+	let path = join(modRoot, RESTORE, point);
+	if (!(await exists(path))) return null;
+	store.set(PROGRESS_OVERLAY, {
+		title: "Restoring from " + name,
+		finished: false,
+		button: "Cancel",
+		open: true,
+	});
+	progressBar = document.querySelector("#restore-progress");
+	progressMessage = document.querySelector("#restore-progress-message");
+	progressPerct = document.querySelector("#restore-progress-percentage");
+	while (!progressBar || !progressMessage || !progressPerct) {
+		await new Promise((resolve) => setTimeout(resolve, 10));
+		progressBar = progressBar || document.querySelector("#restore-progress");
+		progressMessage = progressMessage || document.querySelector("#restore-progress-message");
+		progressPerct = progressPerct || document.querySelector("#restore-progress-percentage");
+	}
+	progressMessage.innerText = textMSG.rem;
+	let entries = (await readDir(modRoot)).filter((item) => item.name != RESTORE);
+	for (let entry of entries) {
+		try {
+			await remove(join(modRoot, entry.name), { recursive: true });
+		} catch {}
+	}
+	progressMessage.innerText = textMSG.disc;
+	completedFiles = 0;
+	totalFiles = 0;
+	canceled = false;
+	if (canceled) {
+		result = "Operation Cancelled";
+	} else {
+		await countFilesInDir(path);
+		result = "Ok";
+		rootReplace = join(modRoot, RESTORE, point);
+		await copyDir(path, modRoot, true);
+	}
+	store.set(PROGRESS_OVERLAY, (prev) => ({
+		title: result == "Ok" ? "Restoration Completed" : result,
+		finished: true,
+		button: "Close",
+		open: prev.open,
+	}));
+	return null;
+}
+export async function createRestorePoint(prefix = "") {
+	store.set(PROGRESS_OVERLAY, {
+		title: "Creating Restore Point",
+		button: "Cancel",
+		finished: false,
+		open: true,
+	});
+	progressBar = document.querySelector("#restore-progress");
+	progressMessage = document.querySelector("#restore-progress-message");
+	progressPerct = document.querySelector("#restore-progress-percentage");
+	while (!progressBar || !progressMessage || !progressPerct) {
+		await new Promise((resolve) => setTimeout(resolve, 10));
+		progressBar = progressBar || document.querySelector("#restore-progress");
+		progressMessage = progressMessage || document.querySelector("#restore-progress-message");
+		progressPerct = progressPerct || document.querySelector("#restore-progress-percentage");
+	}
+	progressMessage.innerText = textMSG.disc;
+	completedFiles = 0;
+	totalFiles = 0;
+	canceled = false;
+	try {
+		await mkdir(join(modRoot, RESTORE), { recursive: true });
+	} catch (e) {}
+
+	let restorePointName = prefix + "RESTORE-" + formatDateTime();
+	const root = !prefix ? modRoot : src;
+	rootReplace = root;
+	await countFilesInDir(root);
+	try {
+		await mkdir(join(modRoot, RESTORE, restorePointName));
+	} catch (e) {
+		return null;
+	}
+	result = "Ok";
+	await copyDir(root, join(modRoot, RESTORE, restorePointName), true);
+	if (canceled) {
+		if (result == "Ok") result = "Operation Cancelled";
+		await remove(join(modRoot, RESTORE, restorePointName), { recursive: true });
+		try {
+			await remove(join(modRoot, RESTORE));
+			await remove(join(modRoot));
+		} catch (e) {}
+	}
+	store.set(PROGRESS_OVERLAY, (prev) => ({
+		title: result == "Ok" ? "Restore Point Created" : result,
+		button: "Close",
+		finished: true,
+		open: prev.open,
+	}));
+	return null;
 }
 export async function checkOldVerDirs(src: string) {
 	try {
@@ -163,7 +367,7 @@ export async function checkOldVerDirs(src: string) {
 		return false;
 	}
 }
-export async function categorizeDir(src: string) {
+export async function categorizeDir(src: string, skipRestore = false) {
 	try {
 		const categories = [...store.get(CATEGORIES), { _sName: UNCATEGORIZED }].map((cat) => cat._sName);
 		const reqCategories: Record<string, Array<{ name: string; isDirectory: boolean }>> = {};
@@ -175,6 +379,7 @@ export async function categorizeDir(src: string) {
 			if (item.isDirectory && ignore.includes(item.name)) continue;
 
 			if (item.name === OLD_RESTORE) {
+				if (skipRestore) continue;
 				try {
 					await rename(join(src, OLD_RESTORE), join(src, RESTORE));
 				} catch (error) {
@@ -227,24 +432,18 @@ export async function categorizeDir(src: string) {
 	}
 }
 export async function verifyDirStruct() {
-	const status = {
-		src: false,
-		tgt: false,
-		modDir: false,
-		tgtDir: false,
-		before: [] as any[],
-		after: [] as any[],
-		map: {} as any,
+	const status: ChangeInfo = {
+		before: [],
+		after: [],
+		map: {},
 		title: "Confirm Changes",
 		skip: false,
 	};
 	try {
-		status.src = !!src && (await exists(src));
-		status.tgt = !!tgt && (await exists(tgt));
-		if (!status.src || !status.tgt) throw new Error("Source or Target not found");
+		if (!(!!src && (await exists(src))) || !(!!tgt && (await exists(tgt))))
+			throw new Error("Source or Target not found");
 		const tgtDir = join(tgt, "Mods");
-		status.tgtDir = await exists(tgtDir);
-		if (!status.tgtDir) throw new Error("Target Directory not found");
+		if (!(await exists(tgtDir))) throw new Error("Target Directory not found");
 
 		const modDir = join(src, managedSRC);
 		const [modDirExists, isOldVersion] = await Promise.all([exists(modDir), checkOldVerDirs(src)]);
@@ -258,8 +457,11 @@ export async function verifyDirStruct() {
 			status.skip = true;
 		}
 		if (status.skip) throw new Error("Migration done, please verify the directories again");
-		const categories = [...store.get(CATEGORIES), { _sName: UNCATEGORIZED, _sIconUrl: "" }];
-		const reqCategories: Record<string, any> = {};
+		const categories: Category[] = [
+			...store.get(CATEGORIES),
+			{ _sName: UNCATEGORIZED, _sIconUrl: "", _idRow: 0, _nItemCount: 0, _nCategoryCount: 0, _sUrl: "" },
+		];
+		const reqCategories: Record<string, DirEntry> = {};
 
 		const srcEntries = await readDir(src);
 		status.before = srcEntries
@@ -286,7 +488,7 @@ export async function verifyDirStruct() {
 		const readPromises: Promise<{ item: any; entries: any[] }>[] = [];
 		for (const item of before) {
 			const category =
-				categories.find((cat: any) =>
+				categories.find((cat: Category) =>
 					cat._sName
 						.toLowerCase()
 						.split(" ")
@@ -318,7 +520,7 @@ export async function verifyDirStruct() {
 						children: [],
 					};
 				}
-				reqCategories[category._sName].children.push({ name: item.name, isDirectory: item.isDirectory });
+				reqCategories[category._sName].children?.push({ name: item.name, isDirectory: item.isDirectory });
 			}
 		}
 
@@ -333,8 +535,8 @@ export async function verifyDirStruct() {
 					children: [],
 				};
 			}
-			reqCategories[category._sName].children.push(
-				...entries.map((i: any) => ({ name: i.name, isDirectory: i.isDirectory }))
+			reqCategories[category._sName].children?.push(
+				...entries.map((i: DirEntry) => ({ name: i.name, isDirectory: i.isDirectory }))
 			);
 		}
 		status.map = { ...reqCategories };
@@ -345,7 +547,7 @@ export async function verifyDirStruct() {
 		if (modDirExists) {
 			try {
 				const modDirEntries = await readDir(modDir);
-				const modDirReadPromises: Promise<{ category: any; entries: any[] }>[] = [];
+				const modDirReadPromises: Promise<{ category: any; entries: DirEntry[] }>[] = [];
 
 				for (const item of modDirEntries) {
 					if (!item.isDirectory) continue;
@@ -353,7 +555,7 @@ export async function verifyDirStruct() {
 					const category =
 						item.name === RESTORE
 							? { _sName: RESTORE, _sIconUrl: "" }
-							: categories.find((cat: any) =>
+							: categories.find((cat) =>
 									cat._sName
 										.toLowerCase()
 										.split(" ")
@@ -385,8 +587,8 @@ export async function verifyDirStruct() {
 							children: [],
 						};
 					}
-					reqCategories[category._sName].children.push(
-						...entries.map((i: any) => ({ name: i.name, isDirectory: i.isDirectory }))
+					reqCategories[category._sName].children?.push(
+						...entries.map((i) => ({ name: i.name, isDirectory: i.isDirectory }))
 					);
 				}
 			} catch (error) {
@@ -394,12 +596,12 @@ export async function verifyDirStruct() {
 			}
 		}
 		for (const key of Object.keys(reqCategories)) {
-			status.after[0].children.push({
+			status.after[0].children?.push({
 				...reqCategories[key],
-				children: (reqCategories[key].children as any[]).sort(sortMods),
+				children: (reqCategories[key].children as DirEntry[]).sort(sortMods),
 			});
 		}
-		status.after[0].children.sort(sortMods);
+		status.after[0].children?.sort(sortMods);
 		status.after.sort(sortMods);
 	} catch (e) {
 		//console.log(e);
@@ -407,11 +609,23 @@ export async function verifyDirStruct() {
 		return status;
 	}
 }
+export async function createManagedDir() {
+	try {
+		if (!src) return false;
+		await mkdir(join(src, managedSRC), { recursive: true });
+		if (!tgt) return false;
+		await mkdir(join(tgt, "Mods", managedTGT), { recursive: true });
+		return true;
+	} catch (error) {
+		console.error("Error creating managed directories:", error);
+		throw error;
+	}
+}
 export async function applyChanges(isMigration = false) {
 	try {
 		if (!src || !tgt) return false;
 
-		let map: Record<string, any> = {};
+		let map: Record<string, DirEntry> = {};
 		if (!isMigration) {
 			map = (await verifyDirStruct()).map;
 		}
@@ -420,7 +634,8 @@ export async function applyChanges(isMigration = false) {
 		if (!target) return true;
 
 		await mkdir(join(src, managedSRC), { recursive: true });
-		await categorizeDir(src);
+		await mkdir(join(tgt, "Mods", managedTGT), { recursive: true });
+		await categorizeDir(src, isMigration);
 
 		const entries = isMigration ? (await readDir(src)).map((item) => item.name) : Object.keys(map);
 
@@ -450,7 +665,7 @@ export async function applyChanges(isMigration = false) {
 
 			await mkdir(join(target, key), { recursive: true });
 
-			const dirEntries = isMigration ? await readDir(join(src, managedSRC, key)) : map[key].children;
+			const dirEntries = (isMigration ? await readDir(join(src, managedSRC, key)) : map[key].children) || [];
 
 			// Batch process directory entries
 			const itemOperations: Promise<void>[] = [];
@@ -485,16 +700,16 @@ export async function applyChanges(isMigration = false) {
 }
 async function readDirRecr(root: string, path: string, maxDepth = 2, depth = 0, def = true) {
 	if (depth > maxDepth) return [];
-	let entries = [] as any; // DirEntry[];
+	let entries: DirEntry[] = [];
 	try {
 		entries = await readDir(join(root, path));
 	} catch {
 		return [];
 	}
-	let files = [] as any; // LocalMod[];
+	let files: Mod[] = [];
 	for (let entry of entries) {
 		if ((entry.name == RESTORE || entry.name == IGNORE) && def && depth == 0) continue;
-		let children = [] as any; // LocalMod[];
+		let children: Mod[] = [];
 		if (entry.isDirectory) children = await readDirRecr(root, join(path, entry.name), maxDepth, depth + 1);
 		files.push({
 			isDir: entry.isDirectory,
@@ -509,21 +724,18 @@ async function readDirRecr(root: string, path: string, maxDepth = 2, depth = 0, 
 	}
 	return files.sort(sortMods);
 }
-async function detectHotkeys(
-	entries: any[],
-	data: any /*LocalData*/,
-	src: string
-) /* Promise<[LocalMod[], ModHotkey[]]>*/ {
-	const hotkeyData: any[] = []; // ModHotkey[];
+async function detectHotkeys(entries: Mod[], data: ModDataObj, src: string): Promise<[Mod[], ModHotKeys[]]> {
+	const hotkeyData: ModHotKeys[] = [];
 
 	for (const entry of entries) {
 		try {
 			// Apply stored data to entry
 			if (data[entry.path]) {
 				for (const key of Object.keys(data[entry.path])) {
-					entry[key as "source" | "updatedAt" | "note"] = data[entry.path as keyof typeof data][
-						key as "source" | "updatedAt" | "note"
-					] as any;
+					// @ts-ignore
+					entry[key as "source" | "updatedAt" | "note"] =
+						data[entry.path as keyof typeof data][key as "source" | "updatedAt" | "note"] ||
+						(key === "updatedAt" ? 0 : "");
 				}
 			}
 
@@ -595,7 +807,7 @@ export async function refreshModList() {
 
 		// Batch process entries - separate rename operations from exists checks
 		const renameOperations: Promise<void>[] = [];
-		const existsChecks: Promise<{ entry: any; enabled: boolean }>[] = [];
+		const existsChecks: Promise<{ entry: Mod; enabled: boolean }>[] = [];
 
 		for (const entry of entries) {
 			if (entry.name.startsWith("DISABLED")) {
@@ -629,8 +841,8 @@ export async function refreshModList() {
 		for (const { entry, enabled } of existsResults) {
 			entry.enabled = enabled;
 		}
-
-		return entries;
+		console.log(recentlyDownloaded);	
+		return entries.filter((entry)=> recentlyDownloaded.includes(entry.path)).concat(entries.filter((entry)=> !recentlyDownloaded.includes(entry.path)));
 	} catch (error) {
 		console.error("Error refreshing mod list:", error);
 		throw error;
@@ -649,7 +861,6 @@ export async function createModDownloadDir(cat: string, dir: string) {
 	}
 }
 export async function validateModDownload(path: string) {
-	console.log(path);
 	try {
 		const entries = await readDir(path);
 		const previewCount = entries.filter((entry) => entry.name.startsWith("preview.") && !entry.isDirectory).length;
@@ -677,24 +888,43 @@ export async function validateModDownload(path: string) {
 				}
 			}
 		}
+		const downloads = store.get(DOWNLOAD_LIST);
+		const completed = downloads.completed.length + 1;
+		const total = completed + downloads.queue.length;
+		addToast({ type: "success", message: `${textData._Toasts.DownloadComplete} (${completed}/${total})` });
 	} catch (error) {
+		addToast({ type: "error", message: textData._Toasts.ErrDownload });
 		console.error("Error validating mod download:", error);
 	}
 	return true;
 }
-export async function changeModName(path: any, newPath: string) {
+export async function changeModName(path: string, newPath: string) {
 	try {
 		const enabled = await toggleMod(path, false);
 		await mkdir(join(src, managedSRC, ...newPath.split("\\").slice(0, -1)), { recursive: true });
 		await rename(join(src, managedSRC, path), join(src, managedSRC, newPath));
 		if (enabled) await toggleMod(newPath, true);
+		// addToast({ type: "success", message: "Mod renamed successfully!" });
 		return newPath;
 	} catch (error) {
 		console.error("Error changing mod name:", error);
+		// addToast({ type: "error", message: "Error changing mod name." });
 		throw error;
 	}
 }
-export async function deleteMod(path: any) {
+export async function deleteRestorePoint(point: string) {
+	try {
+		const path = join(modRoot, RESTORE, point);
+		await remove(path, { recursive: true });
+		addToast({ type: "success", message: textData._Toasts.Deleted });
+		return true;
+	} catch (error) {
+		console.error("Error deleting restore point:", error);
+		addToast({ type: "error", message: textData._Toasts.ErrOcc });
+		return false;
+	}
+}
+export async function deleteMod(path: string) {
 	const modSrc = join(src, managedSRC, path);
 	const modTgt = join(tgt, "Mods", managedTGT, path);
 
@@ -706,12 +936,14 @@ export async function deleteMod(path: any) {
 
 	try {
 		await remove(modSrc, { recursive: true });
+		addToast({ type: "success", message: textData._Toasts.Deleted });
 	} catch (error) {
 		console.error("Error removing mod source:", error);
+		addToast({ type: "error", message: textData._Toasts.ErrOcc });
 		throw error;
 	}
 }
-export async function toggleMod(path: any, enabled: boolean) {
+export async function toggleMod(path: string, enabled: boolean) {
 	try {
 		const modSrc = join(src, managedSRC, path);
 		const modTgt = join(tgt, "Mods", managedTGT, path);
@@ -769,13 +1001,14 @@ export async function savePreviewImage(path: string) {
 		const fileExt = file.split(".").pop();
 		await copyFile(file, path + "\\" + "preview." + fileExt);
 		store.set(LAST_UPDATED, Date.now());
+		addToast({ type: "success", message: textData._Toasts.ImgSaved });
 	} catch (error) {
 		console.error("Error saving preview image:", error);
+		addToast({ type: "error", message: textData._Toasts.ErrOcc });
 		throw error;
 	}
 }
-
-export async function applyPreset(data: any) {
+export async function applyPreset(data: string[], name = "") {
 	try {
 		await remove(join(tgt, "Mods", managedTGT), { recursive: true });
 		await mkdir(join(tgt, "Mods", managedTGT), { recursive: true });
@@ -785,15 +1018,19 @@ export async function applyPreset(data: any) {
 		for (let i = 0; i < data.length; i += batchSize) {
 			const batch = data.slice(i, i + batchSize);
 			await Promise.all(
-				batch.map((mod: any) =>
+				batch.map((mod) =>
 					toggleMod(mod, true).catch((error) => {
 						console.error(`Error toggling mod ${mod}:`, error);
 					})
 				)
 			);
 		}
+		if (name) {
+			addToast({ type: "success", message: textData._Toasts.PresetApplied });
+		}
 	} catch (error) {
 		console.error("Error applying preset:", error);
+		if (name) addToast({ type: "error", message: textData._Toasts.ErrOcc });
 		throw error;
 	}
 }

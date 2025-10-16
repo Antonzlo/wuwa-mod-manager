@@ -23,7 +23,7 @@ function Page4({ setPage }: { setPage: (page: number) => void }) {
 			<div className="fixed z-20 flex flex-col items-center justify-center w-full duration-200">
 				{tgt == "" ? (
 					<div className=" text-accent flex flex-col items-center gap-5 my-2 text-2xl">
-						{textData._Intro._Intro.NotFound}
+						{textData._Checklist.NotFound}
 						<Button
 							className="w-1/2 mt-2"
 							onClick={async () => {
@@ -32,12 +32,12 @@ function Page4({ setPage }: { setPage: (page: number) => void }) {
 								setSrc(path+"\\Mods");
 							}}
 						>
-							{textData.generic.Browse}
+							{textData.Browse}
 						</Button>
 					</div>
 				) : (
 					<div className="text-accent flex flex-col items-center gap-5 my-2 text-2xl">
-						{textData._Intro._Intro.ConfirmDir}
+						{textData._Checklist.ConfirmDir}
 						<div className="flex items-center gap-2">
 							<Label>{game}MI Dir :</Label>
 							<Input
@@ -55,7 +55,7 @@ function Page4({ setPage }: { setPage: (page: number) => void }) {
 									}
 								}}
 							>
-								{textData.generic.Browse}
+								{textData.Browse}
 							</Button>
 						</div>
 						<div
@@ -83,7 +83,7 @@ function Page4({ setPage }: { setPage: (page: number) => void }) {
 									setSrc(path);
 								}}
 							>
-								{textData.generic.Browse}
+								{textData.Browse}
 							</Button>
 						</div>
 
@@ -91,7 +91,7 @@ function Page4({ setPage }: { setPage: (page: number) => void }) {
 							<Checkbox checked={checked} onClick={() => setChecked(!checked)} className=" checked:bg-accent bgaccent  " />
 							<label className="text-accent/75 text-sm min-w-fit">
 								{" "}
-								Mods are stored in {game}MI\Mods {/* TRANSLATE */}
+								{textData._Checklist.ModsIn.replace("{game}", game)}{" "}
 							</label>
 						</div>
 
@@ -106,7 +106,7 @@ function Page4({ setPage }: { setPage: (page: number) => void }) {
 
 							}}
 						>
-							{textData.generic.Confirm}
+							{textData.Confirm}
 						</Button>
 					</div>
 				)}

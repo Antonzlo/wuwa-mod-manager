@@ -3,14 +3,28 @@ export const store = createStore();
 // import { initGame } from "./init";
 import { TEXT } from "./text";
 import { DEFAULTS, VERSION } from "./consts";
+import {
+	Category,
+	ChangeInfo,
+	DownloadList,
+	Games,
+	InstalledItem,
+	Language,
+	Mod,
+	ModDataObj,
+	OnlineData,
+	Preset,
+	ProgressData,
+	Settings,
+} from "./types";
 
 // const init = { settings: true };
 const INIT_DONE = atom(false);
-const GAME = atom("");
-const LANG = atom("en");
+const GAME = atom<Games>("");
+const LANG = atom<Language>("en");
 //saved
 const LAST_UPDATED = atom(Date.now());
-const SETTINGS = atom({
+const SETTINGS = atom<Settings>({
 	global: {
 		bgOpacity: 1,
 		winOpacity: 1,
@@ -31,36 +45,53 @@ const SETTINGS = atom({
 		onlineType: "Mod",
 	},
 });
-const SOURCE = atom("");
-const TARGET = atom("");
-const DATA = atom<any>({});
-const PRESETS = atom<any[]>([]);
-const CATEGORIES = atom([] as any[]);
-const TYPES = atom([] as any[]);
+const SOURCE = atom<string>("");
+const TARGET = atom<string>("");
+const DATA = atom<ModDataObj>({});
+const PRESETS = atom<Preset[]>([]);
+const CATEGORIES = atom<Category[]>([]);
+const TYPES = atom<Category[]>([]);
 //not-saved
 const LEFT_SIDEBAR_OPEN = atom(true);
 const RIGHT_SIDEBAR_OPEN = atom(true);
 const RIGHT_SLIDEOVER_OPEN = atom(false);
 const ONLINE = atom(false);
-const DOWNLOAD_LIST = atom(DEFAULTS.DOWNLOAD_LIST);
+const DOWNLOAD_LIST = atom<DownloadList>(DEFAULTS.DOWNLOAD_LIST);
 
 const CURRENT_PRESET = atom(DEFAULTS.CURRENT_PRESET);
-const MOD_LIST = atom(DEFAULTS.MOD_LIST);
+const MOD_LIST = atom<Mod[]>(DEFAULTS.MOD_LIST);
 const SELECTED = atom(DEFAULTS.SELECTED);
 const FILTER = atom(DEFAULTS.FILTER);
 const CATEGORY = atom(DEFAULTS.CATEGORY);
 const SEARCH = atom(DEFAULTS.SEARCH);
-const INSTALLED_ITEMS = atom(DEFAULTS.INSTALLED_ITEMS);
-const ONLINE_DATA = atom<any>(DEFAULTS.ONLINE_DATA);
+const INSTALLED_ITEMS = atom<InstalledItem[]>(DEFAULTS.INSTALLED_ITEMS);
+const ONLINE_DATA = atom<OnlineData>(DEFAULTS.ONLINE_DATA);
 const ONLINE_TYPE = atom(DEFAULTS.ONLINE_TYPE);
 const ONLINE_SORT = atom(DEFAULTS.ONLINE_SORT);
 const ONLINE_PATH = atom(DEFAULTS.ONLINE_PATH);
 const ONLINE_SELECTED = atom(DEFAULTS.ONLINE_SELECTED);
-
-const CHANGES = atom({} as any);
+const TOASTS = atom([] as any[]);
+const CHANGES = atom<ChangeInfo>({
+	before: [],
+	after: [],
+	map: {},
+	skip: false,
+	title: "",
+});
 const TEXT_DATA = atom(TEXT["en"]);
+const PROGRESS_OVERLAY = atom<ProgressData>({ title: "", open: false, finished: false, button: "" });
+export interface UpdateInfo {
+	version: string;
+	status: "available" | "downloading" | "ready" | "error" | "installed";
+	date: string;
+	body: string;
+	raw:any|null;
+}
+const IMM_UPDATE = atom(null as UpdateInfo | null);
+const UPDATER_OPEN = atom(false);
 export function resetAtoms() {
 	const atoms = {
+		
 		INIT_DONE,
 		LANG,
 		GAME,
@@ -87,9 +118,15 @@ export function resetAtoms() {
 		ONLINE_SORT,
 		ONLINE_SELECTED,
 	};
-	Object.keys(atoms).forEach((atom) => store.set(atoms[atom as keyof typeof atoms], DEFAULTS[atom as keyof typeof DEFAULTS]));
+	Object.keys(atoms).forEach((atom) =>
+		store.set(atoms[atom as keyof typeof atoms] as any, DEFAULTS[atom as keyof typeof DEFAULTS])
+	);
 }
 export {
+	UPDATER_OPEN,
+	IMM_UPDATE,
+	PROGRESS_OVERLAY,
+	TOASTS,
 	CURRENT_PRESET,
 	INSTALLED_ITEMS,
 	RIGHT_SLIDEOVER_OPEN,

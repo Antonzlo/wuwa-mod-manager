@@ -1,3 +1,4 @@
+import { addToast } from "@/_Toaster/ToastProvider";
 import { saveConfigs } from "@/utils/filesys";
 import { initGame, main } from "@/utils/init";
 import { switchGameTheme } from "@/utils/theme";
@@ -17,7 +18,7 @@ function Page2({ setPage }: { setPage: (page: number) => void }) {
 	return (
 		<div className="text-muted-foreground gap-4 fixed flex flex-col items-center justify-center w-screen h-screen">
 			<div className="mb-4 text-3xl">
-				{text.generic.Select.split("").map((letter, index) => (
+				{text.Select.split("").map((letter, index) => (
 					<span
 						key={index}
 						className="wave-letter"
@@ -41,17 +42,21 @@ function Page2({ setPage }: { setPage: (page: number) => void }) {
 							// setLang("en");
 							setTimeout(() => {
 								switchGameTheme("wuwa");
+								addToast({ type: "info", message: text.Loading+" WWMM" });
+
+								// addToast({ type: "info", message: "Loading Config..." });
 							}, 100);
+
 							setPage(0);
 							// window.location.reload();
 							setTimeout(() => {
-							main();
-							},100)
+								main();
+							}, 100);
 						}
 					}}
-					className="flex duration-200 border border-wuwa-accent/50 hover:shadow-lg hover:-mt-2 active:scale-90 shadow-wuwa-accent hover:bg-wuwa-accent/10 bg-wuwa-accent/2  p-6 rounded-md aspect-square flex-col items-center wuwa-font"
+					className="flex duration-200 border-2 border-wuwa-accent/30 hover:shadow-lg hover:-mt-2 active:scale-90 shadow-wuwa-accent bg-wuwa-accent/7 p-6 rounded-md aspect-square flex-col items-center wuwa-font"
 				>
-					<img src="/logoWW.png" className="max-h-40 " />
+					<img src="/WWLogo.png" className="max-h-40 " />
 					<label className="text-2xl mt-8">WuWa</label>
 				</div>
 				<div
@@ -65,17 +70,19 @@ function Page2({ setPage }: { setPage: (page: number) => void }) {
 							// setLang("en");
 							setTimeout(() => {
 								switchGameTheme("zzz");
+								addToast({ type: "info", message: text.Loading+" ZZMM" });
 							}, 100);
+
 							setPage(0);
 							// window.location.reload();
 							setTimeout(() => {
-							main();
-							},100)
+								main();
+							}, 100);
 						}
 					}}
-					className="flex duration-200 border border-zzz-accent-2/50 hover:shadow-lg hover:-mt-2 active:scale-90 shadow-zzz-accent-2 hover:bg-zzz-accent-2/10 bg-zzz-accent-2/2 p-6 rounded-md min-w-56 flex-col items-center zzz-font"
+					className="flex duration-200 border-2 border-zzz-accent-2/30 hover:shadow-lg hover:-mt-2 active:scale-90 shadow-zzz-accent-2 bg-zzz-accent-2/7 p-6 rounded-md min-w-56 flex-col items-center zzz-font"
 				>
-					<img src="/logoZZ.png" className="max-h-40 " />
+					<img src="/ZZLogo.png" className="max-h-40 " />
 					<label className="text-2xl mt-8">ZZZ</label>
 				</div>
 			</div>

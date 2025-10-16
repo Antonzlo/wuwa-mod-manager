@@ -5,9 +5,9 @@ import { LANG, SETTINGS } from "@/utils/vars";
 import { useAtom, useAtomValue } from "jotai";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-let interval: any = null;
-let loadTime = null as any;
-let timer = null as any;
+let interval="" as  NodeJS.Timeout | "";
+let loadTime = null as number | null;
+let timer = null as NodeJS.Timeout | null;
 function Page1({ setPage }: { setPage: (page: number) => void }) {
 	const [selectedIndex, setSelectedIndex] = useState(-1);
 	const [currentLangIndex, setCurrentLangIndex] = useState(-1);
@@ -28,7 +28,7 @@ function Page1({ setPage }: { setPage: (page: number) => void }) {
 	useEffect(() => {
 		loadTime = Date.now();
 		interval = setInterval(() => {
-			setCurrentLangIndex((prev: any) => (prev + 1) % languageKeys.length);
+			setCurrentLangIndex((prev) => (prev + 1) % languageKeys.length);
 		}, 2000);
 
 		return () => clearInterval(interval);
@@ -73,7 +73,7 @@ function Page1({ setPage }: { setPage: (page: number) => void }) {
 							transition={{ duration: 0.4, ease: "easeInOut" }}
 							className="text-xl text-accent/80 text-center"
 						>
-							{TEXT[languageKeys[currentLangIndex]].generic.SelectLang}
+							{TEXT[languageKeys[currentLangIndex]].SelectLang}
 						</motion.div>
 					)}
 				</AnimatePresence>
@@ -90,7 +90,7 @@ function Page1({ setPage }: { setPage: (page: number) => void }) {
 							{LANG_LIST.map((lang, index) => (
 								<div
 									key={lang.Code}
-									className={`hover:brightness-110 group hover:scale-125 bg-accent/20 px-1 rounded-sm -mt-2 flex-col flex items-center justify-center gap-1 text-sm duration-300 cursor-pointer select-none`}
+									className={`hover:brightness-110 group hover:scale-125 bg-accent/20 px-1 rounded-sm -mt-2 flex-col flex items-center justify-center gap-1 text-sm duration-300 cursor-pointerx select-none`}
 									style={{
 										background: selectedIndex == index ? "" : "#0000",
 										scale: selectedIndex == index ? "1.25" : "",
@@ -104,7 +104,7 @@ function Page1({ setPage }: { setPage: (page: number) => void }) {
 										onMouseEnter={() => {
 											if (interval) {
 												clearInterval(interval);
-												interval = null;
+												interval = "";
 											}
 											setCurrentLangIndex(index);
 										}}
@@ -147,8 +147,8 @@ function Page1({ setPage }: { setPage: (page: number) => void }) {
 							transition={{ duration: 0.4, ease: "easeInOut" }}
 							className="opacity-20 text-accent mt-4 fixed bottom-2 right-1 text-sm max-w-1/3 flex flex-col text-center"
 						>
-							<span>{TEXT[languageKeys[selectedIndex]].generic.Warning1}</span>
-							{TEXT[languageKeys[selectedIndex]].generic.Warning2}
+							<span>{TEXT[languageKeys[selectedIndex]].Warning1}</span>
+							{TEXT[languageKeys[selectedIndex]].Warning2}
 						</motion.div>
 					)}
 				</AnimatePresence>

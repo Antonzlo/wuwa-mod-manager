@@ -14,7 +14,7 @@ function Checklist() {
 		<Page3 setPage={setPage} />,
 		<Page4 setPage={setPage} />,
 		<Page5/>
-	] as any;
+	];
 	return (
 		<motion.div
 			key="intro"

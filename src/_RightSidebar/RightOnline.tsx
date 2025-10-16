@@ -5,7 +5,6 @@ import { fetchMod, formatSize, getTimeDifference, modRouteFromURL } from "@/util
 import {
 	DATA,
 	DOWNLOAD_LIST,
-	GAME,
 	INSTALLED_ITEMS,
 	MOD_LIST,
 	ONLINE_DATA,
@@ -33,6 +32,8 @@ import Carousel from "./components/Carousel";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { refreshModList, saveConfigs } from "@/utils/filesys";
 import { Separator } from "@radix-ui/react-separator";
+import { UNCATEGORIZED } from "@/utils/consts";
+import { OnlineMod } from "@/utils/types";
 let now = Date.now() / 1000;
 function RightOnline({ open }: { open: boolean }) {
 	const textData = useAtomValue(TEXT_DATA);
@@ -47,8 +48,8 @@ function RightOnline({ open }: { open: boolean }) {
 	const [altPopoverOpen, setAltPopoverOpen] = useState(false);
 	const setDownloadList = useSetAtom(DOWNLOAD_LIST);
 	const installedItems = useAtomValue(INSTALLED_ITEMS);
-	const item = onlineData[selected];
-	const installedItem = installedItems.find((it: any) => it.source && modRouteFromURL(it.source) == selected);
+	const item = onlineData[selected] as any;
+	const installedItem = installedItems.find((it) => it.source && modRouteFromURL(it.source) == selected) || null;
 	const type = installedItem ? (installedItem.modStatus ? "Update" : "Reinstall") : "Install";
 	useEffect(() => {
 		now = Date.now() / 1000;
@@ -69,7 +70,7 @@ function RightOnline({ open }: { open: boolean }) {
 	}, [selected]);
 	useEffect(() => {
 		if (type != "Install" && item?._sProfileUrl) {
-			setData((prev: any) => {
+			installedItem && setData((prev: any) => {
 				if (installedItem.name) {
 					prev[installedItem.name] = { ...prev[installedItem.name], viewedAt: now * 1000 };
 				}
@@ -93,7 +94,7 @@ function RightOnline({ open }: { open: boolean }) {
 							item._aPreviewMedia && item._aPreviewMedia._aImages && item._aPreviewMedia._aImages.length > 0
 								? item._aPreviewMedia._aImages[0]._sBaseUrl + "/" + item._aPreviewMedia._aImages[0]._sFile
 								: "",
-						category: item._aCategory?._sName || textData._RightSideBar._RightOnline.Unknown,
+						category: item._aCategory?._sName.replaceAll("Skins",UNCATEGORIZED) || UNCATEGORIZED,
 						source: item._sProfileUrl || "",
 						file: file._sDownloadUrl,
 						updated: file._tsDateAdded,
@@ -166,7 +167,6 @@ function RightOnline({ open }: { open: boolean }) {
 			</div>
 		</Button>
 	));
-	console.log(onlineData[selected]);
 	return (
 		<AnimatePresence mode="wait">
 			{open && (
@@ -175,7 +175,7 @@ function RightOnline({ open }: { open: boolean }) {
 					animate={{ translateX: "0%", opacity: 1 }}
 					exit={{ translateX: "100%", opacity: 0 }}
 					transition={{ duration: 0.3, ease: "linear" }}
-					className="bg-sidebar fixed overflow-hidden h-full z-10 flex flex-col items-center justify-center border-l right-0"
+					className="bg-sidebar polka fixed overflow-hidden h-full z-10 flex flex-col items-center justify-center border-l right-0"
 					style={{
 						maxWidth: "42vw",
 						width: "50rem",
@@ -193,7 +193,7 @@ function RightOnline({ open }: { open: boolean }) {
 								key="no-selection"
 								className="h-full flex items-center justify-center text-accent p-4"
 							>
-								No item selected
+								{textData._RightSideBar._RightOnline.NoItem}
 							</motion.div>
 						) : !onlineData[selected] ? (
 							<motion.div
@@ -377,9 +377,9 @@ function RightOnline({ open }: { open: boolean }) {
 												{{ Install: <DownloadIcon />, Reinstall: <Redo2Icon />, Update: <UploadIcon /> }[type]}
 												{
 													{
-														Install: textData.generic.Install,
+														Install: textData.Install,
 														Reinstall: textData._RightSideBar._RightOnline.Reinstall,
-														Update: textData.generic.Update,
+														Update: textData.Update,
 													}[type]
 												}
 											</PopoverTrigger>

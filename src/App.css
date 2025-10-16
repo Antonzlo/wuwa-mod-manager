@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
+
+
+
 @font-face {
 	font-family: wuwa;
 	src: url("./fonts/wuwa.ttf");
@@ -43,6 +46,13 @@
 }
 .zzz-font {
 	font-family: zzz-en;
+}
+[data-theme="zzz"] .polka {
+	background-image: 
+		radial-gradient(circle, rgba(31,31,31,50%) 2px, transparent 2px),
+		radial-gradient(circle, rgba(31,31,31,50%) 2px, transparent 2px);
+	background-size: 20px 20px;
+	background-position: 0 0, 10px 10px;
 }
 .fadein {
 	animation: fadein 0.3s ease-in-out;
@@ -208,7 +218,6 @@ a {
 	--game-font-ru: wuwa;
 	--radius-main: 0.5rem;
 	--border-w-main: 1px;
-
 	--button: #2d2a28;
 	--background: oklch(0.147 0.004 49.25);
 	--foreground: oklch(0.985 0.001 106.423);
@@ -218,7 +227,7 @@ a {
 	--popover-foreground: oklch(0.985 0.001 106.423);
 	--primary: oklch(0.923 0.003 48.717);
 	--primary-foreground: oklch(0.216 0.006 56.043);
-	--secondary: oklch(0.268 0.007 34.298);
+	--secondary: oklch(26.848% 0.00627 34.067);
 	--secondary-foreground: oklch(0.985 0.001 106.423);
 	--muted: #837660;
 	--muted-foreground: oklch(0.709 0.01 56.259);
@@ -226,7 +235,7 @@ a {
 	--accent-foreground: oklch(0.985 0.001 106.423);
 	--destructive: oklch(0.704 0.191 22.216);
 	--border: #4e463a;
-	--input: oklch(1 0 0 / 15%);
+	--input: oklch(100% 0.00011 271.152 / 0.15);
 	--ring: oklch(0.553 0.013 58.071);
 	--chart-1: oklch(0.488 0.243 264.376);
 	--chart-2: oklch(0.696 0.17 162.48);
@@ -301,23 +310,23 @@ a {
 [data-theme="zzz"] .ctrs {
 	transform: skew(8deg, 8deg) rotate(-8deg);
 }
+/* Hide default cursor */
+* {
+	cursor: url('/WWCursor.png') ,auto;
+}
 
 /* Theme-specific background images */
-[data-theme="wuwa"] .bg-bgg {
-	background-image: url("/WWmm.png");
-	background-size: 100px 100px;
-	background-repeat: repeat;
-	background-attachment: fixed;
-	background-position: 0 0;
+[data-theme="wuwa"] /* Hide default cursor */
+* {
+	cursor: url('/WWCursor.png') ,auto;
 }
 
-[data-theme="zzz"] .bg-bgg {
-	background-image: url("/ZZmm.png");
-	background-size: 100px 100px;
-	background-repeat: repeat;
-	background-attachment: fixed;
-	background-position: 0 0;
+
+[data-theme="zzz"] /* Hide default cursor */
+* {
+	cursor: url('/ZZCursor.png') ,auto;
 }
+
 
 /* Default background (fallback) */
 .bg-bgg {
@@ -328,20 +337,7 @@ a {
 	background-position: 0 0;
 }
 
-/* Theme-specific logo */
-[data-theme="wuwa"] .logo {
-	background-image: url("/logoWW.png");
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
-}
 
-[data-theme="zzz"] .logo {
-	background-image: url("/logoZZ.png");
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
-}
 .card-grid {
 	grid-template-columns: repeat(auto-fill, minmax(256px, 256px));
 	grid-auto-rows: 288px;
@@ -351,7 +347,7 @@ a {
 .card-generic {
 	width: 14rem; /* w-56 */
 	height: 18rem; /* h-72 */
-	cursor: pointer;
+	/* cursor: pointer; */
 	/* outline-accent/0 */
 	user-select: none; /* select-none */
 	background-color: var(--card); /* bg-card */
@@ -366,7 +362,7 @@ a {
 [data-theme="zzz"] .card-generic {
 	width: 14rem; /* w-56 */
 	height: 18rem; /* h-72 */
-	cursor: pointer;
+	/* cursor: pointer; */
 	/* outline-accent/0 */
 	user-select: none; /* select-none */
 	background-color: var(--card); /* bg-card */
@@ -398,7 +394,42 @@ a {
 }
 /* Default background (fallback) */
 .logo {
-	background-image: url("/logoWW.png");
+	background-image: url("/WWLogo.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+/* Theme-specific logo */
+[data-theme="wuwa"] .logo {
+	background-image: url("/WWLogo.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+[data-theme="zzz"] .logo {
+	background-image: url("/ZZLogo.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+/* Default background (fallback) */
+.cursor {
+	background-image: url("/WWCursor.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+/* Theme-specific logo */
+[data-theme="wuwa"] .cursor {
+	background-image: url("/WWCursor.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+[data-theme="zzz"] .cursor {
+	background-image: url("/ZZCursor.png");
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;

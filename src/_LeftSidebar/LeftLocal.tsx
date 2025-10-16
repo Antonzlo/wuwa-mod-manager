@@ -14,10 +14,10 @@ function LeftLocal() {
 	const textData = useAtomValue(TEXT_DATA);
 	const [filter, setFilter] = useAtom(FILTER);
 	const [presets, setPresets] = useAtom(PRESETS);
-	const [currentPreset, setCurrentPreset] = useAtom(CURRENT_PRESET)
+	const [currentPreset, setCurrentPreset] = useAtom(CURRENT_PRESET);
 	const [modList, setModList] = useAtom(MOD_LIST);
 	const updatePreset = (index: number, name: string, shouldSave = false, shouldDelete = false) => {
-		const tempPresets: any = [...presets];
+		const tempPresets = [...presets];
 		let wasCreated = false;
 
 		if (index === tempPresets.length) {
@@ -26,7 +26,7 @@ function LeftLocal() {
 		}
 		let counter = 1;
 		let orgName = name;
-		while (tempPresets.find((p: any, i: number) => p.name === name && i !== index)) {
+		while (tempPresets.find((p, i) => p.name === name && i !== index)) {
 			name = `${orgName} (${counter++})`;
 		}
 		tempPresets[index].name = name;
@@ -74,7 +74,7 @@ function LeftLocal() {
 						{
 							name: "All",
 							icon: <CircleIcon className="aspect-square h-4" />,
-							text: textData.generic.All,
+							text: textData.All,
 						},
 						{
 							name: "Enabled",
@@ -92,7 +92,10 @@ function LeftLocal() {
 							onClick={() => {
 								setFilter(fil.name);
 							}}
-							className={"w-25 data-zzz:text-xs " + (filter == fil.name ? "bg-accent bgaccent data-zzz:text-background text-background " : "")}
+							className={
+								"w-25 data-zzz:text-xs " +
+								(filter == fil.name ? "bg-accent bgaccent data-zzz:text-background text-background " : "")
+							}
 							style={{ width: leftSidebarOpen ? "" : "2.5rem" }}
 						>
 							{fil.icon}
@@ -110,7 +113,21 @@ function LeftLocal() {
 				}}
 			/>
 			<SidebarGroup className="">
-				<SidebarGroupLabel>{textData._LeftSideBar._LeftLocal.Presets}</SidebarGroupLabel>
+				<SidebarGroupLabel className="flex items-center justify-between">
+					{textData._LeftSideBar._LeftLocal.Presets}
+
+					<div
+						onClickCapture={async () => {
+							setCurrentPreset(-1);
+							applyPreset([]);
+							setModList(await refreshModList());
+						}}
+						className="min-w-fit hover:text-accent duration-200 cursor-pointerx active:scale-95 select-none text-xs text-accent/50"
+						onClick={() => {}}
+					>
+						{textData._LeftSideBar._LeftLocal._Presets.DisableAll}
+					</div>
+				</SidebarGroupLabel>
 				<SidebarContent className="justify-evenly flex items-center w-full gap-0 overflow-hidden">
 					<div
 						className="min-w-14 thin justify-evenly flex flex-col items-center w-full gap-2 pl-2 overflow-hidden overflow-y-scroll duration-200"
@@ -118,21 +135,21 @@ function LeftLocal() {
 							maxHeight: leftSidebarOpen ? "calc(100vh - 28rem)" : "calc(100vh - 39rem)",
 						}}
 					>
-						<AnimatePresence  initial={false}>
+						<AnimatePresence initial={false}>
 							{presets.length > 0 || !leftSidebarOpen ? (
 								presets.map((preset, index) => (
 									<motion.div
 										initial={{ opacity: 0, marginBottom: "-2.5rem" }}
 										animate={{ opacity: 1, marginBottom: "0rem" }}
 										exit={{ opacity: 0, marginBottom: "-3rem" }}
-										key={preset.name}
+										key={preset?.name}
 										layout
 										transition={{ duration: 0.2 }}
 										className="min-h-10 flex justify-center w-full"
 										onClick={async (e) => {
 											if (e.target == e.currentTarget) {
 												setCurrentPreset(index);
-												await applyPreset(preset.data);
+												await applyPreset(preset?.data, preset?.name);
 												setModList(await refreshModList());
 											}
 										}}
@@ -146,7 +163,9 @@ function LeftLocal() {
 											<div
 												className={
 													"w-full text-accent data-zzz:border-2 data-zzz:rounded-full duration-200 rounded-lg px-2 pointer-events-none items-center flex gap-1 " +
-													(currentPreset == index ? " bg-accent bgaccent text-background" : "data-zzz:text-foreground bg-input/10")
+													(currentPreset == index
+														? " bg-accent bgaccent text-background"
+														: "data-zzz:text-foreground bg-input/10")
 												}
 												style={{
 													transitionProperty: "background-color, border-radius",
@@ -167,7 +186,7 @@ function LeftLocal() {
 													type="text"
 													className="w-full h-full p-2  pointer-events-none focus-within:pointer-events-auto overflow-hidden focus-visible:ring-[0px] border-0  text-ellipsis"
 													style={{ backgroundColor: "#fff0" }}
-													defaultValue={preset.name}
+													defaultValue={preset?.name}
 												/>
 												<EditIcon
 													onClick={(e) => {
@@ -193,7 +212,7 @@ function LeftLocal() {
 									initial={{ opacity: 0, height: "0px" }}
 									animate={{ opacity: 1, height: "2.5rem" }}
 									key="loner"
-									className="text-foreground/50 flex items-center justify-center w-64 h-10 overflow-hidden duration-200 ease-linear"
+									className="text-foreground/50 flex text-center items-center justify-center w-64 h-10 overflow-hidden duration-200 ease-linear"
 									style={{
 										opacity: leftSidebarOpen ? "" : "0",
 										scale: leftSidebarOpen ? "" : "0",
@@ -258,7 +277,6 @@ function LeftLocal() {
 					</div>
 				</SidebarContent>
 			</SidebarGroup>
-			
 		</>
 	);
 }

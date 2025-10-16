@@ -1,49 +1,62 @@
 export const TEXT = {
 	en: {
-		generic: {
-			Quit: "Quit",
-			Confirm: "Confirm",
-			Browse: "Browse",
-			All: "All",
-			Update: "Update",
-			Install: "Install",
-			Loading: "Loading",
-			Cancel: "Cancel",
-			Select: "Select",
-			Settings: "Settings",
-			Category: "Category",
-			Downloads: "Downloads",
-			Installed: "Installed",
-			Warning1: "AI has been used to translate to this language. There may be some mistakes.",
-			Warning2: "Some UI elements might not be aligned properly in this language.",
-			Language: "Language",
-			Current: "English",
-			Flag: "https://flagsapi.com/GB/flat/64.png",
-			Change: "Change language to ",
-			SelectLang: "Select a language",
-			BFR: "Report bugs or request a feature",
-			Languages: {
-				cn: "Chinese (Simplified)",
-				en: "English",
-				ru: "Russian",
-				jp: "Japanese",
-				kr: "Korean",
-			},
+		Confirm: "Confirm",
+		Browse: "Browse",
+		All: "All",
+		Update: "Update",
+		Install: "Install",
+		Loading: "Loading",
+		Skip: "Skip",
+		Search: "Search...",
+		Items: "Items",
+		Cancel: "Cancel",
+		Select: "Select",
+		Settings: "Settings",
+		Category: "Category",
+		Downloads: "Downloads",
+		Installed: "Installed",
+		Warning1: "AI has been used to translate to this language. There may be some mistakes.",
+		Warning2: "Some UI elements might not be aligned properly in this language.",
+		Language: "Language",
+		Current: "English",
+		Flag: "https://flagsapi.com/GB/flat/64.png",
+		Change: "Change language to ",
+		SelectLang: "Select a language",
+		BFR: "Report bugs or request a feature",
+		Languages: {
+			cn: "Chinese (Simplified)",
+			en: "English",
+			ru: "Russian",
+			jp: "Japanese",
+			kr: "Korean",
 		},
-		_Consent: {
-			_Consent: {
-				RestorePoint: "Create a restore point before applying changes",
-				Confirm: "Confirm changes",
-			},
+		_Toasts: {
+			ModsLoaded: "Mods Loaded Successfully",
+			ApplyingChanges: "Applying changes...",
+			InvalidConfig: "Invalid config file",
+			ConfigExported: "Config exported!",
+			ErrorExporting: "Error exporting config",
+			SuccessPort: "Successfully ported old config!",
+			GameConfigMismatch: "Game configuration mismatch!",
+			ConfigLoaded: "Configuration loaded successfully!",
+			ErrDownload: "Error validating mod download",
+			DownloadComplete: "Download complete",
+			Deleted: "Deleted successfully!",
+			ErrOcc: "An error occurred.",
+			ImgSaved: "Preview image saved!",
+			PresetApplied: "Preset applied!",
 		},
-		_Intro: {
-			_Intro: {
-				Greeting: "Hello, ",
-				Configure: "Let's configure some basic settings",
-				Continue: "Click Anywhere To Continue",
-				ConfirmDir: "Confirm Your Mod Directory",
-				NotFound: "We couldn't find your Mod Directory",
-			},
+		_Changes: {
+			ConfirmChanges: "Confirm changes",
+			CreateRestore: "Create a restore point before applying changes",
+		},
+		_Checklist: {
+			Greeting: "Hello, ",
+			Configure: "Let's configure some basic settings",
+			Continue: "Click Anywhere To Continue",
+			ConfirmDir: "Confirm Your Mod Directory",
+			NotFound: "We couldn't find your Mod Directory",
+			ModsIn: "Mods are stored in {game}MI\\Mods",
 		},
 		_LeftSideBar: {
 			_components: {
@@ -63,13 +76,15 @@ export const TEXT = {
 					PleaseSelect: "Please select a valid restore point.",
 				},
 				_Settings: {
+					Global: " Global",
+					Change: "Change",
 					AutoReload: "Auto Reload",
 					_AutoReload: {
 						Disable: "Disable",
 						Enable: "Enable",
 						OnFocus: "On Focus",
 						DisableMsg: "Auto Reload Disabled",
-						WWMMMsg: "Reload when WWMM is focused ★",
+						WWMMMsg: "Reload when IMM is focused ★",
 						FocusMsg: "Reload when the Game is focused",
 						ReloadMsg: "Please reload manually once on changing this.",
 					},
@@ -99,8 +114,9 @@ export const TEXT = {
 						Import: "Import",
 						Export: "Export",
 					},
+					Folders: "<game> and Mods Folder",
 					LaunchGame: "Launch Game",
-					_LaunchGame: { LaunchMsg1: "Launches the game via XXMI", LaunchMsg2: "when you start WWMM" },
+					_LaunchGame: { LaunchMsg1: "Launches the game via XXMI", LaunchMsg2: "when you start IMM" },
 					HotKey: "Hotkey",
 					_HotKey: {
 						HKMsg1: "Works only when auto-reload is",
@@ -126,11 +142,11 @@ export const TEXT = {
 				},
 				Presets: "Presets",
 				_Presets: {
+					DisableAll: "Disable All Mods",
 					Empty: "It's lonely here, create a preset!",
 					New: "New",
 					Save: "Save",
 				},
-				ModDir: "Mod Directory",
 			},
 			_LeftOnline: {
 				Type: "Type",
@@ -138,13 +154,13 @@ export const TEXT = {
 		},
 		_Main: {
 			_components: {
-				_Catbar: {
+				_BottomBar: {
 					Uncategorized: "Uncategorized",
 				},
 				_Filter: {
 					Show: "Show",
 				},
-				_Navbar: {
+				_TopBar: {
 					Most: "Most",
 					ModsOnly: "Mods Only",
 					Default: "Default",
@@ -154,7 +170,7 @@ export const TEXT = {
 					InstallNow: "Install Now",
 					Error: "Error",
 					Retry: "Retry",
-					Updater: "WWMM Updater",
+					Updater: "IMM Updater",
 					CurVer: "Current version",
 					Version: "Version",
 					ago: "ago",
@@ -170,6 +186,7 @@ export const TEXT = {
 			_MainLocal: {
 				Delete: "Delete",
 				Irrev: "This action is irreversible.",
+				NoMods: "No mods found in directory",
 			},
 		},
 		_Progress: {
@@ -191,6 +208,8 @@ export const TEXT = {
 				HotKeys: "Hotkeys",
 				Key: "Key",
 				Action: "Action",
+				NoSource: "No source",
+				NoNotes: "No notes",
 			},
 			_RightOnline: {
 				Reinstall: "Reinstall",
@@ -199,6 +218,7 @@ export const TEXT = {
 				About: "About",
 				LatestUpd: "Latest Update",
 				Sep: "Install Separately",
+				NoItem: "No item selected",
 			},
 		},
 		_Tutorial: {
@@ -248,7 +268,7 @@ export const TEXT = {
 			},
 			p8: {
 				Title: "Viewing Mods from a link",
-				Paste: "Paste anywhere in the WWMM window",
+				Paste: "Paste anywhere in the IMM window",
 				Opens: "Mod opens in Online Mode",
 			},
 			p9: {
@@ -262,50 +282,63 @@ export const TEXT = {
 		},
 	},
 	cn: {
-		generic: {
-			Quit: "退出",
-			Confirm: "确认",
-			Browse: "浏览",
-			All: "全部",
-			Update: "更新",
-			Install: "安装",
-			Loading: "加载中",
-			Cancel: "取消",
-			Select: "选择",
-			Settings: "设置",
-			Category: "分类",
-			Downloads: "下载",
-			Installed: "已安装",
-			Warning1: "AI已用于翻译为此语言。可能存在一些错误。",
-			Warning2: "某些UI元素在此语言中可能无法正确对齐。",
-			Language: "语言",
-			Current: "中文",
-			Flag: "https://flagsapi.com/CN/flat/64.png",
-			Change: "更改语言为 ",
-			SelectLang: "选择语言",
-			BFR: "报告错误或请求功能",
-			Languages: {
-				cn: "中文（简体）",
-				en: "英语",
-				ru: "俄语",
-				jp: "日语",
-				kr: "韩语",
-			},
+		Confirm: "确认",
+		Browse: "浏览",
+		All: "全部",
+		Update: "更新",
+		Install: "安装",
+		Loading: "加载中",
+		Skip: "跳过",
+		Search: "搜索...",
+		Items: "项目",
+		Cancel: "取消",
+		Select: "选择",
+		Settings: "设置",
+		Category: "分类",
+		Downloads: "下载",
+		Installed: "已安装",
+		Warning1: "AI已用于翻译为此语言。可能存在一些错误。",
+		Warning2: "某些UI元素在此语言中可能无法正确对齐。",
+		Language: "语言",
+		Current: "中文",
+		Flag: "https://flagsapi.com/CN/flat/64.png",
+		Change: "更改语言为 ",
+		SelectLang: "选择语言",
+		BFR: "报告错误或请求功能",
+		Languages: {
+			cn: "中文（简体）",
+			en: "英语",
+			ru: "俄语",
+			jp: "日语",
+			kr: "韩语",
 		},
-		_Consent: {
-			_Consent: {
-				RestorePoint: "应用更改前创建还原点",
-				Confirm: "确认更改",
-			},
+		_Toasts: {
+			ModsLoaded: "模组加载成功",
+			ApplyingChanges: "正在应用更改...",
+			InvalidConfig: "配置文件无效",
+			ConfigExported: "配置已导出！",
+			ErrorExporting: "导出配置时出错",
+			SuccessPort: "成功移植旧配置！",
+			GameConfigMismatch: "游戏配置不匹配！",
+			ConfigLoaded: "配置加载成功！",
+			ErrDownload: "验证模组下载时出错",
+			DownloadComplete: "下载完成",
+			Deleted: "删除成功！",
+			ErrOcc: "发生错误。",
+			ImgSaved: "预览图片已保存！",
+			PresetApplied: "预设已应用！",
 		},
-		_Intro: {
-			_Intro: {
-				Greeting: "你好，",
-				Configure: "让我们配置一些基本设置",
-				Continue: "点击任意处继续",
-				ConfirmDir: "确认您的模组目录",
-				NotFound: "我们找不到您的模组目录",
-			},
+		_Changes: {
+			ConfirmChanges: "确认更改",
+			CreateRestore: "应用更改前创建还原点",
+		},
+		_Checklist: {
+			Greeting: "你好，",
+			Configure: "让我们配置一些基本设置",
+			Continue: "点击任意处继续",
+			ConfirmDir: "确认您的模组目录",
+			NotFound: "我们找不到您的模组目录",
+			ModsIn: "模组存储在 {game}MI\\Mods",
 		},
 		_LeftSideBar: {
 			_components: {
@@ -325,13 +358,15 @@ export const TEXT = {
 					PleaseSelect: "请选择一个有效的还原点。",
 				},
 				_Settings: {
+					Global: " 全局",
+					Change: "更改",
 					AutoReload: "自动重载",
 					_AutoReload: {
 						Disable: "禁用",
 						Enable: "启用",
 						OnFocus: "聚焦时",
 						DisableMsg: "自动重载已禁用",
-						WWMMMsg: "WWMM 获得焦点时重载 ★",
+						WWMMMsg: "IMM 获得焦点时重载 ★",
 						FocusMsg: "游戏获得焦点时重载",
 						ReloadMsg: "更改此设置后请手动重载一次。",
 					},
@@ -361,8 +396,9 @@ export const TEXT = {
 						Import: "导入",
 						Export: "导出",
 					},
+					Folders: "<game> 和模组文件夹",
 					LaunchGame: "启动游戏",
-					_LaunchGame: { LaunchMsg1: "通过 XXMI 启动游戏", LaunchMsg2: "当您启动 WWMM 时" },
+					_LaunchGame: { LaunchMsg1: "通过 XXMI 启动游戏", LaunchMsg2: "当您启动 IMM 时" },
 					HotKey: "热键",
 					_HotKey: {
 						HKMsg1: "仅在自动重载设置为",
@@ -388,11 +424,11 @@ export const TEXT = {
 				},
 				Presets: "预设",
 				_Presets: {
+					DisableAll: "禁用所有模组",
 					Empty: "这里很孤单，创建一个预设吧！",
 					New: "新建",
 					Save: "保存",
 				},
-				ModDir: "模组目录",
 			},
 			_LeftOnline: {
 				Type: "类型",
@@ -400,13 +436,13 @@ export const TEXT = {
 		},
 		_Main: {
 			_components: {
-				_Catbar: {
+				_BottomBar: {
 					Uncategorized: "未分类",
 				},
 				_Filter: {
 					Show: "显示",
 				},
-				_Navbar: {
+				_TopBar: {
 					Most: "最多",
 					ModsOnly: "仅模组",
 					Default: "默认",
@@ -416,7 +452,7 @@ export const TEXT = {
 					InstallNow: "立即安装",
 					Error: "错误",
 					Retry: "重试",
-					Updater: "WWMM 更新器",
+					Updater: "IMM 更新器",
 					CurVer: "当前版本",
 					Version: "版本",
 					ago: "前",
@@ -432,6 +468,7 @@ export const TEXT = {
 			_MainLocal: {
 				Delete: "删除",
 				Irrev: "此操作不可逆转。",
+				NoMods: "目录中未找到模组",
 			},
 		},
 		_Progress: {
@@ -453,6 +490,8 @@ export const TEXT = {
 				HotKeys: "热键",
 				Key: "按键",
 				Action: "操作",
+				NoSource: "无来源",
+				NoNotes: "无备注",
 			},
 			_RightOnline: {
 				Reinstall: "重新安装",
@@ -461,6 +500,7 @@ export const TEXT = {
 				About: "关于",
 				LatestUpd: "最新更新",
 				Sep: "单独安装",
+				NoItem: "未选择项目",
 			},
 		},
 		_Tutorial: {
@@ -510,7 +550,7 @@ export const TEXT = {
 			},
 			p8: {
 				Title: "从链接查看模组",
-				Paste: "在 WWMM 窗口的任意位置粘贴",
+				Paste: "在 IMM 窗口的任意位置粘贴",
 				Opens: "模组在在线模式下打开",
 			},
 			p9: {
@@ -524,50 +564,63 @@ export const TEXT = {
 		},
 	},
 	ru: {
-		generic: {
-			Quit: "Выход",
-			Confirm: "Подтвердить",
-			Browse: "Обзор",
-			All: "Все",
-			Update: "Обновить",
-			Install: "Установить",
-			Loading: "Загрузка",
-			Cancel: "Отмена",
-			Select: "Выбрать",
-			Settings: "Настройки",
-			Category: "Категория",
-			Downloads: "Загрузки",
-			Installed: "Установлено",
-			Warning1: "ИИ был использован для перевода на этот язык. Возможны некоторые ошибки.",
-			Warning2: "Некоторые элементы интерфейса могут быть неправильно выровнены на этом языке.",
-			Language: "Язык",
-			Current: "Русский",
-			Flag: "https://flagsapi.com/RU/flat/64.png",
-			Change: "Изменить язык на ",
-			SelectLang: "Выберите язык",
-			BFR: "Сообщить об ошибках или запросить функцию",
-			Languages: {
-				cn: "Китайский (упрощенный)",
-				en: "Английский",
-				ru: "Русский",
-				jp: "Японский",
-				kr: "Корейский",
-			},
+		Confirm: "Подтвердить",
+		Browse: "Обзор",
+		All: "Все",
+		Update: "Обновить",
+		Install: "Установить",
+		Loading: "Загрузка",
+		Skip: "Пропустить",
+		Search: "Поиск...",
+		Items: "Элементы",
+		Cancel: "Отмена",
+		Select: "Выбрать",
+		Settings: "Настройки",
+		Category: "Категория",
+		Downloads: "Загрузки",
+		Installed: "Установлено",
+		Warning1: "ИИ был использован для перевода на этот язык. Возможны некоторые ошибки.",
+		Warning2: "Некоторые элементы интерфейса могут быть неправильно выровнены на этом языке.",
+		Language: "Язык",
+		Current: "Русский",
+		Flag: "https://flagsapi.com/RU/flat/64.png",
+		Change: "Изменить язык на ",
+		SelectLang: "Выберите язык",
+		BFR: "Сообщить об ошибках или запросить функцию",
+		Languages: {
+			cn: "Китайский (упрощенный)",
+			en: "Английский",
+			ru: "Русский",
+			jp: "Японский",
+			kr: "Корейский",
 		},
-		_Consent: {
-			_Consent: {
-				RestorePoint: "Создать точку восстановления перед применением изменений",
-				Confirm: "Подтвердить изменения",
-			},
+		_Toasts: {
+			ModsLoaded: "Моды успешно загружены",
+			ApplyingChanges: "Применение изменений...",
+			InvalidConfig: "Недействительный файл конфигурации",
+			ConfigExported: "Конфигурация экспортирована!",
+			ErrorExporting: "Ошибка экспорта конфигурации",
+			SuccessPort: "Старая конфигурация успешно перенесена!",
+			GameConfigMismatch: "Несоответствие конфигурации игры!",
+			ConfigLoaded: "Конфигурация успешно загружена!",
+			ErrDownload: "Ошибка проверки загрузки мода",
+			DownloadComplete: "Загрузка завершена",
+			Deleted: "Успешно удалено!",
+			ErrOcc: "Произошла ошибка.",
+			ImgSaved: "Превью изображение сохранено!",
+			PresetApplied: "Пресет применен!",
 		},
-		_Intro: {
-			_Intro: {
-				Greeting: "Привет, ",
-				Configure: "Давайте настроим основные параметры",
-				Continue: "Нажмите в любом месте для продолжения",
-				ConfirmDir: "Подтвердите каталог модов",
-				NotFound: "Мы не смогли найти ваш каталог модов",
-			},
+		_Changes: {
+			ConfirmChanges: "Подтвердить изменения",
+			CreateRestore: "Создать точку восстановления перед применением изменений",
+		},
+		_Checklist: {
+			Greeting: "Привет, ",
+			Configure: "Давайте настроим основные параметры",
+			Continue: "Нажмите в любом месте для продолжения",
+			ConfirmDir: "Подтвердите каталог модов",
+			NotFound: "Мы не смогли найти ваш каталог модов",
+			ModsIn: "Моды хранятся в {game}MI\\Mods",
 		},
 		_LeftSideBar: {
 			_components: {
@@ -587,13 +640,15 @@ export const TEXT = {
 					PleaseSelect: "Пожалуйста, выберите действительную точку восстановления.",
 				},
 				_Settings: {
+					Global: " Глобальные",
+					Change: "Изменить",
 					AutoReload: "Автоперезагрузка",
 					_AutoReload: {
 						Disable: "Отключить",
 						Enable: "Включить",
 						OnFocus: "При фокусе",
 						DisableMsg: "Автоперезагрузка отключена",
-						WWMMMsg: "Перезагружать при фокусе на WWMM ★",
+						WWMMMsg: "Перезагружать при фокусе на IMM ★",
 						FocusMsg: "Перезагружать при фокусе на игре",
 						ReloadMsg: "Пожалуйста, перезагрузите вручную один раз после изменения этого параметра.",
 					},
@@ -623,8 +678,9 @@ export const TEXT = {
 						Import: "Импорт",
 						Export: "Экспорт",
 					},
+					Folders: "<game> и папка модов",
 					LaunchGame: "Запустить игру",
-					_LaunchGame: { LaunchMsg1: "Запускает игру через XXMI", LaunchMsg2: "при запуске WWMM" },
+					_LaunchGame: { LaunchMsg1: "Запускает игру через XXMI", LaunchMsg2: "при запуске IMM" },
 					HotKey: "Горячая клавиша",
 					_HotKey: {
 						HKMsg1: "Работает только при автоперезагрузке",
@@ -650,11 +706,11 @@ export const TEXT = {
 				},
 				Presets: "Пресеты",
 				_Presets: {
+					DisableAll: "Отключить все моды",
 					Empty: "Здесь одиноко, создайте пресет!",
 					New: "Новый",
 					Save: "Сохранить",
 				},
-				ModDir: "Каталог модов",
 			},
 			_LeftOnline: {
 				Type: "Тип",
@@ -662,13 +718,13 @@ export const TEXT = {
 		},
 		_Main: {
 			_components: {
-				_Catbar: {
+				_BottomBar: {
 					Uncategorized: "Без категории",
 				},
 				_Filter: {
 					Show: "Показать",
 				},
-				_Navbar: {
+				_TopBar: {
 					Most: "Больше всего",
 					ModsOnly: "Только моды",
 					Default: "По умолчанию",
@@ -678,7 +734,7 @@ export const TEXT = {
 					InstallNow: "Установить сейчас",
 					Error: "Ошибка",
 					Retry: "Повторить",
-					Updater: "Обновлятор WWMM",
+					Updater: "Обновлятор IMM",
 					CurVer: "Текущая версия",
 					Version: "Версия",
 					ago: "назад",
@@ -694,6 +750,7 @@ export const TEXT = {
 			_MainLocal: {
 				Delete: "Удалить",
 				Irrev: "Это действие необратимо.",
+				NoMods: "Моды не найдены в каталоге",
 			},
 		},
 		_Progress: {
@@ -715,6 +772,8 @@ export const TEXT = {
 				HotKeys: "Горячие клавиши",
 				Key: "Клавиша",
 				Action: "Действие",
+				NoSource: "Нет источника",
+				NoNotes: "Нет заметок",
 			},
 			_RightOnline: {
 				Reinstall: "Переустановить",
@@ -723,6 +782,7 @@ export const TEXT = {
 				About: "О программе",
 				LatestUpd: "Последнее обновление",
 				Sep: "Установить отдельно",
+				NoItem: "Элемент не выбран",
 			},
 		},
 		_Tutorial: {
@@ -772,7 +832,7 @@ export const TEXT = {
 			},
 			p8: {
 				Title: "Просмотр модов по ссылке",
-				Paste: "Вставьте в любом месте окна WWMM",
+				Paste: "Вставьте в любом месте окна IMM",
 				Opens: "Мод открывается в онлайн режиме",
 			},
 			p9: {
@@ -786,50 +846,63 @@ export const TEXT = {
 		},
 	},
 	jp: {
-		generic: {
-			Quit: "終了",
-			Confirm: "確認",
-			Browse: "参照",
-			All: "すべて",
-			Update: "更新",
-			Install: "インストール",
-			Loading: "読み込み中",
-			Cancel: "キャンセル",
-			Select: "選択",
-			Settings: "設定",
-			Category: "カテゴリ",
-			Downloads: "ダウンロード",
-			Installed: "インストール済み",
-			Warning1: "この言語への翻訳にAIが使用されました。いくつかの間違いがある可能性があります。",
-			Warning2: "一部のUI要素がこの言語では適切に配置されない場合があります。",
-			Language: "言語",
-			Current: "日本語",
-			Flag: "https://flagsapi.com/JP/flat/64.png",
-			Change: "言語を変更： ",
-			SelectLang: "言語を選択",
-			BFR: "バグを報告するか機能をリクエスト",
-			Languages: {
-				cn: "中国語（簡体字）",
-				en: "英語",
-				ru: "ロシア語",
-				jp: "日本語",
-				kr: "韓国語",
-			},
+		Confirm: "確認",
+		Browse: "参照",
+		All: "すべて",
+		Update: "更新",
+		Install: "インストール",
+		Loading: "読み込み中",
+		Skip: "スキップ",
+		Search: "検索...",
+		Items: "アイテム",
+		Cancel: "キャンセル",
+		Select: "選択",
+		Settings: "設定",
+		Category: "カテゴリ",
+		Downloads: "ダウンロード",
+		Installed: "インストール済み",
+		Warning1: "この言語への翻訳にAIが使用されました。いくつかの間違いがある可能性があります。",
+		Warning2: "一部のUI要素がこの言語では適切に配置されない場合があります。",
+		Language: "言語",
+		Current: "日本語",
+		Flag: "https://flagsapi.com/JP/flat/64.png",
+		Change: "言語を変更： ",
+		SelectLang: "言語を選択",
+		BFR: "バグを報告するか機能をリクエスト",
+		Languages: {
+			cn: "中国語（簡体字）",
+			en: "英語",
+			ru: "ロシア語",
+			jp: "日本語",
+			kr: "韓国語",
 		},
-		_Consent: {
-			_Consent: {
-				RestorePoint: "変更を適用する前に復元ポイントを作成",
-				Confirm: "変更を確認",
-			},
+		_Toasts: {
+			ModsLoaded: "Modが正常に読み込まれました",
+			ApplyingChanges: "変更を適用中...",
+			InvalidConfig: "無効な設定ファイル",
+			ConfigExported: "設定をエクスポートしました！",
+			ErrorExporting: "設定のエクスポート中にエラーが発生しました",
+			SuccessPort: "古い設定の移行に成功しました！",
+			GameConfigMismatch: "ゲーム設定の不一致！",
+			ConfigLoaded: "設定が正常に読み込まれました！",
+			ErrDownload: "Modダウンロードの検証エラー",
+			DownloadComplete: "ダウンロード完了",
+			Deleted: "正常に削除されました！",
+			ErrOcc: "エラーが発生しました。",
+			ImgSaved: "プレビュー画像を保存しました！",
+			PresetApplied: "プリセットを適用しました！",
 		},
-		_Intro: {
-			_Intro: {
-				Greeting: "こんにちは、",
-				Configure: "基本設定を行いましょう",
-				Continue: "どこかをクリックして続行",
-				ConfirmDir: "Modディレクトリを確認",
-				NotFound: "Modディレクトリが見つかりませんでした",
-			},
+		_Changes: {
+			ConfirmChanges: "変更を確認",
+			CreateRestore: "変更を適用する前に復元ポイントを作成",
+		},
+		_Checklist: {
+			Greeting: "こんにちは、",
+			Configure: "基本設定を行いましょう",
+			Continue: "どこかをクリックして続行",
+			ConfirmDir: "Modディレクトリを確認",
+			NotFound: "Modディレクトリが見つかりませんでした",
+			ModsIn: "Modは{game}MI\\Modsに保存されます",
 		},
 		_LeftSideBar: {
 			_components: {
@@ -849,13 +922,15 @@ export const TEXT = {
 					PleaseSelect: "有効な復元ポイントを選択してください。",
 				},
 				_Settings: {
+					Global: " グローバル",
+					Change: "変更",
 					AutoReload: "自動リロード",
 					_AutoReload: {
 						Disable: "無効",
 						Enable: "有効",
 						OnFocus: "フォーカス時",
 						DisableMsg: "自動リロードが無効になりました",
-						WWMMMsg: "WWMMがフォーカスされた時にリロード ★",
+						WWMMMsg: "IMMがフォーカスされた時にリロード ★",
 						FocusMsg: "ゲームがフォーカスされた時にリロード",
 						ReloadMsg: "この設定を変更した後、一度手動でリロードしてください。",
 					},
@@ -885,8 +960,9 @@ export const TEXT = {
 						Import: "インポート",
 						Export: "エクスポート",
 					},
+					Folders: "<game> とModフォルダ",
 					LaunchGame: "ゲーム起動",
-					_LaunchGame: { LaunchMsg1: "XXMIを介してゲームを起動", LaunchMsg2: "WWMMを起動する時" },
+					_LaunchGame: { LaunchMsg1: "XXMIを介してゲームを起動", LaunchMsg2: "IMMを起動する時" },
 					HotKey: "ホットキー",
 					_HotKey: {
 						HKMsg1: "自動リロードが",
@@ -912,11 +988,11 @@ export const TEXT = {
 				},
 				Presets: "プリセット",
 				_Presets: {
+					DisableAll: "すべてのModを無効化",
 					Empty: "寂しいですね、プリセットを作成しましょう！",
 					New: "新規",
 					Save: "保存",
 				},
-				ModDir: "Modディレクトリ",
 			},
 			_LeftOnline: {
 				Type: "タイプ",
@@ -924,13 +1000,13 @@ export const TEXT = {
 		},
 		_Main: {
 			_components: {
-				_Catbar: {
+				_BottomBar: {
 					Uncategorized: "未分類",
 				},
 				_Filter: {
 					Show: "表示",
 				},
-				_Navbar: {
+				_TopBar: {
 					Most: "最多",
 					ModsOnly: "Modのみ",
 					Default: "デフォルト",
@@ -940,7 +1016,7 @@ export const TEXT = {
 					InstallNow: "今すぐインストール",
 					Error: "エラー",
 					Retry: "再試行",
-					Updater: "WWMM アップデーター",
+					Updater: "IMM アップデーター",
 					CurVer: "現在のバージョン",
 					Version: "バージョン",
 					ago: "前",
@@ -956,6 +1032,7 @@ export const TEXT = {
 			_MainLocal: {
 				Delete: "削除",
 				Irrev: "この操作は元に戻せません。",
+				NoMods: "ディレクトリにModが見つかりません",
 			},
 		},
 		_Progress: {
@@ -977,6 +1054,8 @@ export const TEXT = {
 				HotKeys: "ホットキー",
 				Key: "キー",
 				Action: "アクション",
+				NoSource: "ソースなし",
+				NoNotes: "ノートなし",
 			},
 			_RightOnline: {
 				Reinstall: "再インストール",
@@ -985,6 +1064,7 @@ export const TEXT = {
 				About: "詳細",
 				LatestUpd: "最新アップデート",
 				Sep: "個別にインストール",
+				NoItem: "アイテムが選択されていません",
 			},
 		},
 		_Tutorial: {
@@ -1034,7 +1114,7 @@ export const TEXT = {
 			},
 			p8: {
 				Title: "リンクからModを表示",
-				Paste: "WWMMウィンドウのどこかに貼り付け",
+				Paste: "IMMウィンドウのどこかに貼り付け",
 				Opens: "Modがオンラインモードで開きます",
 			},
 			p9: {
@@ -1048,50 +1128,63 @@ export const TEXT = {
 		},
 	},
 	kr: {
-		generic: {
-			Quit: "종료",
-			Confirm: "확인",
-			Browse: "찾아보기",
-			All: "모두",
-			Update: "업데이트",
-			Install: "설치",
-			Loading: "로딩 중",
-			Cancel: "취소",
-			Select: "선택",
-			Settings: "설정",
-			Category: "카테고리",
-			Downloads: "다운로드",
-			Installed: "설치됨",
-			Warning1: "이 언어로의 번역에 AI가 사용되었습니다. 일부 실수가 있을 수 있습니다.",
-			Warning2: "일부 UI 요소가 이 언어에서 제대로 정렬되지 않을 수 있습니다.",
-			Language: "언어",
-			Current: "한국어",
-			Flag: "https://flagsapi.com/KR/flat/64.png",
-			Change: "언어 변경: ",
-			SelectLang: "언어 선택",
-			BFR: "버그 신고 또는 기능 요청",
-			Languages: {
-				cn: "중국어 (간체)",
-				en: "영어",
-				ru: "러시아어",
-				jp: "일본어",
-				kr: "한국어",
-			},
+		Confirm: "확인",
+		Browse: "찾아보기",
+		All: "모두",
+		Update: "업데이트",
+		Install: "설치",
+		Loading: "로딩 중",
+		Skip: "건너뛰기",
+		Search: "검색...",
+		Items: "항목",
+		Cancel: "취소",
+		Select: "선택",
+		Settings: "설정",
+		Category: "카테고리",
+		Downloads: "다운로드",
+		Installed: "설치됨",
+		Warning1: "이 언어로의 번역에 AI가 사용되었습니다. 일부 실수가 있을 수 있습니다.",
+		Warning2: "일부 UI 요소가 이 언어에서 제대로 정렬되지 않을 수 있습니다.",
+		Language: "언어",
+		Current: "한국어",
+		Flag: "https://flagsapi.com/KR/flat/64.png",
+		Change: "언어 변경: ",
+		SelectLang: "언어 선택",
+		BFR: "버그 신고 또는 기능 요청",
+		Languages: {
+			cn: "중국어 (간체)",
+			en: "영어",
+			ru: "러시아어",
+			jp: "일본어",
+			kr: "한국어",
 		},
-		_Consent: {
-			_Consent: {
-				RestorePoint: "변경 사항을 적용하기 전에 복원 지점 생성",
-				Confirm: "변경 사항 확인",
-			},
+		_Toasts: {
+			ModsLoaded: "모드가 성공적으로 로드되었습니다",
+			ApplyingChanges: "변경 사항 적용 중...",
+			InvalidConfig: "잘못된 설정 파일",
+			ConfigExported: "설정이 내보내졌습니다!",
+			ErrorExporting: "설정 내보내기 오류",
+			SuccessPort: "이전 설정을 성공적으로 이식했습니다!",
+			GameConfigMismatch: "게임 설정 불일치!",
+			ConfigLoaded: "설정이 성공적으로 로드되었습니다!",
+			ErrDownload: "모드 다운로드 검증 오류",
+			DownloadComplete: "다운로드 완료",
+			Deleted: "성공적으로 삭제되었습니다!",
+			ErrOcc: "오류가 발생했습니다.",
+			ImgSaved: "미리보기 이미지가 저장되었습니다!",
+			PresetApplied: "프리셋이 적용되었습니다!",
 		},
-		_Intro: {
-			_Intro: {
-				Greeting: "안녕하세요, ",
-				Configure: "기본 설정을 구성해 봅시다",
-				Continue: "아무 곳이나 클릭하여 계속",
-				ConfirmDir: "모드 디렉토리 확인",
-				NotFound: "모드 디렉토리를 찾을 수 없습니다",
-			},
+		_Changes: {
+			ConfirmChanges: "변경 사항 확인",
+			CreateRestore: "변경 사항을 적용하기 전에 복원 지점 생성",
+		},
+		_Checklist: {
+			Greeting: "안녕하세요, ",
+			Configure: "기본 설정을 구성해 봅시다",
+			Continue: "아무 곳이나 클릭하여 계속",
+			ConfirmDir: "모드 디렉토리 확인",
+			NotFound: "모드 디렉토리를 찾을 수 없습니다",
+			ModsIn: "모드는 {game}MI\\Mods에 저장됩니다",
 		},
 		_LeftSideBar: {
 			_components: {
@@ -1111,13 +1204,15 @@ export const TEXT = {
 					PleaseSelect: "유효한 복원 지점을 선택하세요.",
 				},
 				_Settings: {
+					Global: " 글로벌",
+					Change: "변경",
 					AutoReload: "자동 새로고침",
 					_AutoReload: {
 						Disable: "비활성화",
 						Enable: "활성화",
 						OnFocus: "포커스 시",
 						DisableMsg: "자동 새로고침이 비활성화되었습니다",
-						WWMMMsg: "WWMM이 포커스될 때 새로고침 ★",
+						WWMMMsg: "IMM이 포커스될 때 새로고침 ★",
 						FocusMsg: "게임이 포커스될 때 새로고침",
 						ReloadMsg: "이 설정을 변경한 후 한 번 수동으로 새로고침해주세요.",
 					},
@@ -1147,8 +1242,9 @@ export const TEXT = {
 						Import: "가져오기",
 						Export: "내보내기",
 					},
+					Folders: "<game> 및 모드 폴더",
 					LaunchGame: "게임 실행",
-					_LaunchGame: { LaunchMsg1: "XXMI를 통해 게임 실행", LaunchMsg2: "WWMM을 시작할 때" },
+					_LaunchGame: { LaunchMsg1: "XXMI를 통해 게임 실행", LaunchMsg2: "IMM을 시작할 때" },
 					HotKey: "단축키",
 					_HotKey: {
 						HKMsg1: "자동 새로고침이",
@@ -1174,11 +1270,11 @@ export const TEXT = {
 				},
 				Presets: "프리셋",
 				_Presets: {
+					DisableAll: "모든 모드 비활성화",
 					Empty: "외롭네요, 프리셋을 만들어보세요!",
 					New: "새로 만들기",
 					Save: "저장",
 				},
-				ModDir: "모드 디렉토리",
 			},
 			_LeftOnline: {
 				Type: "타입",
@@ -1186,13 +1282,13 @@ export const TEXT = {
 		},
 		_Main: {
 			_components: {
-				_Catbar: {
+				_BottomBar: {
 					Uncategorized: "분류되지 않음",
 				},
 				_Filter: {
 					Show: "표시",
 				},
-				_Navbar: {
+				_TopBar: {
 					Most: "가장 많은",
 					ModsOnly: "모드만",
 					Default: "기본값",
@@ -1202,7 +1298,7 @@ export const TEXT = {
 					InstallNow: "지금 설치",
 					Error: "오류",
 					Retry: "다시 시도",
-					Updater: "WWMM 업데이터",
+					Updater: "IMM 업데이터",
 					CurVer: "현재 버전",
 					Version: "버전",
 					ago: "전",
@@ -1218,6 +1314,7 @@ export const TEXT = {
 			_MainLocal: {
 				Delete: "삭제",
 				Irrev: "이 작업은 되돌릴 수 없습니다.",
+				NoMods: "디렉토리에서 모드를 찾을 수 없습니다",
 			},
 		},
 		_Progress: {
@@ -1239,6 +1336,8 @@ export const TEXT = {
 				HotKeys: "단축키",
 				Key: "키",
 				Action: "액션",
+				NoSource: "소스 없음",
+				NoNotes: "노트 없음",
 			},
 			_RightOnline: {
 				Reinstall: "재설치",
@@ -1247,6 +1346,7 @@ export const TEXT = {
 				About: "정보",
 				LatestUpd: "최신 업데이트",
 				Sep: "개별 설치",
+				NoItem: "선택된 항목 없음",
 			},
 		},
 		_Tutorial: {
@@ -1296,7 +1396,7 @@ export const TEXT = {
 			},
 			p8: {
 				Title: "링크에서 모드 보기",
-				Paste: "WWMM 창 아무 곳에나 붙여넣기",
+				Paste: "IMM 창 아무 곳에나 붙여넣기",
 				Opens: "모드가 온라인 모드에서 열립니다",
 			},
 			p9: {
@@ -1308,5 +1408,72 @@ export const TEXT = {
 			},
 			Skip: "건너뛰기",
 		},
+	},
+};
+
+export const updateData = {
+	available: true,
+	currentVersion: "2.0.3",
+	version: "2.0.4",
+	date: "2025-10-11T04:15:00Z",
+	body: {
+		major: [
+			"CRITICAL FIX - Selecting a language before other settings were loaded would break the app due to broken config file. It has been fixed now. Sorry for the inconvenience",
+			"Added temporary category list to use if gamebanana is offline",
+		],
+		minor: [],
+		patch: [],
+		notice:{
+			level:0,
+			message:"This is a critical update. Please update to the latest version.",
+			timer:10,
+			time:Date.now(),
+			criticalSetHTML:false	
+		},
+		cn: {
+			major: [
+				"紧急修复 - 在其他设置加载之前选择语言会由于配置文件损坏而导致应用程序崩溃。现已修复。给您带来的不便，我们深表歉意",
+				"添加临时分类列表，以便在GameBanana离线时使用",
+			],
+			minor: [],
+			patch: [],
+		},
+		ru: {
+			major: [
+				"КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ - Выбор языка до загрузки других настроек приводил к поломке приложения из-за поврежденного файла конфигурации. Теперь это исправлено. Извините за неудобства",
+				"Добавлен временный список категорий для использования, если GameBanana недоступен",
+			],
+			minor: [],
+			patch: [],
+		},
+		jp: {
+			major: [
+				"重要修正 - 他の設定が読み込まれる前に言語を選択すると、設定ファイルの破損によりアプリが壊れる問題がありました。これは修正されました。ご不便をおかけして申し訳ありません",
+				"GameBananaがオフラインの場合に使用する一時的なカテゴリリストを追加",
+			],
+			minor: [],
+			patch: [],
+		},
+		kr: {
+			major: [
+				"중요 수정 - 다른 설정이 로드되기 전에 언어를 선택하면 설정 파일 손상으로 인해 앱이 중단되는 문제가 있었습니다. 이제 수정되었습니다. 불편을 끼쳐드려 죄송합니다",
+				"GameBanana가 오프라인일 때 사용할 임시 카테고리 목록 추가",
+			],
+			minor: [],
+			patch: [],
+		},
+	},
+	rawJson: {
+		notes:
+			'{"major":["CRITICAL FIX - Selecting a language before other settings were loaded would break the app due to broken config file. It has been fixed now. Sorry for the inconvenience","Added temporary category list to use if gamebanana is offline"],"minor":[],"patch":[],"cn":{"major":["紧急修复 - 在其他设置加载之前选择语言会由于配置文件损坏而导致应用程序崩溃。现已修复。给您带来的不便，我们深表歉意","添加临时分类列表，以便在GameBanana离线时使用"],"minor":[],"patch":[]},"ru":{"major":["КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ - Выбор языка до загрузки других настроек приводил к поломке приложения из-за поврежденного файла конфигурации. Теперь это исправлено. Извините за неудобства","Добавлен временный список категорий для использования, если GameBanana недоступен"],"minor":[],"patch":[]},"jp":{"major":["重要修正 - 他の設定が読み込まれる前に言語を選択すると、設定ファイルの破損によりアプリが壊れる問題がありました。これは修正されました。ご不便をおかけして申し訳ありません","GameBananaがオフラインの場合に使用する一時的なカテゴリリストを追加"],"minor":[],"patch":[]},"kr":{"major":["중요 수정 - 다른 설정이 로드되기 전에 언어를 선택하면 설정 파일 손상으로 인해 앱이 중단되는 문제가 있었습니다. 이제 수정되었습니다. 불편을 끼쳐드려 죄송합니다","GameBanana가 오프라인일 때 사용할 임시 카테고리 목록 추가"],"minor":[],"patch":[]}}',
+		platforms: {
+			"windows-x86_64": {
+				signature:
+					"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRcHZDTEMvcmhGWEZlelZxRVN2WEJZUjFGMEpiSVBET3pGUVgyaFA0cDRmdHh4NXduclZRM0VyR00vVFlMWElkRlBkeWZxdWRXaXhOdmF2QnF4TDdSeE56R0Naa3EraUFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzYwMTU1NzM2CWZpbGU6V3V3YSBNb2QgTWFuYWdlciAoV1dNTSlfMi4wLjRfeDY0LXNldHVwLmV4ZQpSQ2tUQU9pbEV0bWtiNlRQVU9GTG5iTzFpWnF6RUxjWS9QaHgxM3pvZGNnekZFSHNHeHBrZWgzMjNHQitkbS9NcGVkUFNqYjh0TENFY0VWSllZdHdBdz09Cg==",
+				url: "https://github.com/jpbhatt21/wuwa-mod-manager/releases/latest/download/Wuwa.Mod.Manager.WWMM._2.0.4_x64-setup.exe",
+			},
+		},
+		pub_date: "2025-10-11T04:15:00Z",
+		version: "2.0.4",
 	},
 };

@@ -16,7 +16,7 @@ function Page3({ setPage }: { setPage: (page: number) => void }) {
 			// setTgt(tgt);
 			// setSrc(src);
 			setPage(4);
-			setChanges((await verifyDirStruct()) as any);
+			setChanges((await verifyDirStruct()));
 		}
 		if (src && tgt) {
 			skip();
@@ -35,10 +35,10 @@ function Page3({ setPage }: { setPage: (page: number) => void }) {
 		>
 			<div className="fixed z-20 flex flex-col items-center justify-center w-full h-full duration-200">
 				<div className="text-accent text-5xl">
-					{textData._Intro._Intro.Greeting} <label id="user">{user}</label>
+					{textData._Checklist.Greeting} <label id="user">{user}</label>
 				</div>
-				<div className="text-accent opacity-75 my-2 text-2xl">{textData._Intro._Intro.Configure}</div>
-				<div className=" mt-5 opacity-50">{textData._Intro._Intro.Continue}</div>
+				<div className="text-accent opacity-75 my-2 text-2xl">{textData._Checklist.Configure}</div>
+				<div className=" mt-5 opacity-50">{textData._Checklist.Continue}</div>
 			</div>
 		</div>
 	);

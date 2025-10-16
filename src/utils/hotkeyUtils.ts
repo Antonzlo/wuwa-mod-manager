@@ -112,8 +112,8 @@ export async function registerGlobalHotkeys(): Promise<void> {
 
 	const currentPresets = store.get(PRESETS);
 	const validHotkeys = currentPresets
-		.filter((preset) => preset.hotkey && preset.hotkey.trim() !== "")
-		.map((preset) => preset.hotkey);
+		.filter((preset) => preset?.hotkey && preset?.hotkey.trim() !== "")
+		.map((preset) => preset?.hotkey);
 	//console.log("Valid hotkeys to register:", validHotkeys);
 	if (validHotkeys.length === 0) {
 		//logger.log("No valid hotkeys found to register");
@@ -124,7 +124,7 @@ export async function registerGlobalHotkeys(): Promise<void> {
 	await register(validHotkeys, (event) => {
 		//logger.log("Hotkey pressed:", event);
 		if (event.state === "Pressed") {
-			const freshPresets = store.get(PRESETS).filter((preset) => preset.hotkey && preset.hotkey.trim() !== "");
+			const freshPresets = store.get(PRESETS).filter((preset) => preset?.hotkey && preset?.hotkey.trim() !== "");
 
 			let normalizedShortcut = event.shortcut
 				.toLowerCase()
@@ -135,22 +135,22 @@ export async function registerGlobalHotkeys(): Promise<void> {
 				.replaceAll("digit", "")
 				.replaceAll("numpad", "");
 			normalizedShortcut = sortHotkeys(normalizedShortcut.split("+")).join("+").toLowerCase();
-		//console.log("Hotkey pressed:", normalizedShortcut);
+			//console.log("Hotkey pressed:", normalizedShortcut);
 
 			const matchedPreset = freshPresets.find((preset) => {
 				// logger.debug("Comparing:", preset.hotkey, "vs", normalizedShortcut);
-				return preset.hotkey.toLowerCase() === normalizedShortcut;
+				return preset?.hotkey?.toLowerCase() === normalizedShortcut;
 			});
 			if (matchedPreset) {
 				//logger.log("Matched preset:", matchedPreset);
-				
+
 				(async () => {
 					try {
 						const allPresets = store.get(PRESETS);
 						const presetIndex = allPresets.findIndex((p) => p === matchedPreset);
 
 						store.set(CURRENT_PRESET, presetIndex);
-						await applyPreset(matchedPreset.data);
+						await applyPreset(matchedPreset.data,matchedPreset.name);
 						store.set(MOD_LIST, await refreshModList());
 
 						invoke("focus_mod_manager_send_f10_return_to_game");
@@ -168,4 +168,4 @@ export async function registerGlobalHotkeys(): Promise<void> {
 
 store.sub(PRESETS, () => {
 	registerGlobalHotkeys();
-})
+});

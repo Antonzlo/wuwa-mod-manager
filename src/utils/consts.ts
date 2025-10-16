@@ -1,4 +1,18 @@
+import { Settings } from "http2";
 import { TEXT } from "./text";
+import {
+	Category,
+	ChangeInfo,
+	DownloadItem,
+	DownloadList,
+	Games,
+	InstalledItem,
+	Language,
+	Mod,
+	ModDataObj,
+	OnlineData,
+	Preset,
+} from "./types";
 export const IMAGER_SERVER = "http://127.0.0.1:5000/preview";
 export const OLD_RESTORE = "DISABLED_RESTORE";
 export const RESTORE = "RESTORE";
@@ -7,32 +21,32 @@ export const UNCATEGORIZED = "Uncategorized";
 export const managedSRC = "DISABLED (Managed by IMM)";
 export const managedTGT = "Mods (Managed by IMM)";
 export const VERSION = "2.1.0";
-export const GAMES = ["WW", "ZZ"];
+export const GAMES: Games[] = ["WW", "ZZ"];
 export const PRIORITY_KEYS = ["Alt", "Ctrl", "Shift", "Capslock", "Tab", "Up", "Down", "Left", "Right"] as const;
-export const LANG_LIST = [
+export const LANG_LIST: { Name: string; Flag: string; Code: Language }[] = [
 	{
-		Name: TEXT.en.generic.Current,
-		Flag: TEXT.en.generic.Flag,
+		Name: TEXT.en.Current,
+		Flag: TEXT.en.Flag,
 		Code: "en",
 	},
 	{
-		Name: TEXT.cn.generic.Current,
-		Flag: TEXT.cn.generic.Flag,
+		Name: TEXT.cn.Current,
+		Flag: TEXT.cn.Flag,
 		Code: "cn",
 	},
 	{
-		Name: TEXT.ru.generic.Current,
-		Flag: TEXT.ru.generic.Flag,
+		Name: TEXT.ru.Current,
+		Flag: TEXT.ru.Flag,
 		Code: "ru",
 	},
 	{
-		Name: TEXT.jp.generic.Current,
-		Flag: TEXT.jp.generic.Flag,
+		Name: TEXT.jp.Current,
+		Flag: TEXT.jp.Flag,
 		Code: "jp",
 	},
 	{
-		Name: TEXT.kr.generic.Current,
-		Flag: TEXT.kr.generic.Flag,
+		Name: TEXT.kr.Current,
+		Flag: TEXT.kr.Flag,
 		Code: "kr",
 	},
 ];
@@ -49,50 +63,50 @@ export const GAME_ID_MAP: { [key: string]: number } = {
 	SR: 3,
 };
 export const DEFAULTS = {
-	INIT_DONE : false,
-	LANG: "en",
-	GAME: "",
-	SETTINGS:{
-	global: {
-		bgOpacity: 1,
-		winOpacity: 1,
-		winType: 0,
-		bgType: 2,
-		listType: 0,
-		nsfw: 1,
-		toggleClick: 2,
-		ignore: VERSION,
-		clientDate: "1759866302559426603",
-		exeXXMI: "",
-		lang: "",
-		game: "",
-	},
-	game: {
-		launch: 0,
-		hotReload: 1,
-		onlineType: "Mod",
-	},
-},
-	SOURCE:"",
-	TARGET:"",
-	DATA:{},
-	PRESETS:[],
-	CATEGORIES:[],
-	TYPES:[],
-	CHANGES:{},
+	INIT_DONE: false,
+	LANG: "en" as Language,
+	GAME: "" as Games,
+	SETTINGS: {
+		global: {
+			bgOpacity: 1,
+			winOpacity: 1,
+			winType: 0,
+			bgType: 2,
+			listType: 0,
+			nsfw: 1,
+			toggleClick: 2,
+			ignore: VERSION,
+			clientDate: "1759866302559426603",
+			exeXXMI: "",
+			lang: "",
+			game: "",
+		},
+		game: {
+			launch: 0,
+			hotReload: 1,
+			onlineType: "Mod",
+		},
+	} as Settings,
+	SOURCE: "",
+	TARGET: "",
+	DATA: {} as ModDataObj,
+	PRESETS: [] as Preset[],
+	CATEGORIES: [] as Category[],
+	TYPES: [] as Category[],
+	CHANGES: { before: [], after: [], map: {}, skip: false, title: "" } as ChangeInfo,
 	DOWNLOAD_LIST: {
-		queue: [] as any[],
-		downloading: {} as any,
-		completed: [] as any[],
+		queue: [] as DownloadItem[],
+		downloading: {} as DownloadItem | null,
+		completed: [] as DownloadItem[],
 	},
 	CURRENT_PRESET: -1,
-	MOD_LIST: [] as any[],
+	MOD_LIST: [] as Mod[],
 	SELECTED: "",
 	FILTER: "All",
 	CATEGORY: "All",
 	SEARCH: "",
-	INSTALLED_ITEMS: [] as any[],
-	ONLINE_DATA: {} as any,
+	INSTALLED_ITEMS: [] as InstalledItem[],
+	ONLINE_DATA: {} as OnlineData,
 	ONLINE_TYPE: "Mod",
 	ONLINE_SORT: "",
 	ONLINE_PATH: "home&type=Mod",

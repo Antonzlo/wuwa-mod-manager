@@ -2,10 +2,7 @@ import {
 	CATEGORIES,
 	DATA,
 	GAME,
-	INIT_DONE,
 	LANG,
-	ONLINE,
-	ONLINE_DATA,
 	PRESETS,
 	resetAtoms,
 	SETTINGS,
@@ -14,7 +11,10 @@ import {
 	TARGET,
 	TEXT_DATA,
 	TYPES,
+	IMM_UPDATE
 } from "./vars";
+import { check, type Update } from "@tauri-apps/plugin-updater";
+
 import { path } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
 import { currentMonitor, PhysicalSize } from "@tauri-apps/api/window";
@@ -23,14 +23,17 @@ import { exists, writeTextFile, readTextFile } from "@tauri-apps/plugin-fs";
 import defConfig from "../default.json";
 import defConfigXX from "../defaultXX.json";
 import { apiClient } from "./api";
-import { VERSION } from "./consts";
+import { managedSRC, VERSION } from "./consts";
 import { switchGameTheme } from "./theme";
 import { executeXXMI, isGameProcessRunning } from "./autolaunch";
 // import { updateIni } from "./iniUpdater";
-import { setHotreload, stopWindowMonitoring } from "./hotreload";
+import { join,  setHotreload, stopWindowMonitoring } from "./hotreload";
 import { registerGlobalHotkeys } from "./hotkeyUtils";
 import { TEXT } from "./text";
 import { unregisterAll } from "@tauri-apps/plugin-global-shortcut";
+import { safeLoadJson } from "./utils";
+import { addToast } from "@/_Toaster/ToastProvider";
+import { Category, Preset, Settings } from "./types";
 // import { v2_0_4_migration } from "./filesys";
 
 let isFirstLoad = false;
@@ -41,9 +44,8 @@ export function getDataDir() {
 	return dataDir;
 }
 let appData = "";
-let categories: any[] = [];
+let categories: Category[] = [];
 export const window = getCurrentWebviewWindow();
-// invoke("get_username");
 export function setWindowType(type: number) {
 	if (type == 0) {
 		window.setFullscreen(false);
@@ -64,7 +66,7 @@ export function setWindowType(type: number) {
 invoke<string>("get_image_server_url").then((url) => {
 	//console.log("Image server URL:", url);
 });
-async function updateConfig(oconfig: any) {
+export async function updateConfig(oconfig: any) {
 	// await v2_0_4_migration(oconfig.dir);
 	if (oconfig.version >= "2.1.0") return oconfig;
 	let config = {
@@ -91,7 +93,14 @@ async function updateConfig(oconfig: any) {
 			delete data[key];
 		}
 	}
-	writeTextFile(
+	let presets = oconfig.presets.map((preset:Preset) => {
+		let newPreset:Preset = { name: preset.name || "Preset", data: [], hotkey: preset?.hotkey || "" };
+		if (preset.data && Array.isArray(preset.data)) {
+			newPreset.data = preset.data.map((item: string) => (item.startsWith("\\") ? item.substring(1) : item));
+		}
+		return newPreset;
+	});
+	await writeTextFile(
 		`configWW.json`,
 		JSON.stringify(
 			{
@@ -105,7 +114,7 @@ async function updateConfig(oconfig: any) {
 					onlineType: oconfig.settings.onlineType || "Mod",
 				},
 				data: oconfig.data || {},
-				presets: oconfig.presets || [],
+				presets: presets || [],
 				updatedAt: new Date().getTime(),
 			},
 			null,
@@ -116,7 +125,7 @@ async function updateConfig(oconfig: any) {
 }
 export async function initGame(game: string) {
 	if (await exists(`config${game}.json`)) {
-		configXX = JSON.parse(await readTextFile(`config${game}.json`));
+		configXX =JSON.parse(await readTextFile(`config${game}.json`))
 	} else configXX = { ...defConfigXX };
 	configXX.game = game;
 	switchGameTheme(game == "ZZ" ? "zzz" : "wuwa");
@@ -124,9 +133,12 @@ export async function initGame(game: string) {
 	writeTextFile(`config${game}.json`, JSON.stringify(configXX, null, 2));
 	apiClient.setGame(game as any);
 	await setCategories(game);
+	// Validate source and target dirs
+	if (configXX.sourceDir && !(await exists(join(configXX.sourceDir, managedSRC)))) configXX.sourceDir = "";
+	if (configXX.targetDir && !(await exists(join(configXX.targetDir, "Mods")))) configXX.targetDir = "";
 	store.set(SOURCE, configXX.sourceDir || "");
 	store.set(TARGET, configXX.targetDir || "");
-	store.set(SETTINGS, (prev) => ({ global: { ...prev.global, game }, game: { ...prev.game, ...configXX.settings } }));
+	store.set(SETTINGS, (prev) => ({ global: { ...prev.global, game }, game: { ...prev.game, ...configXX.settings } } as Settings));
 	store.set(TYPES, apiClient.generic.types);
 	store.set(DATA, configXX.data || {});
 	store.set(PRESETS, configXX.presets || []);
@@ -144,7 +156,7 @@ store.sub(SETTINGS, async () => {
 			if (compare.names[i] === "lang" && compare.src[i])
 				store.set(TEXT_DATA, TEXT[compare.src[i] as keyof typeof TEXT] || TEXT["en"]);
 			// else if (compare.names[i] === "game" && compare.src[i]) await initGame(compare.src[i]);
-			store.set(compare.to[i], compare.src[i]);
+			store.set(compare.to[i] as any, compare.src[i]);
 		}
 	}
 });
@@ -156,7 +168,7 @@ async function setCategories(game?: string) {
 		if (!categories || categories.length == 0) throw "No categories found, please verify the directories again";
 	} catch (e) {
 		try {
-			if (config.game) configXX = await initGame(config.game);
+			// if (config.game) configXX = await initGame(config.game);
 		} finally {
 			categories = configXX.categories || apiClient.categoryList;
 		}
@@ -172,7 +184,13 @@ function removeHelpers() {
 async function initHelpers() {
 	if (configXX.settings.launch && (await exists(config.exeXXMI)) && ["WW", "ZZ", "GI", "SR"].includes(config.game)) {
 		isGameProcessRunning(config.game).then((running) => {
-			if (!running) executeXXMI(config.exeXXMI);
+			if (!running) {
+				executeXXMI(config.exeXXMI);
+				addToast({
+					type: "info",
+					message: "Launching Game",
+				});
+			}
 		});
 	}
 	setHotreload(configXX.settings.hotReload as 0 | 1 | 2, config.game, configXX.targetDir);
@@ -189,9 +207,8 @@ export async function main() {
 	if (!(await exists("config.json"))) {
 		await writeTextFile("config.json", JSON.stringify(defConfig, null, 2));
 	}
-	config = JSON.parse(await readTextFile("config.json"));
+	config = safeLoadJson(defConfig, JSON.parse(await readTextFile("config.json")));
 	if (config.game) apiClient.setGame(config.game);
-	await setCategories(config.game);
 	//Get config files
 
 	if (config.version < "2.1.0") {
@@ -224,39 +241,40 @@ export async function main() {
 	// isGameProcessRunning()
 	initHelpers();
 	// Check for updates with 2-second timeout
-	// let update: Update | null = null;
-	// try {
-	// 	const timeoutPromise = new Promise<never>((_, reject) =>
-	// 		setTimeout(() => reject(new Error("Update check timeout")), 2000)
-	// 	);
-	// 	update = await Promise.race([check(), timeoutPromise]);
-	// } catch (error) {
-	// 	// If check fails or times out, update remains null
-	// 	update = null;
-	// }
-	// if (update) {
-	// 	let lang = config.settings.lang;
-	// 	let parsedBody = {};
-	// 	if (update.body) {
-	// 		try {
-	// 			parsedBody = JSON.parse(update.body);
-	// 			parsedBody = parsedBody[lang as keyof typeof parsedBody] || parsedBody;
-	// 		} catch (e) {
-	// 			parsedBody = {};
-	// 		}
-	// 	}
-	// 	store.set(updateWWMMAtom, {
-	// 		version: update.version,
-	// 		date: update.date || "",
-	// 		body: JSON.stringify(parsedBody) || "{}",
-	// 		status: "available",
-	// 		raw: update,
-	// 	});
-	// 	if (update.version > config.settings.ignore) {
-	// 		store.set(updaterOpenAtom, true);
-	// 		config.settings.ignore = update.version;
-	// 	}
-	// }
+	let update: Update | null = null;
+	try {
+		const timeoutPromise = new Promise<never>((_, reject) =>
+			setTimeout(() => reject(new Error("Update check timeout")), 2000)
+		);
+		update = await Promise.race([check(), timeoutPromise]);
+	} catch (error) {
+		// If check fails or times out, update remains null
+		update = null;
+	}
+	if (update) {
+		let lang = config.lang || "en";
+		let parsedBody = {};
+		if (update.body) {
+			try {
+				parsedBody = JSON.parse(update.body);
+				parsedBody = parsedBody[lang as keyof typeof parsedBody] || parsedBody;
+			} catch (e) {
+				parsedBody = {};
+			}
+		}
+		console.log("Update available:", update);
+		store.set(IMM_UPDATE, {
+			version: update.version,
+			date: update.date || "",
+			body: JSON.stringify(parsedBody) || "{}",
+			status: "available",
+			raw: update,
+		});
+		// if (update.version > config.settings.ignore) {
+		// 	store.set(updaterOpenAtom, true);
+		// 	config.settings.ignore = update.version;
+		// }
+	}
 
 	// store.set(settingsDataAtom, config.settings as Settings);
 

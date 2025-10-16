@@ -15,8 +15,15 @@ import {
 } from "@/utils/vars";
 import { Separator } from "@radix-ui/react-separator";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { AppWindowIcon, EyeIcon, FolderCheckIcon, ShieldQuestion, ShirtIcon, UploadIcon } from "lucide-react";
-
+import { AppWindowIcon, BotIcon, EyeIcon, FolderCheckIcon, ShieldQuestion, ShirtIcon, UploadIcon, UserIcon } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+const iconMap: { [key: string]: JSX.Element } = {
+	Skin: <ShirtIcon className="w-6 h-6" />,
+	Characters: <UserIcon className="w-6 h-6" />,
+	Bangboo: <BotIcon className="w-6 h-6" />,
+	UI: <AppWindowIcon className="w-6 h-6" />,
+	Other: <ShieldQuestion className="w-6 h-6" />,
+}
 function LeftOnline() {
 	const textData = useAtomValue(TEXT_DATA);
 	const leftSidebarOpen = useAtomValue(LEFT_SIDEBAR_OPEN);
@@ -24,7 +31,7 @@ function LeftOnline() {
 	const onlineType = useAtomValue(ONLINE_TYPE);
 	const [onlinePath, setOnlinePath] = useAtom(ONLINE_PATH);
 	const onlineSort = useAtomValue(ONLINE_SORT);
-	const installedItems: any[] = useAtomValue(INSTALLED_ITEMS);
+	const installedItems = useAtomValue(INSTALLED_ITEMS);
 	const setSelected = useSetAtom(ONLINE_SELECTED);
 	const setRightSlideOverOpen = useSetAtom(RIGHT_SLIDEOVER_OPEN);
 	return (
@@ -37,7 +44,7 @@ function LeftOnline() {
 						gridTemplateColumns: leftSidebarOpen ? "" : "repeat(1, minmax(0, 1fr))",
 					}}
 				>
-					{types.map((category: any, index) => {
+					{types.map((category, index) => {
 						return (
 							<div className="w-full flex items-center justify-center">
 								<Button
@@ -58,11 +65,7 @@ function LeftOnline() {
 									style={{ width: leftSidebarOpen ? "" : "2.5rem" }}
 								>
 									{
-										[
-											<ShirtIcon className="w-6 h-6" />,
-											<AppWindowIcon className="w-6 h-6" />,
-											<ShieldQuestion className="w-6 h-6" />,
-										][index % 3]
+										iconMap[category._sName] || <ShieldQuestion className="w-6 h-6" />
 									}
 									{leftSidebarOpen && category._sName}
 								</Button>
@@ -81,7 +84,7 @@ function LeftOnline() {
 			/>
 			<SidebarGroup className="pr-1 flex flex-col h-full overflow-hidden">
 				<SidebarGroupLabel className="flex items-center gap-1">
-					{textData.generic.Installed}{" "}
+					{textData.Installed}{" "}
 					<Label className="text-accent opacity-50 flex text-xs scale-75">
 						<UploadIcon className="min-h-2 min-w-2 w-4 h-4" />{" "}
 						{installedItems.filter((item) => item.modStatus === 2).length} |{" "}
@@ -90,11 +93,16 @@ function LeftOnline() {
 					</Label>
 				</SidebarGroupLabel>
 				<SidebarContent className="min-w-14 flex flex-col items-center w-full h-full gap-2 pl-2 pr-1 overflow-hidden overflow-y-auto duration-200">
-					{leftSidebarOpen ? (
-						<>
-							{installedItems.map(
-								(item, index) => (
-									<div
+					<AnimatePresence initial={false}>
+						{leftSidebarOpen ? (
+							<>
+								{installedItems.map((item, index) => (
+									<motion.div
+										initial={{ opacity: 0, marginBottom: "-2.5rem" }}
+										animate={{ opacity: 1, marginBottom: "0rem" }}
+										exit={{ opacity: 0, marginBottom: "-3rem" }}
+										layout
+										transition={{ duration: 0.2 }}
 										key={item.name}
 										className={
 											"w-full min-h-12 data-zzz:border-2 data-zzz:rounded-full data-zzz:text-foreground flex-col justify-center height-in overflow-hidden rounded-lg flex duration-200 " +
@@ -125,26 +133,26 @@ function LeftOnline() {
 										) : (
 											<div className="flex items-center justify-center w-full h-full">{index + 1}</div>
 										)}
-									</div>
-								)
-							)}
-						</>
-					) : (
-						<>
-							<div className="aspect-square min-h-10 flex-col data-zzz:rounded-full data-zzz:border-2 items-center text-xs justify-center height-in overflow-hidden rounded-lg flex duration-200 bg-input/50 text-accent hover:bg-input/80">
-								<UploadIcon className="min-h-2 min-w-2 w-4 h-4" />{" "}
-								{installedItems.filter((item) => item.modStatus === 2).length}
-							</div>
-							<div className="aspect-square min-h-10 flex-col data-zzz:rounded-full data-zzz:border-2 data-zzz:text-foreground items-center text-xs justify-center height-in overflow-hidden rounded-lg flex duration-200 bg-input/50 text-accent hover:bg-input/80">
-								<EyeIcon className="min-h-2 min-w-2 w-4 h-4" />
-								{installedItems.filter((item) => item.modStatus === 1).length}
-							</div>
-							<div className="aspect-square min-h-10 flex-col data-zzz:rounded-full data-zzz:border-2 data-zzz:text-foreground items-center text-xs justify-center height-in overflow-hidden rounded-lg flex duration-200 bg-input/50 text-accent hover:bg-input/80">
-								<FolderCheckIcon className="min-h-2 min-w-2 w-4 h-4" />
-								{installedItems.filter((item) => item.modStatus === 0).length}
-							</div>{" "}
-						</>
-					)}
+									</motion.div>
+								))}
+							</>
+						) : (
+							<>
+								<div className="aspect-square min-h-10 flex-col data-zzz:rounded-full data-zzz:border-2 items-center text-xs justify-center height-in overflow-hidden rounded-lg flex duration-200 bg-input/50 text-accent hover:bg-input/80">
+									<UploadIcon className="min-h-2 min-w-2 w-4 h-4" />{" "}
+									{installedItems.filter((item) => item.modStatus === 2).length}
+								</div>
+								<div className="aspect-square min-h-10 flex-col data-zzz:rounded-full data-zzz:border-2 data-zzz:text-foreground items-center text-xs justify-center height-in overflow-hidden rounded-lg flex duration-200 bg-input/50 text-accent hover:bg-input/80">
+									<EyeIcon className="min-h-2 min-w-2 w-4 h-4" />
+									{installedItems.filter((item) => item.modStatus === 1).length}
+								</div>
+								<div className="aspect-square min-h-10 flex-col data-zzz:rounded-full data-zzz:border-2 data-zzz:text-foreground items-center text-xs justify-center height-in overflow-hidden rounded-lg flex duration-200 bg-input/50 text-accent hover:bg-input/80">
+									<FolderCheckIcon className="min-h-2 min-w-2 w-4 h-4" />
+									{installedItems.filter((item) => item.modStatus === 0).length}
+								</div>{" "}
+							</>
+						)}
+					</AnimatePresence>
 				</SidebarContent>
 			</SidebarGroup>
 		</>
