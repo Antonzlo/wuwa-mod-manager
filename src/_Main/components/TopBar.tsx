@@ -12,8 +12,7 @@ import {
 	SEARCH,
 	TEXT_DATA,
 } from "@/utils/vars";
-import { Update } from "@tauri-apps/plugin-updater";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import {
 	DownloadIcon,
 	EyeIcon,
@@ -26,6 +25,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Updater from "./Updater";
+import Notice from "./Notice";
+import Help from "./Help";
 
 function TopBar() {
 	const [leftSidebarOpen, setLeftSidebarOpen] = useAtom(LEFT_SIDEBAR_OPEN);
@@ -226,6 +227,8 @@ function TopBar() {
 					</>
 				)}
 			</div>
+			<Notice/>
+			<Help/>
 			<Button
 				onClick={(e) => {
 					e.stopPropagation();

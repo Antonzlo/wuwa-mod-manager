@@ -5,10 +5,7 @@ import { Label } from "@/components/ui/label";
 import { managedSRC, UNCATEGORIZED } from "@/utils/consts";
 import { applyChanges, createManagedDir, createRestorePoint, folderSelector, verifyDirStruct } from "@/utils/filesys";
 import { ChangeInfo } from "@/utils/types";
-import { join } from "@/utils/utils";
-import { CHANGES, INIT_DONE, SOURCE, TEXT_DATA } from "@/utils/vars";
-import { invoke } from "@tauri-apps/api/core";
-import { mkdir } from "@tauri-apps/plugin-fs";
+import { CHANGES, FIRST_LOAD, HELP_OPEN, INIT_DONE, SOURCE, TEXT_DATA} from "@/utils/vars";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ChevronRightIcon, FileIcon, Folder, FolderCogIcon } from "lucide-react";
 import { motion } from "motion/react";
@@ -18,6 +15,8 @@ function Changes({ afterInit }: { afterInit: () => Promise<void> }) {
 	const [changes, setChanges] = useAtom(CHANGES);
 	const [source, setSource] = useAtom(SOURCE);
 	const setInitDone = useSetAtom(INIT_DONE);
+	const firstLoad = useAtomValue(FIRST_LOAD);
+	const setHelpOpen = useSetAtom(HELP_OPEN);
 	useEffect(() => {
 		if (!changes.skip) return;
 		afterInit().then(() => {
@@ -31,7 +30,6 @@ function Changes({ afterInit }: { afterInit: () => Promise<void> }) {
 					map: {},
 					title: "",
 				} as ChangeInfo);
-				addToast({ type: "info", message: textData._Toasts.ModsLoaded });
 			}, 1000);
 		});
 	}, [changes.skip]);
@@ -158,7 +156,7 @@ function Changes({ afterInit }: { afterInit: () => Promise<void> }) {
 				</div>
 				<div className="flex justify-between w-full h-10 mt-2">
 					<Button
-						className="w-28 text-red-300 hover:bg-red-300 data-zzz:hover:text-background hover:text-background"
+						className="w-28 text-destructive hover:bg-destructive data-zzz:hover:text-background hover:text-background"
 						onClick={async() => {
 							// invoke("exit_app");
 							await createManagedDir();
@@ -177,7 +175,7 @@ function Changes({ afterInit }: { afterInit: () => Promise<void> }) {
 						className="w-28 "
 						onClick={async () => {
 							let checked = document.getElementById("checkbox")?.getAttribute("aria-checked") == "true";
-							// if (firstLoad) setTutorialMode(true);
+							if (firstLoad) setHelpOpen(true);
 							if (checked) await createRestorePoint("ORG-");
 							else {
 								// updateInfo("Optimizing dir structure...");

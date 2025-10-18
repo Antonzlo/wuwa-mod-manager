@@ -42,12 +42,12 @@ function Restore({ leftSidebarOpen,disabled=false }: { leftSidebarOpen: boolean,
 			});
 		}
 	}, [selectedRestorePoint]);
-	// getRestorePoints().then((r) => console.log(r));
+	// getRestorePoints().then((r) => //console.log(r));
 	return (
 		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
 			<DialogTrigger asChild>
 				<Button
-					className="w-38.75 data-[theme=zzz]:bg-red-300 text-ellipsis h-12 overflow-hidden"
+					className="w-38.75 data-[theme=zzz]:bg-destructive text-ellipsis h-12 overflow-hidden"
 					style={{ width: leftSidebarOpen ? "" : "3rem" }}
 				>
 					<SaveAllIcon />
@@ -61,12 +61,12 @@ function Restore({ leftSidebarOpen,disabled=false }: { leftSidebarOpen: boolean,
 							<div className="text-xl text-gray-200">
 								{textData._Main._MainLocal.Delete} <span className="text-accent ">{restorePoints[selectedRestorePoint]}</span>?
 							</div>
-							<div className="text-red-300	">{textData._Main._MainLocal.Irrev}</div>
+							<div className="text-destructive	">{textData._Main._MainLocal.Irrev}</div>
 						</div>
 						<div className="flex justify-between w-full gap-4 mt-4">
 							<AlertDialogCancel className="w-24 duration-300">{textData.Cancel}</AlertDialogCancel>
 							<AlertDialogAction
-								className="w-24 text-red-300 hover:bg-red-300 data-zzz:hover:text-background hover:text-background"
+								className="w-24 text-destructive hover:bg-destructive data-zzz:hover:text-background hover:text-background"
 								onClick={async () => {
 									if (selectedRestorePoint === null || selectedRestorePoint === undefined || !restorePoints[selectedRestorePoint]) return;
 									if(await deleteRestorePoint(restorePoints[selectedRestorePoint])){
@@ -167,7 +167,7 @@ function Restore({ leftSidebarOpen,disabled=false }: { leftSidebarOpen: boolean,
 													borderBottom: index == item.children?.length || 0 - 1 ? "" : "1px dashed var(--border)",
 												}}
 											>
-												{!child.isDir ? <FolderIcon className="w-4 h-4" /> : <FileIcon className="w-4 h-4" />}
+												{child.isDir ? <FolderIcon className="w-4 h-4" /> : <FileIcon className="w-4 h-4" />}
 												<Label className={"w-full pointer-events-none" + ((index % 2) + 1)}>{child.name}</Label>
 											</div>
 										))}

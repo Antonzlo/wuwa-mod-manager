@@ -11,6 +11,9 @@ export const TEXT = {
 		Items: "Items",
 		Cancel: "Cancel",
 		Select: "Select",
+		Tutorials: "Tutorials",
+		Next: "Next",
+		Prev: "Prev",
 		Settings: "Settings",
 		Category: "Category",
 		Downloads: "Downloads",
@@ -45,6 +48,89 @@ export const TEXT = {
 			ErrOcc: "An error occurred.",
 			ImgSaved: "Preview image saved!",
 			PresetApplied: "Preset applied!",
+			NewUpdates: "<new/> new updates available!",
+		},
+		_Help: {
+			SwitchGames: {
+				title: "Switching Games",
+				content: ["Click on the game icon [top-left] to show the game selection menu."],
+			},
+			ToggleMods: {
+				title: "Toggling Mods",
+				content: ["Right click on a mod to enable/disable it."],
+			},
+			DeleteMod: {
+				title: "Deleting Mods",
+				content: ["Click on the ✕ to delete the mod."],
+			},
+			EditModInfo: {
+				title: "Editing Mod Details",
+				content: ["Select a mod, and edit details such as name, category, source (URL)."],
+			},
+			ChangeImg: {
+				title: "Changing Preview Image",
+				content: [
+					"Select a mod, click on the edit icon in the right sidebar.",
+					"Select an image to use as the preview image for the mod.",
+					"Done!",
+				],
+			},
+			OpenExp: {
+				title: "Opening a Mod in Explorer",
+				content: ["Click on the ↗ icon to open the mod's location in your file explorer."],
+			},
+			PasteLink: {
+				title: "Paste & Open a Link",
+				content: ["Copy mod link from Gamebanana", "Paste the link anywhere.", "Mod opens in online mode!"],
+			},
+			OpenLink: {
+				title: "Open a Link from Mod Details",
+				content: ["Click on the 🔗 icon to open the mod link in online mode."],
+			},
+			OnlineMode: {
+				title: "Switching to Online Mode",
+				content: ["Switch between online and installed modes using the toggle in the left sidebar."],
+			},
+			UsingPresets: {
+				title: "Using Presets",
+				content: [
+					"Enable the mods that you want to include in the preset.",
+					"Click on the '＋ New' button in the left sidebar.",
+					"Change presets with just a click!",
+				],
+			},
+			SearchMods: {
+				title: "Searching Mods",
+				content: ["Start typing anywhere to search for mods. Works both in online and installed mode."],
+			},
+			DLMods: {
+				title: "Downloading & Installing Mods",
+				content: [
+					"Click on 'Install' and select an option.",
+					"Mod will be added to the download queue.",
+					"Automatically unzips and installs the mod in the mods folder, along with the preview image.",
+				],
+			},
+			UpdateMods: {
+				title: "Updating Mods",
+				content: ["Get notified when an installed mod has updates available!"],
+			},
+			Restore: {
+				title: "Restore Points",
+				content: ["Create and manage restore points (backup).", "Restore your mods from a saved point."],
+			},
+			Settings: {
+				title: "Settings",
+				content: [
+					"Change Global/IMM settings.",
+					"Configure game specific settings: WuWa",
+					"Configure game specific settings: Z·Z·Z",
+				],
+			},
+			Updater: {
+				title: "IMM Updater",
+				content: ["Update IMM to the latest version from within the app."],
+			},
 		},
 		_Changes: {
 			ConfirmChanges: "Confirm changes",
@@ -219,6 +305,7 @@ export const TEXT = {
 				LatestUpd: "Latest Update",
 				Sep: "Install Separately",
 				NoItem: "No item selected",
+				LinkCopied: "Link copied to clipboard!",
 			},
 		},
 		_Tutorial: {
@@ -293,6 +380,9 @@ export const TEXT = {
 		Items: "项目",
 		Cancel: "取消",
 		Select: "选择",
+		Tutorials: "教程",
+		Next: "下一步",
+		Prev: "上一步",
 		Settings: "设置",
 		Category: "分类",
 		Downloads: "下载",
@@ -327,6 +417,89 @@ export const TEXT = {
 			ErrOcc: "发生错误。",
 			ImgSaved: "预览图片已保存！",
 			PresetApplied: "预设已应用！",
+			NewUpdates: "<new/> 个新更新可用！",
+		},
+		_Help: {
+			SwitchGames: {
+				title: "切换游戏",
+				content: ["点击游戏图标[左上角]显示游戏选择菜单。"],
+			},
+			ToggleMods: {
+				title: "切换模组",
+				content: ["右键点击模组以启用/禁用它。"],
+			},
+			DeleteMod: {
+				title: "删除模组",
+				content: ["点击 ✕ 删除模组。"],
+			},
+			EditModInfo: {
+				title: "编辑模组详情",
+				content: ["选择一个模组，编辑名称、分类、来源（URL）等详情。"],
+			},
+			ChangeImg: {
+				title: "更改预览图片",
+				content: [
+					"选择一个模组，点击右侧边栏中的编辑图标。",
+					"选择一张图片作为模组的预览图片。",
+					"完成！",
+				],
+			},
+			OpenExp: {
+				title: "在资源管理器中打开模组",
+				content: ["点击 ↗ 图标在文件资源管理器中打开模组位置。"],
+			},
+			PasteLink: {
+				title: "粘贴并打开链接",
+				content: ["从 Gamebanana 复制模组链接", "在任意位置粘贴链接。", "模组在在线模式下打开！"],
+			},
+			OpenLink: {
+				title: "从模组详情打开链接",
+				content: ["点击 🔗 图标在在线模式下打开模组链接。"],
+			},
+			OnlineMode: {
+				title: "切换到在线模式",
+				content: ["使用左侧边栏中的切换按钮在在线模式和已安装模式之间切换。"],
+			},
+			UsingPresets: {
+				title: "使用预设",
+				content: [
+					"启用您想要包含在预设中的模组。",
+					"点击左侧边栏中的'＋ 新建'按钮。",
+					"只需点击即可更改预设！",
+				],
+			},
+			SearchMods: {
+				title: "搜索模组",
+				content: ["在任意位置开始输入以搜索模组。在在线和已安装模式下均可使用。"],
+			},
+			DLMods: {
+				title: "下载和安装模组",
+				content: [
+					"点击'安装'并选择一个选项。",
+					"模组将被添加到下载队列。",
+					"自动解压并将模组安装到模组文件夹，同时下载预览图片。",
+				],
+			},
+			UpdateMods: {
+				title: "更新模组",
+				content: ["当已安装的模组有可用更新时会收到通知！"],
+			},
+			Restore: {
+				title: "还原点",
+				content: ["创建和管理还原点（备份）。", "从保存的还原点恢复您的模组。"],
+			},
+			Settings: {
+				title: "设置",
+				content: [
+					"更改全局/IMM 设置。",
+					"配置特定游戏设置：WuWa",
+					"配置特定游戏设置：Z·Z·Z",
+				],
+			},
+			Updater: {
+				title: "IMM 更新器",
+				content: ["在应用内将 IMM 更新到最新版本。"],
+			},
 		},
 		_Changes: {
 			ConfirmChanges: "确认更改",
@@ -501,6 +674,7 @@ export const TEXT = {
 				LatestUpd: "最新更新",
 				Sep: "单独安装",
 				NoItem: "未选择项目",
+				LinkCopied: "链接已复制到剪贴板！",
 			},
 		},
 		_Tutorial: {
@@ -575,6 +749,9 @@ export const TEXT = {
 		Items: "Элементы",
 		Cancel: "Отмена",
 		Select: "Выбрать",
+		Tutorials: "Руководства",
+		Next: "Далее",
+		Prev: "Назад",
 		Settings: "Настройки",
 		Category: "Категория",
 		Downloads: "Загрузки",
@@ -609,6 +786,89 @@ export const TEXT = {
 			ErrOcc: "Произошла ошибка.",
 			ImgSaved: "Превью изображение сохранено!",
 			PresetApplied: "Пресет применен!",
+			NewUpdates: "<new/> новых обновлений доступно!",
+		},
+		_Help: {
+			SwitchGames: {
+				title: "Переключение игр",
+				content: ["Нажмите на иконку игры [вверху слева], чтобы показать меню выбора игры."],
+			},
+			ToggleMods: {
+				title: "Переключение модов",
+				content: ["Щелкните правой кнопкой мыши на мод, чтобы включить/отключить его."],
+			},
+			DeleteMod: {
+				title: "Удаление модов",
+				content: ["Нажмите на ✕, чтобы удалить мод."],
+			},
+			EditModInfo: {
+				title: "Редактирование деталей мода",
+				content: ["Выберите мод и отредактируйте такие детали, как название, категория, источник (URL)."],
+			},
+			ChangeImg: {
+				title: "Изменение превью изображения",
+				content: [
+					"Выберите мод, нажмите на иконку редактирования в правой боковой панели.",
+					"Выберите изображение для использования в качестве превью для мода.",
+					"Готово!",
+				],
+			},
+			OpenExp: {
+				title: "Открытие мода в проводнике",
+				content: ["Нажмите на иконку ↗, чтобы открыть расположение мода в проводнике файлов."],
+			},
+			PasteLink: {
+				title: "Вставить и открыть ссылку",
+				content: ["Скопируйте ссылку на мод с Gamebanana", "Вставьте ссылку в любом месте.", "Мод открывается в онлайн режиме!"],
+			},
+			OpenLink: {
+				title: "Открыть ссылку из деталей мода",
+				content: ["Нажмите на иконку 🔗, чтобы открыть ссылку на мод в онлайн режиме."],
+			},
+			OnlineMode: {
+				title: "Переключение в онлайн режим",
+				content: ["Переключайтесь между онлайн и установленными режимами с помощью переключателя на левой боковой панели."],
+			},
+			UsingPresets: {
+				title: "Использование пресетов",
+				content: [
+					"Включите моды, которые вы хотите включить в пресет.",
+					"Нажмите на кнопку '＋ Новый' на левой боковой панели.",
+					"Меняйте пресеты одним щелчком!",
+				],
+			},
+			SearchMods: {
+				title: "Поиск модов",
+				content: ["Начните вводить в любом месте для поиска модов. Работает как в онлайн, так и в установленном режиме."],
+			},
+			DLMods: {
+				title: "Загрузка и установка модов",
+				content: [
+					"Нажмите на 'Установить' и выберите опцию.",
+					"Мод будет добавлен в очередь загрузки.",
+					"Автоматически распаковывает и устанавливает мод в папку модов вместе с превью изображением.",
+				],
+			},
+			UpdateMods: {
+				title: "Обновление модов",
+				content: ["Получайте уведомления, когда для установленного мода доступны обновления!"],
+			},
+			Restore: {
+				title: "Точки восстановления",
+				content: ["Создавайте и управляйте точками восстановления (резервными копиями).", "Восстанавливайте ваши моды из сохраненной точки."],
+			},
+			Settings: {
+				title: "Настройки",
+				content: [
+					"Изменение глобальных/IMM настроек.",
+					"Настройка параметров для конкретной игры: WuWa",
+					"Настройка параметров для конкретной игры: Z·Z·Z",
+				],
+			},
+			Updater: {
+				title: "Обновлятор IMM",
+				content: ["Обновите IMM до последней версии прямо из приложения."],
+			},
 		},
 		_Changes: {
 			ConfirmChanges: "Подтвердить изменения",
@@ -783,6 +1043,7 @@ export const TEXT = {
 				LatestUpd: "Последнее обновление",
 				Sep: "Установить отдельно",
 				NoItem: "Элемент не выбран",
+				LinkCopied: "Ссылка скопирована в буфер обмена!",
 			},
 		},
 		_Tutorial: {
@@ -857,6 +1118,9 @@ export const TEXT = {
 		Items: "アイテム",
 		Cancel: "キャンセル",
 		Select: "選択",
+		Tutorials: "チュートリアル",
+		Next: "次へ",
+		Prev: "前へ",
 		Settings: "設定",
 		Category: "カテゴリ",
 		Downloads: "ダウンロード",
@@ -891,6 +1155,89 @@ export const TEXT = {
 			ErrOcc: "エラーが発生しました。",
 			ImgSaved: "プレビュー画像を保存しました！",
 			PresetApplied: "プリセットを適用しました！",
+			NewUpdates: "<new/> 件の新しいアップデートが利用可能です！",
+		},
+		_Help: {
+			SwitchGames: {
+				title: "ゲームの切り替え",
+				content: ["ゲームアイコン[左上]をクリックしてゲーム選択メニューを表示します。"],
+			},
+			ToggleMods: {
+				title: "Modの切り替え",
+				content: ["Modを右クリックして有効/無効を切り替えます。"],
+			},
+			DeleteMod: {
+				title: "Modの削除",
+				content: ["✕ をクリックしてModを削除します。"],
+			},
+			EditModInfo: {
+				title: "Mod詳細の編集",
+				content: ["Modを選択し、名前、カテゴリ、ソース（URL）などの詳細を編集します。"],
+			},
+			ChangeImg: {
+				title: "プレビュー画像の変更",
+				content: [
+					"Modを選択し、右サイドバーの編集アイコンをクリックします。",
+					"Modのプレビュー画像として使用する画像を選択します。",
+					"完了！",
+				],
+			},
+			OpenExp: {
+				title: "エクスプローラーでModを開く",
+				content: ["↗ アイコンをクリックして、ファイルエクスプローラーでModの場所を開きます。"],
+			},
+			PasteLink: {
+				title: "リンクを貼り付けて開く",
+				content: ["GamebananaからModリンクをコピー", "リンクをどこかに貼り付けます。", "Modがオンラインモードで開きます！"],
+			},
+			OpenLink: {
+				title: "Mod詳細からリンクを開く",
+				content: ["🔗 アイコンをクリックして、オンラインモードでModリンクを開きます。"],
+			},
+			OnlineMode: {
+				title: "オンラインモードへの切り替え",
+				content: ["左サイドバーのトグルを使用して、オンラインモードとインストール済みモード間を切り替えます。"],
+			},
+			UsingPresets: {
+				title: "プリセットの使用",
+				content: [
+					"プリセットに含めたいModを有効にします。",
+					"左サイドバーの'＋ 新規'ボタンをクリックします。",
+					"クリック一つでプリセットを変更！",
+				],
+			},
+			SearchMods: {
+				title: "Modの検索",
+				content: ["どこかで入力を開始してModを検索します。オンラインモードとインストール済みモードの両方で機能します。"],
+			},
+			DLMods: {
+				title: "Modのダウンロードとインストール",
+				content: [
+					"'インストール'をクリックしてオプションを選択します。",
+					"Modがダウンロードキューに追加されます。",
+					"自動的に解凍し、プレビュー画像と共にModフォルダにインストールします。",
+				],
+			},
+			UpdateMods: {
+				title: "Modの更新",
+				content: ["インストール済みのModに利用可能なアップデートがある場合に通知を受け取ります！"],
+			},
+			Restore: {
+				title: "復元ポイント",
+				content: ["復元ポイント（バックアップ）を作成・管理します。", "保存された復元ポイントからModを復元します。"],
+			},
+			Settings: {
+				title: "設定",
+				content: [
+					"グローバル/IMM設定を変更します。",
+					"ゲーム固有の設定を構成：WuWa",
+					"ゲーム固有の設定を構成：Z·Z·Z",
+				],
+			},
+			Updater: {
+				title: "IMMアップデーター",
+				content: ["アプリ内からIMMを最新バージョンに更新します。"],
+			},
 		},
 		_Changes: {
 			ConfirmChanges: "変更を確認",
@@ -1065,6 +1412,7 @@ export const TEXT = {
 				LatestUpd: "最新アップデート",
 				Sep: "個別にインストール",
 				NoItem: "アイテムが選択されていません",
+				LinkCopied: "リンクをクリップボードにコピーしました！",
 			},
 		},
 		_Tutorial: {
@@ -1139,6 +1487,9 @@ export const TEXT = {
 		Items: "항목",
 		Cancel: "취소",
 		Select: "선택",
+		Tutorials: "튜토리얼",
+		Next: "다음",
+		Prev: "이전",
 		Settings: "설정",
 		Category: "카테고리",
 		Downloads: "다운로드",
@@ -1173,6 +1524,89 @@ export const TEXT = {
 			ErrOcc: "오류가 발생했습니다.",
 			ImgSaved: "미리보기 이미지가 저장되었습니다!",
 			PresetApplied: "프리셋이 적용되었습니다!",
+			NewUpdates: "<new/>개의 새로운 업데이트를 사용할 수 있습니다!",
+		},
+		_Help: {
+			SwitchGames: {
+				title: "게임 전환",
+				content: ["게임 아이콘[좌상단]을 클릭하여 게임 선택 메뉴를 표시합니다."],
+			},
+			ToggleMods: {
+				title: "모드 토글",
+				content: ["모드를 오른쪽 클릭하여 활성화/비활성화합니다."],
+			},
+			DeleteMod: {
+				title: "모드 삭제",
+				content: ["✕를 클릭하여 모드를 삭제합니다."],
+			},
+			EditModInfo: {
+				title: "모드 세부 정보 편집",
+				content: ["모드를 선택하고 이름, 카테고리, 소스(URL) 등의 세부 정보를 편집합니다."],
+			},
+			ChangeImg: {
+				title: "미리보기 이미지 변경",
+				content: [
+					"모드를 선택하고 오른쪽 사이드바에서 편집 아이콘을 클릭합니다.",
+					"모드의 미리보기 이미지로 사용할 이미지를 선택합니다.",
+					"완료!",
+				],
+			},
+			OpenExp: {
+				title: "탐색기에서 모드 열기",
+				content: ["↗ 아이콘을 클릭하여 파일 탐색기에서 모드의 위치를 엽니다."],
+			},
+			PasteLink: {
+				title: "링크 붙여넣기 및 열기",
+				content: ["Gamebanana에서 모드 링크 복사", "링크를 아무 곳에나 붙여넣습니다.", "모드가 온라인 모드에서 열립니다!"],
+			},
+			OpenLink: {
+				title: "모드 세부 정보에서 링크 열기",
+				content: ["🔗 아이콘을 클릭하여 온라인 모드에서 모드 링크를 엽니다."],
+			},
+			OnlineMode: {
+				title: "온라인 모드로 전환",
+				content: ["왼쪽 사이드바의 토글을 사용하여 온라인 모드와 설치된 모드 간에 전환합니다."],
+			},
+			UsingPresets: {
+				title: "프리셋 사용",
+				content: [
+					"프리셋에 포함하려는 모드를 활성화합니다.",
+					"왼쪽 사이드바에서 '＋ 새로 만들기' 버튼을 클릭합니다.",
+					"클릭 한 번으로 프리셋을 변경하세요!",
+				],
+			},
+			SearchMods: {
+				title: "모드 검색",
+				content: ["아무 곳에나 입력을 시작하여 모드를 검색합니다. 온라인 및 설치된 모드 모두에서 작동합니다."],
+			},
+			DLMods: {
+				title: "모드 다운로드 및 설치",
+				content: [
+					"'설치'를 클릭하고 옵션을 선택합니다.",
+					"모드가 다운로드 대기열에 추가됩니다.",
+					"자동으로 압축을 풀고 미리보기 이미지와 함께 모드 폴더에 설치합니다.",
+				],
+			},
+			UpdateMods: {
+				title: "모드 업데이트",
+				content: ["설치된 모드에 사용 가능한 업데이트가 있을 때 알림을 받으세요!"],
+			},
+			Restore: {
+				title: "복원 지점",
+				content: ["복원 지점(백업)을 생성하고 관리합니다.", "저장된 복원 지점에서 모드를 복원합니다."],
+			},
+			Settings: {
+				title: "설정",
+				content: [
+					"글로벌/IMM 설정을 변경합니다.",
+					"게임별 설정 구성: WuWa",
+					"게임별 설정 구성: Z·Z·Z",
+				],
+			},
+			Updater: {
+				title: "IMM 업데이터",
+				content: ["앱 내에서 IMM을 최신 버전으로 업데이트합니다."],
+			},
 		},
 		_Changes: {
 			ConfirmChanges: "변경 사항 확인",
@@ -1347,6 +1781,7 @@ export const TEXT = {
 				LatestUpd: "최신 업데이트",
 				Sep: "개별 설치",
 				NoItem: "선택된 항목 없음",
+				LinkCopied: "링크가 클립보드에 복사되었습니다!",
 			},
 		},
 		_Tutorial: {
@@ -1408,72 +1843,5 @@ export const TEXT = {
 			},
 			Skip: "건너뛰기",
 		},
-	},
-};
-
-export const updateData = {
-	available: true,
-	currentVersion: "2.0.3",
-	version: "2.0.4",
-	date: "2025-10-11T04:15:00Z",
-	body: {
-		major: [
-			"CRITICAL FIX - Selecting a language before other settings were loaded would break the app due to broken config file. It has been fixed now. Sorry for the inconvenience",
-			"Added temporary category list to use if gamebanana is offline",
-		],
-		minor: [],
-		patch: [],
-		notice:{
-			level:0,
-			message:"This is a critical update. Please update to the latest version.",
-			timer:10,
-			time:Date.now(),
-			criticalSetHTML:false	
-		},
-		cn: {
-			major: [
-				"紧急修复 - 在其他设置加载之前选择语言会由于配置文件损坏而导致应用程序崩溃。现已修复。给您带来的不便，我们深表歉意",
-				"添加临时分类列表，以便在GameBanana离线时使用",
-			],
-			minor: [],
-			patch: [],
-		},
-		ru: {
-			major: [
-				"КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ - Выбор языка до загрузки других настроек приводил к поломке приложения из-за поврежденного файла конфигурации. Теперь это исправлено. Извините за неудобства",
-				"Добавлен временный список категорий для использования, если GameBanana недоступен",
-			],
-			minor: [],
-			patch: [],
-		},
-		jp: {
-			major: [
-				"重要修正 - 他の設定が読み込まれる前に言語を選択すると、設定ファイルの破損によりアプリが壊れる問題がありました。これは修正されました。ご不便をおかけして申し訳ありません",
-				"GameBananaがオフラインの場合に使用する一時的なカテゴリリストを追加",
-			],
-			minor: [],
-			patch: [],
-		},
-		kr: {
-			major: [
-				"중요 수정 - 다른 설정이 로드되기 전에 언어를 선택하면 설정 파일 손상으로 인해 앱이 중단되는 문제가 있었습니다. 이제 수정되었습니다. 불편을 끼쳐드려 죄송합니다",
-				"GameBanana가 오프라인일 때 사용할 임시 카테고리 목록 추가",
-			],
-			minor: [],
-			patch: [],
-		},
-	},
-	rawJson: {
-		notes:
-			'{"major":["CRITICAL FIX - Selecting a language before other settings were loaded would break the app due to broken config file. It has been fixed now. Sorry for the inconvenience","Added temporary category list to use if gamebanana is offline"],"minor":[],"patch":[],"cn":{"major":["紧急修复 - 在其他设置加载之前选择语言会由于配置文件损坏而导致应用程序崩溃。现已修复。给您带来的不便，我们深表歉意","添加临时分类列表，以便在GameBanana离线时使用"],"minor":[],"patch":[]},"ru":{"major":["КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ - Выбор языка до загрузки других настроек приводил к поломке приложения из-за поврежденного файла конфигурации. Теперь это исправлено. Извините за неудобства","Добавлен временный список категорий для использования, если GameBanana недоступен"],"minor":[],"patch":[]},"jp":{"major":["重要修正 - 他の設定が読み込まれる前に言語を選択すると、設定ファイルの破損によりアプリが壊れる問題がありました。これは修正されました。ご不便をおかけして申し訳ありません","GameBananaがオフラインの場合に使用する一時的なカテゴリリストを追加"],"minor":[],"patch":[]},"kr":{"major":["중요 수정 - 다른 설정이 로드되기 전에 언어를 선택하면 설정 파일 손상으로 인해 앱이 중단되는 문제가 있었습니다. 이제 수정되었습니다. 불편을 끼쳐드려 죄송합니다","GameBanana가 오프라인일 때 사용할 임시 카테고리 목록 추가"],"minor":[],"patch":[]}}',
-		platforms: {
-			"windows-x86_64": {
-				signature:
-					"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRcHZDTEMvcmhGWEZlelZxRVN2WEJZUjFGMEpiSVBET3pGUVgyaFA0cDRmdHh4NXduclZRM0VyR00vVFlMWElkRlBkeWZxdWRXaXhOdmF2QnF4TDdSeE56R0Naa3EraUFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzYwMTU1NzM2CWZpbGU6V3V3YSBNb2QgTWFuYWdlciAoV1dNTSlfMi4wLjRfeDY0LXNldHVwLmV4ZQpSQ2tUQU9pbEV0bWtiNlRQVU9GTG5iTzFpWnF6RUxjWS9QaHgxM3pvZGNnekZFSHNHeHBrZWgzMjNHQitkbS9NcGVkUFNqYjh0TENFY0VWSllZdHdBdz09Cg==",
-				url: "https://github.com/jpbhatt21/wuwa-mod-manager/releases/latest/download/Wuwa.Mod.Manager.WWMM._2.0.4_x64-setup.exe",
-			},
-		},
-		pub_date: "2025-10-11T04:15:00Z",
-		version: "2.0.4",
 	},
 };

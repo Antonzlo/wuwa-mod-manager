@@ -121,7 +121,7 @@ export async function registerGlobalHotkeys(): Promise<void> {
 	}
 
 	//logger.log("Registering hotkeys:", validHotkeys);
-	await register(validHotkeys, (event) => {
+	await register(validHotkeys as any, (event) => {
 		//logger.log("Hotkey pressed:", event);
 		if (event.state === "Pressed") {
 			const freshPresets = store.get(PRESETS).filter((preset) => preset?.hotkey && preset?.hotkey.trim() !== "");

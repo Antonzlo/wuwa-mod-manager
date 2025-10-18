@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { CATEGORIES, DATA, LAST_UPDATED, MOD_LIST, SELECTED, SOURCE, TEXT_DATA } from "@/utils/vars";
+import { CATEGORIES, DATA, LAST_UPDATED, MOD_LIST, ONLINE, ONLINE_SELECTED, RIGHT_SLIDEOVER_OPEN, SELECTED, SOURCE, TEXT_DATA } from "@/utils/vars";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
 	ArrowUpRightFromSquareIcon,
@@ -14,10 +14,10 @@ import {
 import { useEffect, useState } from "react";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { managedSRC } from "@/utils/consts";
-import { getImageUrl, handleImageError, join } from "@/utils/utils";
+import { getImageUrl, handleImageError, join, modRouteFromURL } from "@/utils/utils";
 import { Sidebar, SidebarContent, SidebarGroup } from "@/components/ui/sidebar";
 
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,33 @@ import { Label } from "@/components/ui/label";
 import { Mod } from "@/utils/types";
 
 function RightLocal() {
+	const setOnline = useSetAtom(ONLINE);
+	const setOnlineSelected = useSetAtom(ONLINE_SELECTED);
+	const setRightSlideOverOpen = useSetAtom(RIGHT_SLIDEOVER_OPEN);
+	function handleInAppLink(url: string) {
+		if(!url.startsWith("http")) return;	
+		let mod = modRouteFromURL(url);
+		if (mod) {
+			setOnline(true);
+			setOnlineSelected(mod);
+			setRightSlideOverOpen(true);
+		}
+	}
+	useEffect(() => {
+		const handlePaste = (event: ClipboardEvent) => {
+			let activeEl = document.activeElement;
+			if (activeEl?.tagName === "BUTTON") activeEl = null;
+			if (activeEl === document.body || activeEl === null) {
+				let text = event.clipboardData?.getData("Text");
+				if (text?.startsWith("http")) {
+					event.preventDefault();
+					handleInAppLink(text);
+				}
+			}
+		};
+		document.addEventListener("paste", handlePaste);
+		return () => document.removeEventListener("paste", handlePaste);
+	}, []);
 	const categories = useAtomValue(CATEGORIES);
 	const source = useAtomValue(SOURCE);
 	const [modList, setModList] = useAtom(MOD_LIST);
@@ -241,7 +268,7 @@ function RightLocal() {
 										className="bg-pat2 hover:brightness-150 p-2 duration-200 rounded-lg"
 										onClick={() => {
 											if (item?.source && item?.source != "") {
-												// handleInAppLink(item.source || "");
+												handleInAppLink(item.source || "");
 											}
 										}}
 									>

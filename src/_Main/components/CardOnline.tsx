@@ -1,10 +1,6 @@
 import React from "react";
-import { Label } from "@/components/ui/label";
-// import { renameMod } from "@/utils/fsUtils";
-// import { setChange } from "@/utils/hotreload";
-// import { previewUri } from "@/utils/vars";
-import { EyeOffIcon, File, Folder, LoaderIcon, MessageSquareIcon, PlusIcon, ThumbsUpIcon, XIcon } from "lucide-react";
-import { getImageUrl, getTimeDifference, handleImageError } from "@/utils/utils";
+import { EyeOffIcon, LoaderIcon, MessageSquareIcon, PlusIcon, ThumbsUpIcon } from "lucide-react";
+import { getTimeDifference, handleImageError } from "@/utils/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { CSS_CLASSES, COMMON_STYLES } from "@/utils/consts";

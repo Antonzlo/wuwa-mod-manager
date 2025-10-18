@@ -21,7 +21,7 @@ import { preventContextMenu } from "@/utils/utils";
 import { LoaderIcon } from "lucide-react";
 import { OnlineMod } from "@/utils/types";
 const pageCount = {} as any;
-function resetPageCounts() {
+export function resetPageCounts() {
 	Object.keys(pageCount).forEach((key) => {
 		delete pageCount[key];
 	});
@@ -38,7 +38,7 @@ function MainOnline() {
 	const onlinePath = useAtomValue(ONLINE_PATH);
 	const onlineSort = useAtomValue(ONLINE_SORT);
 	const setRightSlideOverOpen = useSetAtom(RIGHT_SLIDEOVER_OPEN);
-	const [selected, setSelected] = useAtom(ONLINE_SELECTED);
+	const [_, setSelected] = useAtom(ONLINE_SELECTED);
 	const types = useAtomValue(TYPES)
 	const [visibleRange, setVisibleRange] = useState({ start: -1, end: -1 });
 	const game = useAtomValue(GAME);
@@ -56,7 +56,7 @@ function MainOnline() {
 		const res = await fetch(url);
 		const data = await res.json();
 		setOnlineData((prev) => {
-			prev[onlinePath] = [...prev[onlinePath], ...data._aRecords];
+			prev[onlinePath] = [...(prev[onlinePath] as OnlineMod[]), ...data._aRecords];
 			return {
 				...prev,
 			};
@@ -176,7 +176,7 @@ function MainOnline() {
 		//console.log("fetching1", onlineData,onlinePath);
 		//console.log("fetching2");
 		//console.log("fetching3");
-		console.log("fetching", onlinePath, types);
+		//console.log("fetching", onlinePath, types);
 		if (!onlineData[onlinePath]) {
 			pageCount[onlinePath] = 1;
 			loadingRef.current = true;
@@ -216,7 +216,7 @@ function MainOnline() {
 	// Memoize filtered banner data
 	const filteredBannerData = useMemo(() => {
 		if (!onlineData?.banner) return [];
-		return onlineData.banner.filter(
+		return (onlineData.banner as OnlineMod[]).filter(
 			(item) => (item._sModelName == "Mod" || onlineType == "") && (nsfw || item._sInitialVisibility != "hide")
 		);
 	}, [onlineData?.banner, onlineType, nsfw]);
@@ -224,7 +224,7 @@ function MainOnline() {
 	// Memoize filtered online data
 	const filteredOnlineData = useMemo(() => {
 		if (!onlineData[onlinePath]) return [];
-		return onlineData[onlinePath].filter((item) => nsfw || item._sInitialVisibility != "hide");
+		return (onlineData[onlinePath]as OnlineMod[]).filter((item) => nsfw || item._sInitialVisibility != "hide");
 	}, [onlineData, onlinePath, nsfw]);
 	// Memoize animation variants to prevent recreation on every render
 	const animationVariants = useMemo(

@@ -16,6 +16,7 @@ function Progress() {
 			});
 		}
 	}, [restoreInfo]);
+	//console.log(restoreInfo);
 	return (
 		<motion.div
 			initial={{ opacity: 0, filter: "blur(6px)" }}
@@ -30,9 +31,10 @@ function Progress() {
 				{restoreInfo.title
 					.replace("Creating Restore Point", textData._Progress.CreatingRestorePoint)
 					.replace("Restore Point Created", textData._Progress.RestorePointCreated)
-					.replace("Restoring from", textData._Progress.RestoringFrom)
+					.replace("Restoring from", (textData._Progress.RestoringFrom + (restoreInfo.title.startsWith("Restoring from")?`: ${restoreInfo.name}`:"")))
 					.replace("Operation Cancelled", textData._Progress.OperationCancelled)
-					.replace("Restoration Completed", textData._Progress.RestorationCompleted)}
+					.replace("Restoration Completed", textData._Progress.RestorationCompleted)
+					}
 			</div>
 			<div className="w-120 bg-background/50 h-8 overflow-hidden border rounded-lg data-zzz:rounded-full data-zzz:border-2">
 				<div
@@ -47,7 +49,7 @@ function Progress() {
 				<label id="restore-progress-percentage">0%</label>
 			</div>
 			<Button
-				className={"w-32 my-6 " + (!restoreInfo.finished && "hover:bg-red-300 hover:text-background text-red-300")}
+				className={"w-32 my-6 " + (!restoreInfo.finished && "hover:bg-destructive hover:text-background text-destructive")}
 				onClick={async () => {
 					setRestoreInfo((prev) => ({ ...prev, finished: true }));
 					if (!restoreInfo.finished) {

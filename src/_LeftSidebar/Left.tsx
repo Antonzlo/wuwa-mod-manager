@@ -1,8 +1,6 @@
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel } from "@/components/ui/sidebar";
-
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroupLabel } from "@/components/ui/sidebar";
 import { Globe, HardDriveDownload } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-
 import { Button } from "@/components/ui/button";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { GAME, LEFT_SIDEBAR_OPEN, ONLINE, SETTINGS, TEXT_DATA } from "@/utils/vars";
@@ -17,9 +15,9 @@ import Downloads from "./components/Downloads";
 function LeftSidebar() {
 	const leftSidebarOpen = useAtomValue(LEFT_SIDEBAR_OPEN);
 	const textData = useAtomValue(TEXT_DATA);
-	const setSettings = useSetAtom(SETTINGS);
 	const [online, setOnline] = useAtom(ONLINE);
-	const [game, setGame] = useAtom(GAME);
+	const setGame = useSetAtom(GAME);
+	const game = useAtomValue(SETTINGS).global.game;
 	useInstalledItemsManager();
 	return (
 		<Sidebar collapsible="icon" className="pointer-events-auto">
@@ -29,37 +27,29 @@ function LeftSidebar() {
 						<div
 							id="IMMLogo"
 							className="aspect-square logo h-10"
-							onClick={(e) => {
-								// setTutorialMode(true);
-								// setSettings((prev) => ({ ...prev, glo/bal: { ...prev.global, game: "" } }));
-							if(e.isTrusted)
+							onClick={() => {
 								setGame("");
 							}}
 						></div>
 						<div
-							className="flex flex-col w-24 min-w-fit text-center duration-200 ease-linear"
+							className="flex flex-col max-w-28 min-w-28 text-center duration-200 ease-linear"
 							style={{
-								marginRight: leftSidebarOpen ? "" : "-7.125rem",
+								marginRight: leftSidebarOpen ? "" : "-8.125rem",
 								opacity: leftSidebarOpen ? "" : "0",
 							}}
 						>
 							<label className="text-2xl text-[#eaeaea] min-w-fit">
-								{{
-									WW: "WuWa",
-									ZZ: "ZZZ",
-								}[game] || "Integrated"}
+								{{ "": "", WW: "WuWa", ZZ: "Z·Z·Z" }[game] || "Integrated"}
 							</label>
 							<label className="min-w-fit text-accent opacity-75 textaccent text-sm">Mod Manager</label>
 						</div>
 					</div>
-					<div
-						className="duration-200 px-0 w-full mt-2.5"
-					>
+					<div className="duration-200 px-0 w-full mt-2.5">
 						<SidebarGroupLabel>{textData._LeftSideBar._Left.Mode}</SidebarGroupLabel>
 						<div
 							className="min-h-fit grid grid-cols-2 justify-between px-2 w-full gap-2 overflow-hidden"
 							style={{
-								gridTemplateColumns:leftSidebarOpen?"": "repeat(1, minmax(0, 1fr))",
+								gridTemplateColumns: leftSidebarOpen ? "" : "repeat(1, minmax(0, 1fr))",
 							}}
 						>
 							<Button
@@ -88,7 +78,7 @@ function LeftSidebar() {
 							</Button>
 						</div>
 					</div>
-					
+
 					<Separator
 						className="w-full ease-linear duration-200 min-h-[1px] my-2.5 bg-border"
 						style={{
@@ -128,7 +118,6 @@ function LeftSidebar() {
 							<Settings leftSidebarOpen={leftSidebarOpen} />
 						</div>
 					</SidebarFooter>
-					
 				</div>
 			</SidebarContent>
 		</Sidebar>

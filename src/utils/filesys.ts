@@ -47,7 +47,7 @@ const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "bas
 const sp = [UNCATEGORIZED, IGNORE, OLD_RESTORE];
 let recentlyDownloaded: string[] = [];
 store.sub(DOWNLOAD_LIST, () => {
-	recentlyDownloaded = store.get(DOWNLOAD_LIST).completed.map((item:any) => item.path);
+	recentlyDownloaded = store.get(DOWNLOAD_LIST).completed.map((item: any) => item.path);
 });
 let src = "";
 let rootReplace = "";
@@ -113,7 +113,7 @@ export async function saveConfigs(skip = false, settings = store.get(SETTINGS)) 
 		}
 		await Promise.all(promises);
 	} catch (error) {
-		console.error("Error saving configs:", error);
+		//console.error("Error saving configs:", error);
 		throw error;
 	}
 }
@@ -208,7 +208,7 @@ async function copyDir(src: string, dest: string, withProgress = false) {
 	} catch (error) {
 		canceled = true;
 		result = "An Error Occurred";
-		console.error("Error copying directory:", error);
+		//console.error("Error copying directory:", error);
 		throw error;
 	}
 }
@@ -240,7 +240,7 @@ export async function getRestorePoints(): Promise<string[]> {
 			.sort()
 			.reverse();
 	} catch (error) {
-		console.error("Error getting restore points:", error);
+		//console.error("Error getting restore points:", error);
 		return [];
 	}
 }
@@ -249,7 +249,7 @@ export async function previewRestorePoint(point: string) {
 	if (!(await exists(path))) return [];
 	let entries = await readDirRecr(path, "", 2);
 	let categories = store.get(CATEGORIES) || [];
-	console.log(entries);
+	//console.log(entries);
 	return entries.map((entry: Mod) => {
 		let category = categories.find((cat) => cat._sName == entry.name);
 		if (category && entry.isDir) entry.icon = category._sIconUrl;
@@ -264,6 +264,7 @@ export async function restoreFromPoint(point: string) {
 		finished: false,
 		button: "Cancel",
 		open: true,
+		name: point,
 	});
 	progressBar = document.querySelector("#restore-progress");
 	progressMessage = document.querySelector("#restore-progress-message");
@@ -291,13 +292,14 @@ export async function restoreFromPoint(point: string) {
 		await countFilesInDir(path);
 		result = "Ok";
 		rootReplace = join(modRoot, RESTORE, point);
-		await copyDir(path, modRoot, true);
+		await copyDir(path, point.startsWith("ORG") ? src : modRoot, true);
 	}
 	store.set(PROGRESS_OVERLAY, (prev) => ({
 		title: result == "Ok" ? "Restoration Completed" : result,
 		finished: true,
 		button: "Close",
 		open: prev.open,
+		name: point,
 	}));
 	return null;
 }
@@ -307,6 +309,7 @@ export async function createRestorePoint(prefix = "") {
 		button: "Cancel",
 		finished: false,
 		open: true,
+		name: prefix,
 	});
 	progressBar = document.querySelector("#restore-progress");
 	progressMessage = document.querySelector("#restore-progress-message");
@@ -349,6 +352,7 @@ export async function createRestorePoint(prefix = "") {
 		button: "Close",
 		finished: true,
 		open: prev.open,
+		name: prefix,
 	}));
 	return null;
 }
@@ -363,7 +367,7 @@ export async function checkOldVerDirs(src: string) {
 		}
 		return checkFolders === 3;
 	} catch (error) {
-		console.error("Error checking old version directories:", error);
+		//console.error("Error checking old version directories:", error);
 		return false;
 	}
 }
@@ -383,7 +387,7 @@ export async function categorizeDir(src: string, skipRestore = false) {
 				try {
 					await rename(join(src, OLD_RESTORE), join(src, RESTORE));
 				} catch (error) {
-					console.error("Error renaming OLD_RESTORE:", error);
+					//console.error("Error renaming OLD_RESTORE:", error);
 				}
 				continue;
 			}
@@ -419,15 +423,15 @@ export async function categorizeDir(src: string, skipRestore = false) {
 		for (const [key, list] of Object.entries(reqCategories)) {
 			for (const item of list) {
 				renamePromises.push(
-					rename(join(src, item.name), join(src, key, replaceDisabled(item.name))).catch((error) => {
-						console.error(`Error renaming ${item.name}:`, error);
+					rename(join(src, item.name), join(src, key, replaceDisabled(item.name))).catch(() => {
+						//console.error(`Error renaming ${item.name}:`, error);
 					})
 				);
 			}
 		}
 		await Promise.all(renamePromises);
 	} catch (error) {
-		console.error("Error categorizing directory:", error);
+		//console.error("Error categorizing directory:", error);
 		throw error;
 	}
 }
@@ -505,8 +509,8 @@ export async function verifyDirStruct() {
 				readPromises.push(
 					readDir(join(src, item.name))
 						.then((entries) => ({ item, entries, category }))
-						.catch((error) => {
-							console.error(`Error reading directory ${item.name}:`, error);
+						.catch(() => {
+							//console.error(`Error reading directory ${item.name}:`, error);
 							return { item, entries: [], category };
 						})
 				);
@@ -526,7 +530,7 @@ export async function verifyDirStruct() {
 
 		// Process all read operations in parallel
 		const readResults = await Promise.all(readPromises);
-		for (const { item, entries, category } of readResults as any) {
+		for (const { entries, category } of readResults as any) {
 			if (!reqCategories[category._sName]) {
 				reqCategories[category._sName] = {
 					name: category._sName,
@@ -569,8 +573,8 @@ export async function verifyDirStruct() {
 						modDirReadPromises.push(
 							readDir(join(modDir, item.name))
 								.then((entries) => ({ category, entries }))
-								.catch((error) => {
-									console.error(`Error reading modDir category ${item.name}:`, error);
+								.catch(() => {
+									//console.error(`Error reading modDir category ${item.name}:`, error);
 									return { category, entries: [] };
 								})
 						);
@@ -592,7 +596,7 @@ export async function verifyDirStruct() {
 					);
 				}
 			} catch (error) {
-				console.error("Error processing modDir:", error);
+				//console.error("Error processing modDir:", error);
 			}
 		}
 		for (const key of Object.keys(reqCategories)) {
@@ -617,7 +621,7 @@ export async function createManagedDir() {
 		await mkdir(join(tgt, "Mods", managedTGT), { recursive: true });
 		return true;
 	} catch (error) {
-		console.error("Error creating managed directories:", error);
+		//console.error("Error creating managed directories:", error);
 		throw error;
 	}
 }
@@ -650,7 +654,7 @@ export async function applyChanges(isMigration = false) {
 					try {
 						await copyDir(join(src, RESTORE), join(src, managedSRC, RESTORE));
 					} catch (e) {
-						console.error(`Error handling RESTORE directory:`, e);
+						//console.error(`Error handling RESTORE directory:`, e);
 					}
 				}
 				continue;
@@ -659,7 +663,7 @@ export async function applyChanges(isMigration = false) {
 			try {
 				await rename(join(src, key), join(src, managedSRC, key));
 			} catch (error) {
-				console.error(`Error renaming ${key}:`, error);
+				//console.error(`Error renaming ${key}:`, error);
 				continue;
 			}
 
@@ -675,8 +679,8 @@ export async function applyChanges(isMigration = false) {
 
 				if (isDisabled) {
 					itemOperations.push(
-						rename(join(src, managedSRC, key, item.name), join(src, managedSRC, key, name)).catch((error) => {
-							console.error(`Error renaming disabled item ${item.name}:`, error);
+						rename(join(src, managedSRC, key, item.name), join(src, managedSRC, key, name)).catch(() => {
+							//console.error(`Error renaming disabled item ${item.name}:`, error);
 						})
 					);
 				} else {
@@ -684,8 +688,8 @@ export async function applyChanges(isMigration = false) {
 						invoke<void>("create_symlink", {
 							linkPath: join(target, key, name),
 							targetPath: join(src, managedSRC, key, name),
-						}).catch((error) => {
-							console.error(`Error creating symlink for ${name}:`, error);
+						}).catch(() => {
+							//console.error(`Error creating symlink for ${name}:`, error);
 						}) as Promise<void>
 					);
 				}
@@ -694,7 +698,7 @@ export async function applyChanges(isMigration = false) {
 		}
 		return true;
 	} catch (error) {
-		console.error("Error applying changes:", error);
+		//console.error("Error applying changes:", error);
 		throw error;
 	}
 }
@@ -773,7 +777,7 @@ async function detectHotkeys(entries: Mod[], data: ModDataObj, src: string): Pro
 						}
 					}
 				} catch (iniError) {
-					console.error(`Error parsing .ini file ${entry.name}:`, iniError);
+					//console.error(`Error parsing .ini file ${entry.name}:`, iniError);
 				}
 			}
 
@@ -786,7 +790,7 @@ async function detectHotkeys(entries: Mod[], data: ModDataObj, src: string): Pro
 				}
 			}
 		} catch (entryError) {
-			console.error(`Error processing entry ${entry.name}:`, entryError);
+			//console.error(`Error processing entry ${entry.name}:`, entryError);
 		}
 	}
 
@@ -820,8 +824,8 @@ export async function refreshModList() {
 							entry.name = newName;
 							entry.path = newPath;
 						})
-						.catch((error) => {
-							console.error(`Error renaming ${entry.name}:`, error);
+						.catch(() => {
+							//console.error(`Error renaming ${entry.name}:`, error);
 						})
 				);
 			}
@@ -841,10 +845,12 @@ export async function refreshModList() {
 		for (const { entry, enabled } of existsResults) {
 			entry.enabled = enabled;
 		}
-		console.log(recentlyDownloaded);	
-		return entries.filter((entry)=> recentlyDownloaded.includes(entry.path)).concat(entries.filter((entry)=> !recentlyDownloaded.includes(entry.path)));
+		//console.log(recentlyDownloaded);
+		return entries
+			.filter((entry) => recentlyDownloaded.includes(entry.path))
+			.concat(entries.filter((entry) => !recentlyDownloaded.includes(entry.path)));
 	} catch (error) {
-		console.error("Error refreshing mod list:", error);
+		//console.error("Error refreshing mod list:", error);
 		throw error;
 	}
 }
@@ -856,7 +862,7 @@ export async function createModDownloadDir(cat: string, dir: string) {
 		await mkdir(path, { recursive: true });
 		return path;
 	} catch (error) {
-		console.error("Error creating mod download directory:", error);
+		//console.error("Error creating mod download directory:", error);
 		throw error;
 	}
 }
@@ -884,17 +890,17 @@ export async function validateModDownload(path: string) {
 					await copyDir(tempPath, path);
 					await remove(tempPath, { recursive: true });
 				} catch (error) {
-					console.error("Error flattening mod directory structure:", error);
+					//console.error("Error flattening mod directory structure:", error);
 				}
 			}
 		}
 		const downloads = store.get(DOWNLOAD_LIST);
-		const completed = downloads.completed.length + 1;
+		const completed = downloads.completed.length;
 		const total = completed + downloads.queue.length;
 		addToast({ type: "success", message: `${textData._Toasts.DownloadComplete} (${completed}/${total})` });
 	} catch (error) {
 		addToast({ type: "error", message: textData._Toasts.ErrDownload });
-		console.error("Error validating mod download:", error);
+		//console.error("Error validating mod download:", error);
 	}
 	return true;
 }
@@ -907,7 +913,7 @@ export async function changeModName(path: string, newPath: string) {
 		// addToast({ type: "success", message: "Mod renamed successfully!" });
 		return newPath;
 	} catch (error) {
-		console.error("Error changing mod name:", error);
+		//console.error("Error changing mod name:", error);
 		// addToast({ type: "error", message: "Error changing mod name." });
 		throw error;
 	}
@@ -919,7 +925,7 @@ export async function deleteRestorePoint(point: string) {
 		addToast({ type: "success", message: textData._Toasts.Deleted });
 		return true;
 	} catch (error) {
-		console.error("Error deleting restore point:", error);
+		//console.error("Error deleting restore point:", error);
 		addToast({ type: "error", message: textData._Toasts.ErrOcc });
 		return false;
 	}
@@ -931,14 +937,14 @@ export async function deleteMod(path: string) {
 	try {
 		await remove(modTgt);
 	} catch (error) {
-		console.error("Error removing mod target:", error);
+		//console.error("Error removing mod target:", error);
 	}
 
 	try {
 		await remove(modSrc, { recursive: true });
 		addToast({ type: "success", message: textData._Toasts.Deleted });
 	} catch (error) {
-		console.error("Error removing mod source:", error);
+		//console.error("Error removing mod source:", error);
 		addToast({ type: "error", message: textData._Toasts.ErrOcc });
 		throw error;
 	}
@@ -959,7 +965,7 @@ export async function toggleMod(path: string, enabled: boolean) {
 						targetPath: modSrc,
 					});
 				} catch (error) {
-					console.error("Error creating symlink:", error);
+					//console.error("Error creating symlink:", error);
 					return false;
 				}
 			}
@@ -967,13 +973,13 @@ export async function toggleMod(path: string, enabled: boolean) {
 			try {
 				await remove(modTgt);
 			} catch (error) {
-				console.error("Error removing mod:", error);
+				//console.error("Error removing mod:", error);
 				return false;
 			}
 		}
 		return true;
 	} catch (error) {
-		console.error("Error toggling mod:", error);
+		//console.error("Error toggling mod:", error);
 		return false;
 	}
 }
@@ -1003,7 +1009,7 @@ export async function savePreviewImage(path: string) {
 		store.set(LAST_UPDATED, Date.now());
 		addToast({ type: "success", message: textData._Toasts.ImgSaved });
 	} catch (error) {
-		console.error("Error saving preview image:", error);
+		//console.error("Error saving preview image:", error);
 		addToast({ type: "error", message: textData._Toasts.ErrOcc });
 		throw error;
 	}
@@ -1019,8 +1025,8 @@ export async function applyPreset(data: string[], name = "") {
 			const batch = data.slice(i, i + batchSize);
 			await Promise.all(
 				batch.map((mod) =>
-					toggleMod(mod, true).catch((error) => {
-						console.error(`Error toggling mod ${mod}:`, error);
+					toggleMod(mod, true).catch(() => {
+						//console.error(`Error toggling mod ${mod}:`, error);
 					})
 				)
 			);
@@ -1029,7 +1035,7 @@ export async function applyPreset(data: string[], name = "") {
 			addToast({ type: "success", message: textData._Toasts.PresetApplied });
 		}
 	} catch (error) {
-		console.error("Error applying preset:", error);
+		//console.error("Error applying preset:", error);
 		if (name) addToast({ type: "error", message: textData._Toasts.ErrOcc });
 		throw error;
 	}

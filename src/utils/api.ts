@@ -1,12 +1,18 @@
 // API client for communicating with Flask backend
 
 import { VERSION } from "./consts";
+import { saveConfigs } from "./filesys";
 import { Category } from "./types";
+import { SETTINGS, store } from "./vars";
 
 const API_BASE_URL = "https://gamebanana.com/apiv11/";
 const HEALTH_CHECK = "https://health.wwmm.bhatt.jp/health";
 class ApiClient {
 	private GAME = "WW";
+	private CLIENT = "";
+	setClient(client: string) {
+		this.CLIENT = client;
+	}
 	private readonly GAME_DATA = {
 		WW: {
 			id: {
@@ -402,8 +408,8 @@ class ApiClient {
 		},
 		ZZ: {
 			id: {
-				categories:"30305",
-				game:"19567"
+				categories: "30305",
+				game: "19567",
 			},
 			categoryList: [
 				{
@@ -1227,6 +1233,7 @@ class ApiClient {
 	}
 
 	async categories() {
+		//console.log("Fetching categories...", await this.healthCheck());
 		try {
 			const fetchWithRetry = async (timeouts: number[] = [2000, 5000]): Promise<any> => {
 				for (let i = 0; i < timeouts.length; i++) {
@@ -1255,22 +1262,10 @@ class ApiClient {
 			return this.categoryList;
 		} catch (error) {
 			return [];
-			console.error("Failed to fetch categories:", error);
+			//console.error("Failed to fetch categories:", error);
 			throw error;
 		}
 	}
-
-	// async types() {
-	// 	try {
-	// 		const response = await this.makeRequest(
-	// 			`Mod/Categories?_idGameRow=${this.id.game}&_sSort=a_to_z&_bShowEmpty=true`
-	// 		);
-	// 		return response;
-	// 	} catch (error) {
-	// 		console.error("Failed to fetch types:", error);
-	// 		throw error;
-	// 	}
-	// }
 
 	home({ sort = "default", page = 1, type = "" }: { sort?: string; page?: number; type?: string }) {
 		return `${API_BASE_URL}Game/${this.id.game}/Subfeed?${
@@ -1295,7 +1290,7 @@ class ApiClient {
 			const response = await this.makeRequest(`${mod}/ProfilePage`, signal && { signal });
 			return response;
 		} catch (error) {
-			console.error("Failed to fetch categories:", error);
+			//console.error("Failed to fetch categories:", error);
 			throw error;
 		}
 	}
@@ -1305,7 +1300,7 @@ class ApiClient {
 			const response = await this.makeRequest(`${mod}/Updates?_nPage=1&_nPerpage=1`, signal && { signal });
 			return response;
 		} catch (error) {
-			console.error("Failed to fetch categories:", error);
+			//console.error("Failed to fetch categories:", error);
 			throw error;
 		}
 	}
@@ -1315,14 +1310,21 @@ class ApiClient {
 		}&_sSearchString=${encodeURIComponent(term)}&_nPage=${page}`;
 	}
 
-	async healthCheck(clientDate?: string) {
+	async healthCheck() {
+		// return VERSION+"/"+this.GAME+"/"+(this.CLIENT||("_"+Date.now()));
+		//console.log(this.CLIENT, VERSION, this.GAME, this.CLIENT);
+		const base = `${HEALTH_CHECK}/${VERSION || "2.0.1"}/${this.GAME || "WW"}`;
+		//console.log(base);
 		try {
-			if (clientDate) fetch(`${HEALTH_CHECK}/${VERSION || "2.0.1"}/${clientDate}`);
+			if (this.CLIENT) fetch(`${base}/${this.CLIENT}`);
 			else {
-				fetch(`${HEALTH_CHECK}/${VERSION || "2.0.1"}/_${Date.now()}`)
+				fetch(`${base}/_${Date.now()}`)
 					.then((res) => res.json())
 					.then((data) => {
 						if (data.client) {
+							this.CLIENT = data.client;
+							store.set(SETTINGS, (prev) => ({ ...prev, global: { ...prev.global, clientDate: data.client } }));
+							saveConfigs();
 							// config.settings.clientDate = data.client;
 							// store.set(settingsDataAtom, config.settings as Settings);
 							// saveConfig();
@@ -1330,7 +1332,7 @@ class ApiClient {
 					});
 			}
 		} catch (error) {
-			console.error("Health check failed:", error);
+			//console.error("Health check failed:", error);
 		}
 	}
 }

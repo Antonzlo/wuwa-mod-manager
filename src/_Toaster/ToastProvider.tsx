@@ -1,7 +1,7 @@
 import { store, TOASTS } from "@/utils/vars";
 import { useAtomValue } from "jotai";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 let counter = 0;
 export function addToast({
@@ -32,7 +32,7 @@ function ToastProvider() {
 	// 		setMousePosition({ x: event.clientX, y: event.clientY });
 	// 	};
 	// 	window.addEventListener("mousemove", handleMouseMove);
-	// 	window.addEventListener("scroll", ()=>{console.log("Scrolling")});
+	// 	window.addEventListener("scroll", ()=>{//console.log("Scrolling")});
 	// 	return () => window.removeEventListener("mousemove", handleMouseMove);
 	// }, []);
 	return createPortal(

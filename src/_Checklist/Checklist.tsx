@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import Page1 from "./pages/Page1";
-
 import Page2 from "./pages/Page2";
 import Page3 from "./pages/Page3";
 import Page4 from "./pages/Page4";

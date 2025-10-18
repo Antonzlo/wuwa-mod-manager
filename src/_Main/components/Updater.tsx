@@ -97,8 +97,8 @@ function Updater() {
 								),
 								error: (
 									<div className="min-w-24 min-h-12 text-background bg-accent flex items-center justify-center w-full gap-1 pointer-events-none">
-										<CircleAlert className="min-h-4 min-w-4 text-red-300" />
-										<Label className=" w-fit max-w-24 text-xs pointer-events-none text-red-300">
+										<CircleAlert className="min-h-4 min-w-4 text-destructive" />
+										<Label className=" w-fit max-w-24 text-xs pointer-events-none text-destructive">
 											{textData._Main._components._Updater.Error}
 										</Label>
 									</div>
@@ -129,7 +129,7 @@ function Updater() {
 					{update ? (
 						<>
 							{maj.length > 0 && <div className="min-h-6 text-accent">{textData._Main._components._Updater.Maj}:</div>}
-							{[...maj,...maj,...maj].map((item: string, index: number) => (
+							{maj.map((item: string, index: number) => (
 								<div key={index} className="min-h-fit text-lg text-muted-foreground flex items-center mt-1 gap-2">
 									<div className="min-w-1 min-h-1 self-start mt-3 aspect-square bg-accent rounded-full"></div>
 									<div>{item}</div>

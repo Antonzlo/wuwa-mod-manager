@@ -20,6 +20,7 @@ import {
 
 // const init = { settings: true };
 const INIT_DONE = atom(false);
+const FIRST_LOAD = atom(false);
 const GAME = atom<Games>("");
 const LANG = atom<Language>("en");
 //saved
@@ -79,19 +80,29 @@ const CHANGES = atom<ChangeInfo>({
 	title: "",
 });
 const TEXT_DATA = atom(TEXT["en"]);
-const PROGRESS_OVERLAY = atom<ProgressData>({ title: "", open: false, finished: false, button: "" });
+const PROGRESS_OVERLAY = atom<ProgressData>({ title: "", open: false, finished: false, button: "", name:"" });
 export interface UpdateInfo {
 	version: string;
 	status: "available" | "downloading" | "ready" | "error" | "installed";
 	date: string;
 	body: string;
-	raw:any|null;
+	raw: any | null;
 }
 const IMM_UPDATE = atom(null as UpdateInfo | null);
 const UPDATER_OPEN = atom(false);
+const NOTICE = atom({
+	heading: "",
+	subheading: "",
+	ignoreable: 2,
+	timer: 10,
+	ver: "2.1.0",
+	id: 0,
+} as any);
+const HELP_OPEN = atom(false);
+const TUTORIAL_OPEN = atom(false);
+const NOTICE_OPEN = atom(false);
 export function resetAtoms() {
 	const atoms = {
-		
 		INIT_DONE,
 		LANG,
 		GAME,
@@ -123,6 +134,11 @@ export function resetAtoms() {
 	);
 }
 export {
+	FIRST_LOAD,
+	HELP_OPEN,
+	TUTORIAL_OPEN,
+	NOTICE,
+	NOTICE_OPEN,
 	UPDATER_OPEN,
 	IMM_UPDATE,
 	PROGRESS_OVERLAY,

@@ -5,7 +5,7 @@ export type Language = "en" | "cn" | "jp" | "kr" | "ru";
  * Switch between WuWa and ZZZ themes
  * @param theme - The theme to switch to ('wuwa' or 'zzz')
  */
-let interval = null as any;
+// let interval = null as any;
 export function switchGameTheme(theme: GameTheme): void {
 	const root = document.documentElement;
 

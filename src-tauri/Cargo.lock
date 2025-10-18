@@ -2166,6 +2166,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "integrated-mod-manager"
+version = "2.1.0"
+dependencies = [
+ "env_logger",
+ "futures-util",
+ "log",
+ "mime_guess",
+ "once_cell",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sevenz-rust2",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-fs",
+ "tauri-plugin-global-shortcut",
+ "tauri-plugin-http",
+ "tauri-plugin-opener",
+ "tauri-plugin-updater",
+ "tempfile",
+ "tokio",
+ "tokio-util",
+ "unrar",
+ "urlencoding",
+ "warp",
+ "winapi",
+ "zip",
+]
+
+[[package]]
 name = "ipnet"
 version = "2.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6374,37 +6405,6 @@ dependencies = [
  "windows-core",
  "windows-version",
  "x11-dl",
-]
-
-[[package]]
-name = "wuwa-mod-manager"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "futures-util",
- "log",
- "mime_guess",
- "once_cell",
- "reqwest",
- "serde",
- "serde_json",
- "sevenz-rust2",
- "tauri",
- "tauri-build",
- "tauri-plugin-dialog",
- "tauri-plugin-fs",
- "tauri-plugin-global-shortcut",
- "tauri-plugin-http",
- "tauri-plugin-opener",
- "tauri-plugin-updater",
- "tempfile",
- "tokio",
- "tokio-util",
- "unrar",
- "urlencoding",
- "warp",
- "winapi",
- "zip",
 ]
 
 [[package]]

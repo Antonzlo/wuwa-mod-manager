@@ -1,10 +1,16 @@
 import { useEffect } from "react";
-import { IMAGER_SERVER, managedSRC } from "./consts";
-import { DATA, GAME, INSTALLED_ITEMS, LAST_UPDATED, ONLINE_DATA, SOURCE, store } from "./vars";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { IMAGE_SERVER, managedSRC } from "./consts";
+import { DATA, GAME, INSTALLED_ITEMS, LANG, ONLINE_DATA, SOURCE, store } from "./vars";
+import { useAtom, useAtomValue } from "jotai";
 import { apiClient } from "./api";
 import { join } from "./hotreload";
+import { addToast } from "@/_Toaster/ToastProvider";
+import { TEXT } from "./text";
 export { join };
+let IMAGE_SERVER_URL = IMAGE_SERVER;
+export function setImageServer(url: string) {
+	IMAGE_SERVER_URL = url;
+}
 const reservedWindowsNames = /^(con|prn|aux|nul|com\d|lpt\d)$/i;
 const illegalCharacters = /[<>:"/\\|?*\x00-\x1F]/g;
 export function safeLoadJson(cur: any, neww: any) {
@@ -19,29 +25,27 @@ export function safeLoadJson(cur: any, neww: any) {
 	return cur;
 }
 export function sanitizeFileName(input: string, options: any = {}): string {
-	
 	const { replacement = "_", defaultName = "untitled", maxLength = 255 } = options;
-	
+
 	if (typeof input !== "string") {
 		return defaultName;
 	}
-	
+
 	let sanitized = input.replace(illegalCharacters, replacement);
-	
-	
+
 	const baseName = sanitized.split(".")[0];
 	if (reservedWindowsNames.test(baseName)) {
 		sanitized = replacement + sanitized;
 	}
-	
+
 	sanitized = sanitized.trim().replace(/^[.]+|[.]+$/g, "");
-	
+
 	if (sanitized.length > maxLength) {
 		sanitized = sanitized.substring(0, maxLength);
-		
+
 		sanitized = sanitized.trim().replace(/^[.]+|[.]+$/g, "");
 	}
-	
+
 	if (sanitized.length === 0) {
 		return defaultName;
 	}
@@ -69,15 +73,15 @@ export function preventContextMenu(event: React.MouseEvent): void {
 	// event.currentTarget.dispatchEvent(new MouseEvent("mouseup", { button: 2, bubbles: true }));
 }
 let src = "";
-let lastUpdated = 0;
-store.sub(LAST_UPDATED, () => {
-	lastUpdated = Date.now();
-});
+// let lastUpdated = 0;
+// store.sub(LAST_UPDATED, () => {
+// 	lastUpdated = Date.now();
+// });
 store.sub(SOURCE, () => {
 	src = store.get(SOURCE);
 });
 export function getImageUrl(path: string): string {
-	return `${IMAGER_SERVER}/${src}/${managedSRC}/${path}`;
+	return `${IMAGE_SERVER_URL}/${src}/${managedSRC}/${path}`;
 }
 const PRIORITY_KEYS = ["Alt", "Ctrl", "Shift", "Capslock", "Tab", "Up", "Down", "Left", "Right"];
 const PRIORITY_SET = new Set(PRIORITY_KEYS);
@@ -148,8 +152,9 @@ export function modRouteFromURL(url: string): string {
 	let modId = url?.split("mods/").pop()?.split("/")[0] || "";
 	return modId ? "Mod/" + modId : "";
 }
+let initialCheck = true;
 export function useInstalledItemsManager() {
-	const setInstalledItems = useSetAtom(INSTALLED_ITEMS);
+	const [installedItems, setInstalledItems] = useAtom(INSTALLED_ITEMS);
 	const localData = useAtomValue(DATA);
 	const onlineData = useAtomValue(ONLINE_DATA);
 	async function checkModStatus(item: any) {
@@ -190,6 +195,26 @@ export function useInstalledItemsManager() {
 				return { ...item, modStatus };
 			})
 		);
+		const newCount = processedItems.filter((item) => item.modStatus === 2).length;
+		// const pendingCount = processedItems.filter((item) => item.modStatus === 1).length;
+
+		if (initialCheck) {
+			// //console.log("Showing toast for new updates");
+			initialCheck = false;
+			setTimeout(() => {
+				if (newCount > 0)
+					addToast({
+						type: "info",
+						message: TEXT[(store.get(LANG) || "en") as keyof typeof TEXT]._Toasts.NewUpdates.replace(
+							"<new/>",
+							newCount.toString()
+						),
+						duration: 10000,
+					});
+				else
+					addToast({ type: "info", message: TEXT[(store.get(LANG) || "en") as keyof typeof TEXT]._Toasts.ModsLoaded });
+			}, 3500);
+		}
 		setInstalledItems(
 			processedItems.sort((a: any, b: any) => {
 				const flagDiff = b.modStatus - a.modStatus;
@@ -202,6 +227,9 @@ export function useInstalledItemsManager() {
 			})
 		);
 	}
+	useEffect(() => {
+		if (installedItems.length == 0) initialCheck = true;
+	}, [installedItems]);
 	useEffect(() => {
 		if (Object.keys(localData).length > 0) {
 			updateInstalledItems({ ...localData });

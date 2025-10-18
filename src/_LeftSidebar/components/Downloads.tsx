@@ -17,7 +17,7 @@ const Icons = {
 	pending: <Clock className="min-h-4 min-w-4 max-w-4" />,
 	downloading: <Loader2 className="min-h-4 min-w-4 max-w-4 animate-spin" />,
 	completed: <Check className="min-h-4 min-w-4 max-w-4" />,
-	failed: <X className="min-h-4 min-w-4 max-w-4 text-red-300" />,
+	failed: <X className="min-h-4 min-w-4 max-w-4 text-destructive" />,
 };
 function Downloads() {
 	const textData = useAtomValue(TEXT_DATA);
@@ -289,7 +289,7 @@ function Downloads() {
 													variant="ghost"
 													size="sm"
 													onClick={() => cancelDownload(index)}
-													className="hover:text-red-300 text-red-400"
+													className="hover:text-destructive text-red-400"
 												>
 													<X className="w-4 h-4" />
 												</Button>

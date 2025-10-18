@@ -21,6 +21,7 @@ export interface GlobalSettings {
 	game: Games;
 	version?: string;
 	updatedAt?: string;
+	notice?: number;	
 }
 export interface GameSettings {
 	launch: 0 | 1;
@@ -107,6 +108,7 @@ export interface ProgressData {
 	finished: boolean;
 	button: string;
 	open: boolean;
+	name:string;
 }
 export interface InstalledItem {
 	name: string;

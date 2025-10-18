@@ -1,8 +1,7 @@
-import { addToast } from "@/_Toaster/ToastProvider";
 import { saveConfigs } from "@/utils/filesys";
 import { initGame, main } from "@/utils/init";
 import { switchGameTheme } from "@/utils/theme";
-import { GAME, INIT_DONE, LANG, SETTINGS, TEXT_DATA } from "@/utils/vars";
+import { GAME, INIT_DONE, SETTINGS, TEXT_DATA } from "@/utils/vars";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 
@@ -11,7 +10,6 @@ function Page2({ setPage }: { setPage: (page: number) => void }) {
 	const game = useAtomValue(GAME);
 	const setInitDone = useSetAtom(INIT_DONE);
 	const [settings, setSettings] = useAtom(SETTINGS);
-	const setLang = useSetAtom(LANG);
 	useEffect(() => {
 		if (game) setPage(2);
 	}, [game]);
@@ -42,7 +40,7 @@ function Page2({ setPage }: { setPage: (page: number) => void }) {
 							// setLang("en");
 							setTimeout(() => {
 								switchGameTheme("wuwa");
-								addToast({ type: "info", message: text.Loading+" WWMM" });
+								// addToast({ type: "info", message: text.Loading+" WWMM" });
 
 								// addToast({ type: "info", message: "Loading Config..." });
 							}, 100);
@@ -70,7 +68,7 @@ function Page2({ setPage }: { setPage: (page: number) => void }) {
 							// setLang("en");
 							setTimeout(() => {
 								switchGameTheme("zzz");
-								addToast({ type: "info", message: text.Loading+" ZZMM" });
+								// addToast({ type: "info", message: text.Loading+" ZZMM" });
 							}, 100);
 
 							setPage(0);
@@ -83,7 +81,7 @@ function Page2({ setPage }: { setPage: (page: number) => void }) {
 					className="flex duration-200 border-2 border-zzz-accent-2/30 hover:shadow-lg hover:-mt-2 active:scale-90 shadow-zzz-accent-2 bg-zzz-accent-2/7 p-6 rounded-md min-w-56 flex-col items-center zzz-font"
 				>
 					<img src="/ZZLogo.png" className="max-h-40 " />
-					<label className="text-2xl mt-8">ZZZ</label>
+					<label className="text-2xl mt-8">Z·Z·Z</label>
 				</div>
 			</div>
 		</div>

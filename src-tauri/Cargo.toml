@@ -1,6 +1,6 @@
 [package]
-name = "wuwa-mod-manager"
-version = "0.1.0"
+name = "integrated-mod-manager"
+version = "2.1.0"
 description = "A Tauri App"
 authors = ["you"]
 edition = "2021"

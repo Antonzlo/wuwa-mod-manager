@@ -7,7 +7,6 @@ import { Separator } from "@radix-ui/react-separator";
 import { useAtom, useAtomValue } from "jotai";
 import { CheckIcon, CircleIcon, EditIcon, PlusIcon, SaveIcon, XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
 let focusedPreset = -1;
 function LeftLocal() {
 	const leftSidebarOpen = useAtomValue(LEFT_SIDEBAR_OPEN);

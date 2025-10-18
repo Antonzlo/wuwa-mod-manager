@@ -46,7 +46,7 @@ function MainLocal() {
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const toggleOn = useAtomValue(SETTINGS).global.toggleClick;
 	const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-	const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+	// const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 	const keyRef = useRef<string | null>(null);
 	useEffect(() => {
 		if (!searchDB && modList.length > 0) {
@@ -210,17 +210,17 @@ function MainLocal() {
 				<label className="text-muted -mb-2">{filteredList.length} {textData.Items} </label>
 				{noItems}
 				<AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
-					<AlertDialogContent className="min-w-120">
+					<AlertDialogContent>
 						<div className="max-w-96 flex flex-col items-center gap-6 mt-6 text-center">
 							<div className="text-xl text-gray-200">
 								{textData._Main._MainLocal.Delete} <span className="text-accent ">{deleteItemData?.name}</span>?
 							</div>
-							<div className="text-red-300	">{textData._Main._MainLocal.Irrev}</div>
+							<div className="text-destructive">{textData._Main._MainLocal.Irrev}</div>
 						</div>
 						<div className="flex justify-between w-full gap-4 mt-4">
 							<AlertDialogCancel className="w-24 duration-300">{textData.Cancel}</AlertDialogCancel>
 							<AlertDialogAction
-								className="w-24 text-red-300 hover:bg-red-300 data-zzz:hover:text-background hover:text-background"
+								className="w-24 text-destructive hover:bg-destructive data-zzz:hover:text-background hover:text-background"
 								onClick={async () => {
 									if (!deleteItemData) return;
 									setData((prev) => {

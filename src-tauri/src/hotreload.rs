@@ -31,7 +31,7 @@ static CHANGE: AtomicBool = AtomicBool::new(false);
 
 #[cfg(windows)]
 
-static MOD_MANAGER_TITLE: &str = "wuwa-mod-manager";
+static MOD_MANAGER_TITLE: &str = "Integrated Mod Manager";
 static WINDOW_TARGET: RwLock<String> = RwLock::new(String::new());
 static WW_TITLE: &str = "wuthering waves  ";
 static ZZ_TITLE: &str = "zenlesszonezero";

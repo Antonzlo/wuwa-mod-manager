@@ -15,8 +15,8 @@ import { TEXT } from "@/utils/text";
 import { keySort } from "@/utils/utils";
 import { INIT_DONE, PRESETS, SETTINGS, SOURCE, store, TARGET, TEXT_DATA } from "@/utils/vars";
 import { Separator } from "@radix-ui/react-separator";
-import { open, save } from "@tauri-apps/plugin-dialog";
-import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import { save } from "@tauri-apps/plugin-dialog";
+import {  writeTextFile } from "@tauri-apps/plugin-fs";
 import { useAtom, useAtomValue } from "jotai";
 import {
 	AppWindowIcon,
@@ -191,7 +191,7 @@ function Settings({ leftSidebarOpen }: { leftSidebarOpen: boolean }) {
 									filter: !globalPage ? "invert(1) hue-rotate(180deg)" : "",
 								}}
 							></div>
-							{{ WW: "WuWa", ZZ: "ZZZ","":"" }[settings.global.game]}
+							{{ WW: "WuWa", ZZ: "Z·Z·Z","":"" }[settings.global.game]}
 						</TabsTrigger>
 					</TabsList>
 					<AnimatePresence mode="wait" initial={false}>

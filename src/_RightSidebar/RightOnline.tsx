@@ -19,6 +19,7 @@ import {
 	DownloadIcon,
 	EllipsisVerticalIcon,
 	EyeIcon,
+	LinkIcon,
 	LoaderIcon,
 	MessageSquareIcon,
 	PlusIcon,
@@ -33,7 +34,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { refreshModList, saveConfigs } from "@/utils/filesys";
 import { Separator } from "@radix-ui/react-separator";
 import { UNCATEGORIZED } from "@/utils/consts";
-import { OnlineMod } from "@/utils/types";
+import { addToast } from "@/_Toaster/ToastProvider";
+// import { OnlineMod } from "@/utils/types";
 let now = Date.now() / 1000;
 function RightOnline({ open }: { open: boolean }) {
 	const textData = useAtomValue(TEXT_DATA);
@@ -68,6 +70,7 @@ function RightOnline({ open }: { open: boolean }) {
 			controller.abort();
 		};
 	}, [selected]);
+	console.log(item)
 	useEffect(() => {
 		if (type != "Install" && item?._sProfileUrl) {
 			installedItem && setData((prev: any) => {
@@ -126,26 +129,26 @@ function RightOnline({ open }: { open: boolean }) {
 			<div className="w-[calc(100%-6rem)] text-start flex flex-col gap-1">
 				<p className=" text-ellipsis wrap-break-word overflow-hidden text-base resize-none">{file._sFile}</p>
 				<div className=" min-w-fit data-zzz:text-background text-background flex flex-wrap w-full gap-1 text-xs">
-					{file._sAnalysisResultCode == "contains_exe" ? (
-						<div className=" w-12 px-1 text-center bg-red-300 rounded-lg">exe</div>
+					{file._aAnalysisWarnings?.contains_exe ? (
+						<div className=" w-12 px-1 text-center bg-destructive rounded-lg flex item justify-center">Exe</div>
 					) : (
 						""
 					)}
 					{file._sAnalysisState == "done" ? (
 						<>
-							{file._sAvastAvResult == "clean" ? (
-								<div className=" w-16 px-1 text-center bg-green-300 rounded-lg">AvastAV</div>
+							{file._sAvState == "done" && file._sAvResult=="clean" ? (
+								<div className=" w-16 px-1 text-center bg-success rounded-lg">Clean</div>
 							) : (
-								<div className=" w-16 px-1 text-center bg-red-300 rounded-lg">AvastAV</div>
+								<div className=" w-16 px-1 text-center bg-destructive rounded-lg">Dangerous</div>
 							)}
-							{file._sClamAvResult == "clean" ? (
-								<div className=" w-16 px-1 text-center bg-green-300 rounded-lg">ClamAV</div>
+							{/* {file._sClamAvResult == "clean" ? (
+								<div className=" w-16 px-1 text-center bg-success rounded-lg">ClamAV</div>
 							) : (
-								<div className=" w-16 px-1 text-center bg-red-300 rounded-lg">ClamAV</div>
-							)}
+								<div className=" w-16 px-1 text-center bg-destructive rounded-lg">ClamAV</div>
+							)} */}
 						</>
 					) : (
-						<div className=" w-12 px-1 text-center bg-yellow-300 rounded-lg">pending</div>
+						<div className=" w-12 px-1 text-center bg-warn rounded-lg">pending</div>
 					)}
 				</div>
 				<p className="w-54 text-ellipsis brightness-75 wrap-break-word overflow-hidden text-xs resize-none">
@@ -153,7 +156,11 @@ function RightOnline({ open }: { open: boolean }) {
 				</p>
 			</div>
 			<div className="min-w-24 flex flex-col items-center">
+				<div className="flex gap-1">
+					{" "}
+					<LoaderIcon />
 				{getTimeDifference(now, file._tsDateAdded)}
+				</div>
 				<div className="flex gap-1">
 					{" "}
 					<DownloadIcon />
@@ -231,6 +238,12 @@ function RightOnline({ open }: { open: boolean }) {
 									<Label key={item._sName} className="w-full text-xl text-center">
 										{item._sName}
 									</Label>
+									<Button onClick={() => {
+										navigator.clipboard.writeText(item._sProfileUrl || "");
+										addToast({ type: "success", message: textData._RightSideBar._RightOnline.LinkCopied });
+									}} className="min-w-fit aspect-square bg-button p-2 rounded-md data-zzz:border-2 flex items-center gap-2">
+										<LinkIcon/>
+									</Button>
 									<div className="min-w-fit trs bg-button p-2 rounded-md data-zzz:border-2 flex items-center gap-2">
 											<img
 												className="aspect-square min-w-6 max-w-6 scale-120 h-full ctrs rounded-full pointer-events-none"

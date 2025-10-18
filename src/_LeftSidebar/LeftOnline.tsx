@@ -44,7 +44,7 @@ function LeftOnline() {
 						gridTemplateColumns: leftSidebarOpen ? "" : "repeat(1, minmax(0, 1fr))",
 					}}
 				>
-					{types.map((category, index) => {
+					{types.map((category) => {
 						return (
 							<div className="w-full flex items-center justify-center">
 								<Button
