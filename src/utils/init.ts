@@ -8,6 +8,7 @@ import { getDirResructurePlan, saveConfig, setRoot, updateIni } from "./fsUtils"
 import {
 	categoryListAtom,
 	firstLoadAtom,
+	gameConfigAtom,
 	languageAtom,
 	localDataAtom,
 	localPresetListAtom,
@@ -24,7 +25,7 @@ import { isGameProcessRunning, setHotreload } from "./hotreload";
 import { registerGlobalHotkeys } from "./hotkeyUtils";
 import { invoke } from "@tauri-apps/api/core";
 import { executeWWMI } from "./processUtils";
-import { Settings, OnlineMod } from "./types";
+import { Settings, OnlineMod, GameConfig } from "./types";
 import { HEALTH_CHECK, TEMP_CAT, VERSION } from "./consts";
 export const window = getCurrentWebviewWindow();
 invoke("get_username");
@@ -52,6 +53,35 @@ let firstLoad = false;
 let config = { ...defConfig };
 
 export async function main() {
+	updateInfo("Loading configuration...");
+	
+	// Load config first
+	if (await exists("config.json")) {
+		const configText = await readTextFile("config.json");
+		config = JSON.parse(configText);
+	} else {
+		updateInfo("Config file not found, creating default config.");
+		writeTextFile("config.json", JSON.stringify(defConfig, null, 2));
+		firstLoad = true;
+		config = { ...defConfig };
+	}
+	
+	// Load game config if present, otherwise use default
+	const defaultGameConfig: GameConfig = {
+		name: "Wuthering Waves",
+		gameId: 20357,
+		categories: {
+			skins: 29524,
+			ui: 29496,
+			other: 29493
+		},
+		modLoaderPath: "\\XXMI Launcher\\WWMI\\Mods",
+		executablePath: "Resources\\Bin\\XXMI Launcher.exe"
+	};
+	
+	const gameConfig = config.game || defaultGameConfig;
+	store.set(gameConfigAtom, gameConfig);
+	
 	updateInfo("Fetching categories...");
 
 	const fetchWithRetry = async (url: string, timeouts: number[] = [2000, 5000]): Promise<any> => {
@@ -79,7 +109,7 @@ export async function main() {
 	};
 	try {
 		const data = await fetchWithRetry(
-			"https://gamebanana.com/apiv11/Mod/Categories?_idCategoryRow=29524&_sSort=a_to_z&_bShowEmpty=true"
+			`https://gamebanana.com/apiv11/Mod/Categories?_idCategoryRow=${gameConfig.categories.skins}&_sSort=a_to_z&_bShowEmpty=true`
 		);
 
 		store.set(categoryListAtom, [
@@ -94,20 +124,20 @@ export async function main() {
 			},
 			{
 				_special: true,
-				_idRow: 29493,
+				_idRow: gameConfig.categories.other,
 				_sName: "Other",
 				_nItemCount: 75,
 				_nCategoryCount: 0,
-				_sUrl: "https://gamebanana.com/mods/cats/29493",
+				_sUrl: `https://gamebanana.com/mods/cats/${gameConfig.categories.other}`,
 				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c90cba314.png",
 			},
 			{
 				_special: true,
-				_idRow: 29496,
+				_idRow: gameConfig.categories.ui,
 				_sName: "UI",
 				_nItemCount: 55,
 				_nCategoryCount: 0,
-				_sUrl: "https://gamebanana.com/mods/cats/29496",
+				_sUrl: `https://gamebanana.com/mods/cats/${gameConfig.categories.ui}`,
 				_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c913ddf00.png",
 			},
 		]);
@@ -116,17 +146,9 @@ export async function main() {
 		updateInfo("Network error, refresh to try again.", -1);
 		return;
 	}
-	const apd = (await path.dataDir()) + "\\XXMI Launcher\\WWMI\\Mods";
-	const epd = apd.replace("WWMI\\Mods", "Resources\\Bin\\XXMI Launcher.exe");
-	updateInfo("Checking configuration...");
-	if (await exists("config.json")) config = JSON.parse(await readTextFile("config.json"));
-	else {
-		updateInfo("Config file not found, creating default config.");
-
-		writeTextFile("config.json", JSON.stringify(defConfig, null, 2));
-		firstLoad = true;
-		config = { ...defConfig };
-	}
+	const apd = (await path.dataDir()) + gameConfig.modLoaderPath;
+	const epd = apd.replace(gameConfig.modLoaderPath.split("\\").pop() || "", gameConfig.executablePath);
+	updateInfo("Applying configuration...");
 	updateInfo("Applying configuration...");
 	setWindowType(config.settings.type);
 	const bg = document.querySelector("body");

@@ -3,6 +3,7 @@ import { atom, createStore } from "jotai";
 import type {
 	TimeoutOrNull,
 	Settings,
+	GameConfig,
 	DirRestructureItem,
 	LocalData,
 	Preset,
@@ -34,6 +35,17 @@ const tutorialPageAtom = atom(0);
 const refreshAppIdAtom = atom(0);
 const modRootDirAtom = atom("");
 const settingsDataAtom = atom({} as Settings);
+const gameConfigAtom = atom({
+	name: "Wuthering Waves",
+	gameId: 20357,
+	categories: {
+		skins: 29524,
+		ui: 29496,
+		other: 29493
+	},
+	modLoaderPath: "\\XXMI Launcher\\WWMI\\Mods",
+	executablePath: "Resources\\Bin\\XXMI Launcher.exe"
+} as GameConfig);
 const categoryListAtom = atom([] as Category[]);
 const progressOverlayDataAtom = atom({ title: "", open: false, finished: false });
 const consentOverlayDataAtom = atom({
@@ -68,27 +80,38 @@ const sortedInstalledItemsAtom = atom((get) => {
 });
 const onlinePathAtom = atom("home&type=Mod");
 export const apiRoutes = {
-	getCategoryList: () =>
-		"https://gamebanana.com/apiv11/Mod/Categories?_idCategoryRow=29524&_sSort=a_to_z&_bShowEmpty=true",
-	getGenericCategoryList: () =>
-		"https://gamebanana.com/apiv11/Mod/Categories?_idGameRow=20357&_sSort=a_to_z&_bShowEmpty=true",
-	home: ({ sort = "default", page = 1, type = "" }) =>
-		`https://gamebanana.com/apiv11/Game/20357/Subfeed?${
+	getCategoryList: () => {
+		const gameConfig = store.get(gameConfigAtom);
+		return `https://gamebanana.com/apiv11/Mod/Categories?_idCategoryRow=${gameConfig.categories.skins}&_sSort=a_to_z&_bShowEmpty=true`;
+	},
+	getGenericCategoryList: () => {
+		const gameConfig = store.get(gameConfigAtom);
+		return `https://gamebanana.com/apiv11/Mod/Categories?_idGameRow=${gameConfig.gameId}&_sSort=a_to_z&_bShowEmpty=true`;
+	},
+	home: ({ sort = "default", page = 1, type = "" }) => {
+		const gameConfig = store.get(gameConfigAtom);
+		return `https://gamebanana.com/apiv11/Game/${gameConfig.gameId}/Subfeed?${
 			type && `_csvModelInclusions=${type}&`
-		}_sSort=${sort}&_nPage=${page}`,
+		}_sSort=${sort}&_nPage=${page}`;
+	},
 	category: ({ cat = "Skins", sort = "", page = 1 }) =>
 		`https://gamebanana.com/apiv11/Mod/Index?_nPerpage=15&_aFilters%5BGeneric_Category%5D=${
 			(cat.split("/").length > 1
 				? store.get(categoryListAtom).find((x) => x._sName == cat.split("/")[1])?._idRow
 				: genericCategories.find((x) => x._sName == cat.split("/")[0])?._idRow) || 0
 		}&_sSort=${sort}&_nPage=${page}`,
-	banner: () => "https://gamebanana.com/apiv11/Game/20357/TopSubs",
+	banner: () => {
+		const gameConfig = store.get(gameConfigAtom);
+		return `https://gamebanana.com/apiv11/Game/${gameConfig.gameId}/TopSubs`;
+	},
 	mod: (modTitle = "Mod/0") => `https://gamebanana.com/apiv11/${modTitle}/ProfilePage`,
 	modUpdates: (modTitle = "Mod/0") => `https://gamebanana.com/apiv11/${modTitle}/Updates?_nPage=1&_nPerpage=1`,
-	search: ({ term, page = 1, type = "" }: { term: string; page?: number; type?: string }) =>
-		`https://gamebanana.com/apiv11/Util/Search/Results?_sModelName=${type}&_sOrder=best_match&_idGameRow=20357&_sSearchString=${encodeURIComponent(
+	search: ({ term, page = 1, type = "" }: { term: string; page?: number; type?: string }) => {
+		const gameConfig = store.get(gameConfigAtom);
+		return `https://gamebanana.com/apiv11/Util/Search/Results?_sModelName=${type}&_sOrder=best_match&_idGameRow=${gameConfig.gameId}&_sSearchString=${encodeURIComponent(
 			term
-		)}&_nPage=${page}`,
+		)}&_nPage=${page}`;
+	},
 };
 const onlineTypeAtom = atom("Mod");
 const onlineSortAtom = atom("");
@@ -97,32 +120,39 @@ const onlineDownloadListAtom = atom([] as DownloadItem[]);
 const onlineSelectedItemAtom = atom("-1");
 const tutorialModeAtom = atom(false);
 export const updaterOpenAtom = atom(false);
-const genericCategories = [
-	{
-		_idRow: 29524,
-		_sName: "Skins",
-		_nItemCount: 1483,
-		_nCategoryCount: 34,
-		_sUrl: "https://gamebanana.com/mods/cats/29524",
-		_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6654b6596ba11.png",
-	},
-	{
-		_idRow: 29496,
-		_sName: "UI",
-		_nItemCount: 57,
-		_nCategoryCount: 0,
-		_sUrl: "https://gamebanana.com/mods/cats/29496",
-		_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c913ddf00.png",
-	},
-	{
-		_idRow: 29493,
-		_sName: "Other",
-		_nItemCount: 75,
-		_nCategoryCount: 0,
-		_sUrl: "https://gamebanana.com/mods/cats/29493",
-		_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c90cba314.png",
-	},
-];
+// Generic categories will be initialized from game config
+const genericCategoriesAtom = atom<Category[]>([]);
+// Helper to get generic categories based on current game config
+const getGenericCategories = () => {
+	const gameConfig = store.get(gameConfigAtom);
+	return [
+		{
+			_idRow: gameConfig.categories.skins,
+			_sName: "Skins",
+			_nItemCount: 0,
+			_nCategoryCount: 0,
+			_sUrl: `https://gamebanana.com/mods/cats/${gameConfig.categories.skins}`,
+			_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6654b6596ba11.png",
+		},
+		{
+			_idRow: gameConfig.categories.ui,
+			_sName: "UI",
+			_nItemCount: 0,
+			_nCategoryCount: 0,
+			_sUrl: `https://gamebanana.com/mods/cats/${gameConfig.categories.ui}`,
+			_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c913ddf00.png",
+		},
+		{
+			_idRow: gameConfig.categories.other,
+			_sName: "Other",
+			_nItemCount: 0,
+			_nCategoryCount: 0,
+			_sUrl: `https://gamebanana.com/mods/cats/${gameConfig.categories.other}`,
+			_sIconUrl: "https://images.gamebanana.com/img/ico/ModCategory/6692c90cba314.png",
+		},
+	];
+};
+const genericCategories = getGenericCategories();
 function getTimeDifference(startTimestamp: number, endTimestamp: number) {
 	const secInMinute = 60;
 	const secInHour = secInMinute * 60;
@@ -179,6 +209,7 @@ export {
 	refreshAppIdAtom,
 	modRootDirAtom,
 	settingsDataAtom,
+	gameConfigAtom,
 	categoryListAtom,
 	progressOverlayDataAtom,
 	consentOverlayDataAtom,
@@ -199,5 +230,7 @@ export {
 	onlineDownloadListAtom,
 	onlineSelectedItemAtom,
 	genericCategories,
+	genericCategoriesAtom,
+	getGenericCategories,
 	getTimeDifference,
 };
