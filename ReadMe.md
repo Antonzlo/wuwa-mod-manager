@@ -121,6 +121,16 @@ Tauri is built with Rust and requires it for development.
 
 ## Getting Started
 
+### Prerequisites
+
+Before you begin, ensure you have installed:
+- **Rust** - Required for Tauri development
+- **Node.js** (LTS version) - Required for the frontend
+- **Microsoft C++ Build Tools** (Windows only)
+- **Microsoft Edge WebView2** (Windows only)
+
+See the [Development Dependencies](#development-dependencies) section above for detailed installation instructions.
+
 ### Download
 
 Clone the repository using `git`:
@@ -131,24 +141,78 @@ git clone https://github.com/jpbhatt21/wuwa-mod-manager.git
 
 ### Install
 
-Navigate into the project directory and install the necessary packages.
+Navigate into the project directory and install the necessary packages:
 
 ```sh
-cd wuwa-mod-manager && npm i
+cd wuwa-mod-manager
+npm install
 ```
 
-### Run
+This will install all required Node.js dependencies. The first run may take a few minutes.
 
-Run the application in development mode (needs administrator permissions).
+### Run in Development Mode
+
+Run the application in development mode:
 
 ```sh
 npx tauri dev
 ```
 
-### Build
+**Note for Windows:** Some operations may require administrator permissions, particularly when managing mods. Run your terminal as administrator if you encounter permission errors.
 
-Build the application for production (needs administrator permissions).
+The development server will:
+- Start a local web server on `http://localhost:1420`
+- Launch the application in a native window
+- Enable hot-reload for instant updates during development
+
+### Build for Production
+
+Build the application for production:
 
 ```sh
 npx tauri build
 ```
+
+The build process will:
+1. Run TypeScript type checking (`tsc --noEmit`)
+2. Bundle the frontend with Vite
+3. Compile the Rust backend
+4. Create platform-specific installers
+
+The installer will be located at:
+- **Windows**: `src-tauri/target/release/bundle/nsis/`
+- **Other platforms**: Check `src-tauri/target/release/bundle/`
+
+### Additional Commands
+
+**Type Checking:**
+```sh
+npm run type-check
+```
+
+**Linting:**
+```sh
+npm run lint          # Check for issues
+npm run lint:fix      # Auto-fix issues
+```
+
+**Formatting:**
+```sh
+npm run format        # Format all files
+npm run format:check  # Check formatting
+```
+
+**Clean Build Artifacts:**
+```sh
+npm run clean
+```
+
+## Forking for Other Games
+
+Want to adapt this mod manager for Genshin Impact or other games? Check out our comprehensive [**Forking Guide**](./FORKING_GUIDE.md) that explains:
+- How to configure the manager for different games
+- Finding and setting GameBanana game IDs and category IDs
+- Updating branding and icons
+- Managing game-specific categories
+
+All game-specific settings are now centralized in configuration files, making it easy to create forks for other GameBanana-supported games!

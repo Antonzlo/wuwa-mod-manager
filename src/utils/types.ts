@@ -84,6 +84,17 @@ export interface ModHotkey {
 	target: string;
 	name: string;
 }
+export interface GameConfig {
+	name: string;
+	gameId: number;
+	categories: {
+		skins: number;
+		ui: number;
+		other: number;
+	};
+	modLoaderPath: string;
+	executablePath: string;
+}
 export interface Settings {
 	hotKeys: { [key: string]: WWMMHotkey };
 	launch:0|1;

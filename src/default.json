@@ -1,6 +1,17 @@
 {
 	"version": "2.0.4",
 	"dir": "",
+	"game": {
+		"name": "Wuthering Waves",
+		"gameId": 20357,
+		"categories": {
+			"skins": 29524,
+			"ui": 29496,
+			"other": 29493
+		},
+		"modLoaderPath": "\\XXMI Launcher\\WWMI\\Mods",
+		"executablePath": "Resources\\Bin\\XXMI Launcher.exe"
+	},
 	"settings": {
 		"hotKeys": {
 		},
