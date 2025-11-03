@@ -1,0 +1,24 @@
+{
+  "version": "2.0.4",
+  "dir": "C:\\Users\\Anton\\AppData\\Roaming\\XXMI Launcher\\GIMI\\Mods",
+  "settings": {
+    "hotKeys": {},
+    "appDir": "",
+    "launch": 0,
+    "hotReload": 1,
+    "toggle": 2,
+    "open": 0,
+    "opacity": 1,
+    "type": 0,
+    "bgType": 2,
+    "listType": 0,
+    "onlineType": "Mod",
+    "nsfw": 1,
+    "ignore": "2.0.1",
+    "clientDate": "1762188920289493166",
+    "lang": "en"
+  },
+  "data": {},
+  "presets": [],
+  "savedAt": 1762189046878
+}
