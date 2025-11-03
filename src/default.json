@@ -2,21 +2,20 @@
 	"version": "2.0.4",
 	"dir": "",
 	"game": {
-		"name": "Wuthering Waves",
-		"gameId": 20357,
+		"name": "Genshin Impact",
+		"gameId": 8552,
 		"categories": {
 			"skins": 18140,
 			"ui": 29496,
 			"other": 29493
 		},
-		"modLoaderPath": "\\XXMI Launcher\\WWMI\\Mods",
+		"modLoaderPath": "\\XXMI Launcher\\XXMI\\Mods",
 		"executablePath": "Resources\\Bin\\XXMI Launcher.exe"
 	},
 	"settings": {
-		"hotKeys": {
-		},
-		"appDir":"",
-		"launch":0,
+		"hotKeys": {},
+		"appDir": "",
+		"launch": 0,
 		"hotReload": 1,
 		"toggle": 2,
 		"open": 0,
@@ -24,12 +23,11 @@
 		"type": 0,
 		"bgType": 2,
 		"listType": 0,
-		"onlineType":"Mod",
-		"nsfw":1,
-		"ignore":"2.0.1",
-		"clientDate":"",
-		"lang":""
-		
+		"onlineType": "Mod",
+		"nsfw": 1,
+		"ignore": "2.0.1",
+		"clientDate": "",
+		"lang": ""
 	},
 	"data": {},
 	"presets": []
