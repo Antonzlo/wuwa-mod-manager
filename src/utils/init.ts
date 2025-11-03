@@ -71,7 +71,7 @@ export async function main() {
 		name: "Wuthering Waves",
 		gameId: 20357,
 		categories: {
-			skins: 29524,
+			skins: 18140,
 			ui: 29496,
 			other: 29493
 		},
