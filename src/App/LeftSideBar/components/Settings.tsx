@@ -196,7 +196,7 @@ function Settings({
 												{textData._LeftSideBar._components._Settings._AutoReload.DisableMsg}
 											</div>
 											<div>
-												<b>WWMM -</b> {textData._LeftSideBar._components._Settings._AutoReload.WWMMMsg}
+												<b>GIMM -</b> {textData._LeftSideBar._components._Settings._AutoReload.WWMMMsg}
 											</div>
 											<div>
 												<b>{textData._LeftSideBar._components._Settings._AutoReload.OnFocus} -</b>{" "}
@@ -228,7 +228,7 @@ function Settings({
 									</TabsTrigger>
 									<TabsTrigger value="1" className="w-1/3 h-10">
 										<AppWindow />
-										WWMM
+										GIMM
 									</TabsTrigger>
 									<TabsTrigger value="2" className="w-1/3 h-10">
 										<Focus />

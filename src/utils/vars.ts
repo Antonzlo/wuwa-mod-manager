@@ -35,17 +35,10 @@ const tutorialPageAtom = atom(0);
 const refreshAppIdAtom = atom(0);
 const modRootDirAtom = atom("");
 const settingsDataAtom = atom({} as Settings);
-const gameConfigAtom = atom({
-	name: "Wuthering Waves",
-	gameId: 20357,
-	categories: {
-		skins: 18140,
-		ui: 29496,
-		other: 29493
-	},
-	modLoaderPath: "\\XXMI Launcher\\WWMI\\Mods",
-	executablePath: "Resources\\Bin\\XXMI Launcher.exe"
-} as GameConfig);
+// Start with an empty game config so the real value can be loaded from disk
+// during initialization (see src/utils/init.ts). This prevents the hardcoded
+// default here from unintentionally overwriting a saved `config.json`.
+const gameConfigAtom = atom({} as GameConfig);
 const categoryListAtom = atom([] as Category[]);
 const progressOverlayDataAtom = atom({ title: "", open: false, finished: false });
 const consentOverlayDataAtom = atom({
@@ -98,7 +91,7 @@ export const apiRoutes = {
 		`https://gamebanana.com/apiv11/Mod/Index?_nPerpage=15&_aFilters%5BGeneric_Category%5D=${
 			(cat.split("/").length > 1
 				? store.get(categoryListAtom).find((x) => x._sName == cat.split("/")[1])?._idRow
-				: genericCategories.find((x) => x._sName == cat.split("/")[0])?._idRow) || 0
+				: getGenericCategories().find((x) => x._sName == cat.split("/")[0])?._idRow) || 0
 		}&_sSort=${sort}&_nPage=${page}`,
 	banner: () => {
 		const gameConfig = store.get(gameConfigAtom);
@@ -108,9 +101,9 @@ export const apiRoutes = {
 	modUpdates: (modTitle = "Mod/0") => `https://gamebanana.com/apiv11/${modTitle}/Updates?_nPage=1&_nPerpage=1`,
 	search: ({ term, page = 1, type = "" }: { term: string; page?: number; type?: string }) => {
 		const gameConfig = store.get(gameConfigAtom);
-		return `https://gamebanana.com/apiv11/Util/Search/Results?_sModelName=${type}&_sOrder=best_match&_idGameRow=${gameConfig.gameId}&_sSearchString=${encodeURIComponent(
-			term
-		)}&_nPage=${page}`;
+		return `https://gamebanana.com/apiv11/Util/Search/Results?_sModelName=${type}&_sOrder=best_match&_idGameRow=${
+			gameConfig.gameId
+		}&_sSearchString=${encodeURIComponent(term)}&_nPage=${page}`;
 	},
 };
 const onlineTypeAtom = atom("Mod");
@@ -125,6 +118,7 @@ const genericCategoriesAtom = atom<Category[]>([]);
 // Helper to get generic categories based on current game config
 const getGenericCategories = () => {
 	const gameConfig = store.get(gameConfigAtom);
+	if(!gameConfig.categories) return [];
 	return [
 		{
 			_idRow: gameConfig.categories.skins,
@@ -152,7 +146,7 @@ const getGenericCategories = () => {
 		},
 	];
 };
-const genericCategories = getGenericCategories();
+
 function getTimeDifference(startTimestamp: number, endTimestamp: number) {
 	const secInMinute = 60;
 	const secInHour = secInMinute * 60;
@@ -229,7 +223,6 @@ export {
 	onlineDataAtom,
 	onlineDownloadListAtom,
 	onlineSelectedItemAtom,
-	genericCategories,
 	genericCategoriesAtom,
 	getGenericCategories,
 	getTimeDifference,

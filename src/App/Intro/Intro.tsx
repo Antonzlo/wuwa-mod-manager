@@ -75,7 +75,7 @@ function Intro() {
 					}	}
 				>
 					<div className="text-8xl flex  text-foreground">
-						{"WuWa".split("").map((letter, index) => (
+						{"Genshin Impact".split("").map((letter, index) => (
 							<span
 								key={index}
 								className="wave-letter"

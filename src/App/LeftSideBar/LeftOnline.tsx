@@ -1,4 +1,4 @@
-import { genericCategories, onlinePathAtom, leftSidebarOpenAtom, onlineModeAtom, onlineSelectedItemAtom, onlineTypeAtom, onlineSortAtom , textDataAtom } from "@/utils/vars";
+import { getGenericCategories, onlinePathAtom, leftSidebarOpenAtom, onlineModeAtom, onlineSelectedItemAtom, onlineTypeAtom, onlineSortAtom , textDataAtom } from "@/utils/vars";
 import { AppWindow, EyeIcon, FolderCheckIcon, ShieldQuestion, Shirt, UploadIcon } from "lucide-react";
 import { SidebarContent, SidebarGroup, SidebarGroupLabel } from "@/components/ui/sidebar";
 import { modRouteFromURL } from "@/utils/fsUtils";
@@ -16,7 +16,7 @@ function LeftOnline() {
 	const online = useAtomValue(onlineModeAtom);
 	const setOnlineSelectedItem = useSetAtom(onlineSelectedItemAtom);
 	const onlineType = useAtomValue(onlineTypeAtom);
-	
+	const genericCategories = getGenericCategories();
 	const { installed } = useInstalledItems();
 	return (
 		<div

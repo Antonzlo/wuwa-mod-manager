@@ -80,6 +80,7 @@ export async function main() {
 	};
 	
 	const gameConfig = config.game || defaultGameConfig;
+	console.log("Using game config:", config);
 	store.set(gameConfigAtom, gameConfig);
 	
 	updateInfo("Fetching categories...");

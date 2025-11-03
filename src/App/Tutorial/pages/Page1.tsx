@@ -3,7 +3,7 @@ import { textDataAtom } from "@/utils/vars";
 
 function Page1({ setPage }: { setPage: (page: number) => void }) {
 	const text = useAtomValue(textDataAtom);
-	const wuwaText = "WuWa";
+	const wuwaText = "Genshin Impact";
 	const modManagerText = "Mod Manager";
 	return (
 		<>

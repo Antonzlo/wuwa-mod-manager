@@ -1,9 +1,40 @@
-import { refreshAppIdAtom, localModListAtom, localPresetListAtom, settingsDataAtom, categoryListAtom, localDataAtom, consentOverlayDataAtom, progressOverlayDataAtom, modRootDirAtom, store  } from "@/utils/vars";
-import { readDir, readTextFile, writeTextFile, rename, exists, mkdir, remove, copyFile, DirEntry } from "@tauri-apps/plugin-fs";
+import {
+	refreshAppIdAtom,
+	localModListAtom,
+	localPresetListAtom,
+	settingsDataAtom,
+	categoryListAtom,
+	localDataAtom,
+	consentOverlayDataAtom,
+	progressOverlayDataAtom,
+	modRootDirAtom,
+	store,
+	gameConfigAtom,
+} from "@/utils/vars";
+import {
+	readDir,
+	readTextFile,
+	writeTextFile,
+	rename,
+	exists,
+	mkdir,
+	remove,
+	copyFile,
+	DirEntry,
+} from "@tauri-apps/plugin-fs";
 import { open } from "@tauri-apps/plugin-dialog";
 import { IGNORE, RESTORE, UNCATEGORIZED } from "@/utils/init";
 import { VERSION } from "./consts";
-import { SanitizeOptions, LocalMod, DirRestructureItem, LocalData, ModHotkey, Preset, Settings } from "./types";	
+import {
+	SanitizeOptions,
+	LocalMod,
+	DirRestructureItem,
+	LocalData,
+	ModHotkey,
+	Preset,
+	Settings,
+	GameConfig,
+} from "./types";
 let root = "";
 let completedFiles = 0;
 let totalFiles = 0;
@@ -11,33 +42,30 @@ let canceled = false;
 let result = "Ok";
 const PRIORITY_KEYS = ["Alt", "Ctrl", "Shift", "Capslock", "Tab", "Up", "Down", "Left", "Right"];
 const PRIORITY_SET = new Set(PRIORITY_KEYS);
-const textMSG={
-	rem:"Removing current files",
-	disc:"Discovering files",
-	file:"File"
-}
-export function setTextMSG(val:{rem:string,disc:string,file:string}){
-	textMSG.rem=val.rem;
-	textMSG.disc=val.disc;
-	textMSG.file=val.file;
+const textMSG = {
+	rem: "Removing current files",
+	disc: "Discovering files",
+	file: "File",
+};
+export function setTextMSG(val: { rem: string; disc: string; file: string }) {
+	textMSG.rem = val.rem;
+	textMSG.disc = val.disc;
+	textMSG.file = val.file;
 }
 export function keySort(keys: string[]): string[] {
-	
 	const regularKeys = keys.filter((key) => !PRIORITY_SET.has(key));
-	
+
 	regularKeys.sort((a, b) => {
-		
 		if (a.length !== b.length) {
 			return a.length - b.length;
 		}
-		
+
 		return a.localeCompare(b);
 	});
-	
-	
+
 	const inputKeysSet = new Set(keys);
 	const presentPriorityKeys = PRIORITY_KEYS.filter((pKey) => inputKeysSet.has(pKey));
-	
+
 	return [...presentPriorityKeys, ...regularKeys];
 }
 function formatDateTime() {
@@ -53,7 +81,10 @@ function formatDateTime() {
 function sort(a: LocalMod | DirRestructureItem, b: LocalMod | DirRestructureItem) {
 	let x = a.name.replaceAll("DISABLED_", "");
 	let y = b.name.replaceAll("DISABLED_", "");
-	return x.localeCompare(y) * (x[0].toLowerCase() == y[0].toLowerCase() ? (x[0] == x[0].toUpperCase() && y[0] != y[0].toUpperCase() ? 1 : -1) : 1);
+	return (
+		x.localeCompare(y) *
+		(x[0].toLowerCase() == y[0].toLowerCase() ? (x[0] == x[0].toUpperCase() && y[0] != y[0].toUpperCase() ? 1 : -1) : 1)
+	);
 }
 function joinPath(path: string, ...paths: string[]) {
 	let p = path.trim();
@@ -124,12 +155,21 @@ async function copyDir(src: string, dest: string) {
 		throw error;
 	}
 }
-async function copyDirWithProgress(source: string, destination: string, progressBar: HTMLElement | null = null, progressPerct: HTMLElement | null = null, progressMessage: HTMLElement | null = null, isRoot = true) {
+async function copyDirWithProgress(
+	source: string,
+	destination: string,
+	progressBar: HTMLElement | null = null,
+	progressPerct: HTMLElement | null = null,
+	progressMessage: HTMLElement | null = null,
+	isRoot = true
+) {
 	try {
 		try {
 			await mkdir(destination);
 		} catch {}
-		const dirContents = (await readDir(source)).filter((item) => !isRoot || (item.name != RESTORE && item.name != IGNORE));
+		const dirContents = (await readDir(source)).filter(
+			(item) => !isRoot || (item.name != RESTORE && item.name != IGNORE)
+		);
 		for (const entry of dirContents) {
 			if (canceled) {
 				if (result == "Ok") result = "Operation Cancelled";
@@ -138,7 +178,14 @@ async function copyDirWithProgress(source: string, destination: string, progress
 			const fullSourcePath = `${source}\\${entry.name}`;
 			const fullDestinationPath = `${destination}\\${entry.name}`;
 			if (entry.isDirectory) {
-				await copyDirWithProgress(fullSourcePath, fullDestinationPath, progressBar, progressPerct, progressMessage, false);
+				await copyDirWithProgress(
+					fullSourcePath,
+					fullDestinationPath,
+					progressBar,
+					progressPerct,
+					progressMessage,
+					false
+				);
 			} else {
 				await copyFile(fullSourcePath, fullDestinationPath);
 				completedFiles++;
@@ -181,7 +228,7 @@ async function countFilesInDir(path: string, messageBox: HTMLElement | null = nu
 		} else {
 			totalFiles++;
 			if (messageBox) {
-				messageBox.innerText = textMSG.disc+ " ( " + totalFiles + " / ? )";
+				messageBox.innerText = textMSG.disc + " ( " + totalFiles + " / ? )";
 			}
 		}
 	}
@@ -192,7 +239,9 @@ async function detectHotkeys(entries: any[], data: LocalData, src: string): Prom
 		try {
 			if (data[entry.truePath]) {
 				for (let key of Object.keys(data[entry.truePath])) {
-					entry[key as "source" | "updatedAt" | "note"] = data[entry.truePath as keyof typeof data][key as "source" | "updatedAt" | "note"] as any;
+					entry[key as "source" | "updatedAt" | "note"] = data[entry.truePath as keyof typeof data][
+						key as "source" | "updatedAt" | "note"
+					] as any;
 				}
 			}
 			if (entry.name.endsWith(".ini")) {
@@ -278,7 +327,13 @@ async function restructureDir(entries: LocalMod[]) {
 	} catch (e) {
 		//console.log("Folder Uncat already exists");
 	}
-	entries = entries.filter((item) => item.name !== UNCATEGORIZED && item.name != IGNORE && item.name != RESTORE && categories.filter((category) => category._sName == item.name).length == 0);
+	entries = entries.filter(
+		(item) =>
+			item.name !== UNCATEGORIZED &&
+			item.name != IGNORE &&
+			item.name != RESTORE &&
+			categories.filter((category) => category._sName == item.name).length == 0
+	);
 	for (let entry of entries) {
 		let moved = false;
 		for (let category of categories) {
@@ -288,7 +343,13 @@ async function restructureDir(entries: LocalMod[]) {
 					await mkdir(joinPath(root, category._sName));
 				} catch (e) {}
 				if (await exists(joinPath(root, category._sName, entry.name))) {
-					alert("A folder with the name " + entry.name + " already exists in the category " + category._sName + ". Please rename or remove it before restructuring.");
+					alert(
+						"A folder with the name " +
+							entry.name +
+							" already exists in the category " +
+							category._sName +
+							". Please rename or remove it before restructuring."
+					);
 				}
 				await rename(joinPath(root, entry.path), joinPath(root, category._sName, entry.name));
 				break;
@@ -297,9 +358,7 @@ async function restructureDir(entries: LocalMod[]) {
 		if (!moved) {
 			try {
 				await mkdir(joinPath(root, UNCATEGORIZED));
-			} catch (e) {
-				
-			}
+			} catch (e) {}
 			try {
 				let suffix = "";
 				let counter = 0;
@@ -311,9 +370,7 @@ async function restructureDir(entries: LocalMod[]) {
 						suffix = " (" + ++counter + ")";
 					}
 				}
-			} catch (e) {
-				
-			}
+			} catch (e) {}
 		}
 	}
 }
@@ -326,47 +383,46 @@ export function setRoot(val: string, check = false) {
 export function cancelRestore() {
 	canceled = true;
 }
-export async function selectPath({multiple=false,directory=false}:{multiple?:boolean,directory?:boolean}={}) {
+export async function selectPath({
+	multiple = false,
+	directory = false,
+}: { multiple?: boolean; directory?: boolean } = {}) {
 	return await open({
 		multiple,
 		directory,
-	})
+	});
 }
 export async function selectRootDir() {
 	const file = await selectPath({ directory: true });
 	if (!file) return;
 	store.set(modRootDirAtom, file);
 	setRoot(file, true);
-	
-	
 }
 const reservedWindowsNames = /^(con|prn|aux|nul|com\d|lpt\d)$/i;
 const illegalCharacters = /[<>:"/\\|?*\x00-\x1F]/g;
 
 export function sanitizeFileName(input: string, options: SanitizeOptions = {}): string {
-	
 	const { replacement = "_", defaultName = "untitled", maxLength = 255 } = options;
-	
+
 	if (typeof input !== "string") {
 		return defaultName;
 	}
-	
+
 	let sanitized = input.replace(illegalCharacters, replacement);
-	
-	
+
 	const baseName = sanitized.split(".")[0];
 	if (reservedWindowsNames.test(baseName)) {
 		sanitized = replacement + sanitized;
 	}
-	
+
 	sanitized = sanitized.trim().replace(/^[.]+|[.]+$/g, "");
-	
+
 	if (sanitized.length > maxLength) {
 		sanitized = sanitized.substring(0, maxLength);
-		
+
 		sanitized = sanitized.trim().replace(/^[.]+|[.]+$/g, "");
 	}
-	
+
 	if (sanitized.length === 0) {
 		return defaultName;
 	}
@@ -381,7 +437,7 @@ export async function createModDownloadDir(cat: string, dir: string) {
 	let path = root + "\\" + cat + "\\" + dir;
 	let altPath = root + "\\" + cat + "\\" + "DISABLED_" + dir;
 	if (await exists(path)) return;
-	
+
 	if (await exists(altPath)) return true;
 	await mkdir(path, { recursive: true });
 	return false;
@@ -397,11 +453,10 @@ export async function validateModDownload(path: string) {
 				if (entry.isDirectory) dirs.push(entry.name);
 			}
 			if (!ini && dirs.length == 1) {
-				let uuid ="WWMM_TEMP_"+(Math.random()*1000000000)
+				let uuid = "WWMM_TEMP_" + Math.random() * 1000000000;
 				await rename(path + "\\" + dirs[0], path + "\\" + uuid);
-				await copyDir(path + "\\" + uuid,path);
+				await copyDir(path + "\\" + uuid, path);
 				await removeDirRecursive(path + "\\" + uuid);
-
 			}
 		}
 	} catch {}
@@ -429,6 +484,7 @@ export function getConfig() {
 		settings: store.get(settingsDataAtom) || {},
 		data: store.get(localDataAtom) || {},
 		presets: store.get(localPresetListAtom) || [],
+		game: store.get(gameConfigAtom) || {},
 		savedAt: Date.now(),
 	};
 }
@@ -441,18 +497,31 @@ interface ConfigStructure {
 	version: string;
 	dir: string;
 	settings: Settings;
+	game: GameConfig;
 	data: LocalData;
 	presets: Preset[];
 }
 
 export async function checkConfigValidity(config: unknown): Promise<ConfigStructure | null> {
 	const cfg = config as Record<string, unknown>;
-	
-	if (!cfg.version || cfg.version > VERSION || !cfg.dir || typeof cfg.dir !== "string" || !cfg.settings || typeof cfg.settings !== "object" || !cfg.data || typeof cfg.data !== "object" || !cfg.presets || !Array.isArray(cfg.presets)) {
+	// Basic structural/type checks. Do not perform file I/O here — this is a pure validator.
+	if (
+		!cfg.version ||
+		(typeof cfg.version === "string" && cfg.version > VERSION) ||
+		!cfg.dir ||
+		typeof cfg.dir !== "string" ||
+		!cfg.settings ||
+		typeof cfg.settings !== "object" ||
+		!cfg.data ||
+		typeof cfg.data !== "object" ||
+		!cfg.presets ||
+		!Array.isArray(cfg.presets)
+	) {
 		return null;
 	}
 	return config as ConfigStructure;
 }
+
 export async function deleteMod(path: string, isDir: boolean) {
 	try {
 		if (isDir) {
@@ -571,8 +640,7 @@ export async function getDirResructurePlan() {
 		} as DirRestructureItem);
 	}
 	finalEntries = finalEntries.sort(sort);
-	
-	
+
 	store.set(consentOverlayDataAtom, {
 		title: "Confirm changes",
 		from: entries,
@@ -602,9 +670,7 @@ export async function createRestorePoint(prefix = "") {
 	canceled = false;
 	try {
 		await mkdir(joinPath(root, RESTORE));
-	} catch (e) {
-		
-	}
+	} catch (e) {}
 	let restorePointName = prefix + "RESTORE-" + formatDateTime();
 	await countFilesInDir(root, progressMessage);
 	try {
@@ -613,7 +679,13 @@ export async function createRestorePoint(prefix = "") {
 		return null;
 	}
 	result = "Ok";
-	await copyDirWithProgress(root, joinPath(root, RESTORE, restorePointName), progressBar, progressPerct, progressMessage);
+	await copyDirWithProgress(
+		root,
+		joinPath(root, RESTORE, restorePointName),
+		progressBar,
+		progressPerct,
+		progressMessage
+	);
 	store.set(progressOverlayDataAtom, (prev) => ({
 		title: result == "Ok" ? "Restore Point Created" : result,
 		finished: true,

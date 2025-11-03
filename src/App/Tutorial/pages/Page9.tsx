@@ -35,7 +35,7 @@ function Page9() {
 						backgroundPosition: "center",
 					}}></div>
 				<div className="flex flex-col w-48 text-center duration-200 ease-linear">
-					<label className="text-5xl text-[#eaeaea] min-w-fit font-bold">WuWa</label>
+					<label className="text-5xl text-[#eaeaea] min-w-fit font-bold">Genshin</label>
 					<label className="min-w-fit text-accent/75 text-2xl">Mod Manager</label>
 				</div>
 			</div>

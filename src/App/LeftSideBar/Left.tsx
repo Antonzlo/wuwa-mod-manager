@@ -37,7 +37,7 @@ function LeftSidebar() {
 							marginRight: leftSidebarOpen ? "" : "-7.125rem",
 							opacity: leftSidebarOpen ? "" : "0",
 						}}>
-						<label className="text-2xl text-[#eaeaea] min-w-fit font-bold">WuWa</label>
+						<label className="text-2xl text-[#eaeaea] min-w-fit font-bold">Genshin</label>
 						<label className="min-w-fit text-accent/75 text-sm">Mod Manager</label>
 					</div>
 				</div>

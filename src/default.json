@@ -1,15 +1,15 @@
 {
-	"version": "2.0.4",
+	"version": "2.0.5",
 	"dir": "",
 	"game": {
 		"name": "Genshin Impact",
 		"gameId": 8552,
 		"categories": {
 			"skins": 18140,
-			"ui": 29496,
-			"other": 29493
+			"ui": 22474,
+			"other": 12526
 		},
-		"modLoaderPath": "\\XXMI Launcher\\XXMI\\Mods",
+		"modLoaderPath": "\\XXMI Launcher\\GIMI\\Mods",
 		"executablePath": "Resources\\Bin\\XXMI Launcher.exe"
 	},
 	"settings": {
