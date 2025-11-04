@@ -1,5 +1,5 @@
 {
-  "version": "2.0.4",
+  "version": "2.0.5",
   "dir": "C:\\Users\\Anton\\AppData\\Roaming\\XXMI Launcher\\GIMI\\Mods",
   "settings": {
     "hotKeys": {},
@@ -15,10 +15,21 @@
     "onlineType": "Mod",
     "nsfw": 1,
     "ignore": "2.0.1",
-    "clientDate": "1762188920289493166",
+    "clientDate": "1762193499143883311",
     "lang": "en"
   },
   "data": {},
   "presets": [],
-  "savedAt": 1762189046878
+  "game": {
+    "name": "Genshin Impact",
+    "gameId": 8552,
+    "categories": {
+      "skins": 18140,
+      "ui": 22474,
+      "other": 12526
+    },
+    "modLoaderPath": "\\XXMI Launcher\\GIMI\\Mods",
+    "executablePath": "Resources\\Bin\\XXMI Launcher.exe"
+  },
+  "savedAt": 1762194444378
 }
